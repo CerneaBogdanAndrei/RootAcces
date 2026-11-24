@@ -1,0 +1,20 @@
+{
+    "name": "RootAccess.Player",
+    "rootNamespace": "RootAccess.Player",
+    "references": [
+        "RootAccess.Core",
+        "RootAccess.Input",
+        "RootAccess.Systems",
+        "RootAccess.VFX",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

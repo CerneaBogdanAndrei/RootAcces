@@ -1,0 +1,17 @@
+{
+    "name": "RootAccess.Audio",
+    "rootNamespace": "RootAccess.Audio",
+    "references": [
+        "RootAccess.Core",
+        "RootAccess.Systems"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -76,12 +76,31 @@ namespace RootAccess.EditorTools
                 EditorUtility.SetDirty(renderer);
             }
 
+            var universal = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(EditorPaths.UrpUniversalRenderer);
+            if (universal == null)
+            {
+                universal = ScriptableObject.CreateInstance<UniversalRendererData>();
+                universal.postProcessData = AssetDatabase.LoadAssetAtPath<PostProcessData>(EditorPaths.UrpDefaultPostProcessData);
+                AssetDatabase.CreateAsset(universal, EditorPaths.UrpUniversalRenderer);
+                ResourceReloader.ReloadAllNullIn(universal, EditorPaths.UrpPackage);
+                EditorUtility.SetDirty(universal);
+            }
+
             var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(EditorPaths.UrpAsset);
             if (pipeline == null)
             {
                 pipeline = UniversalRenderPipelineAsset.Create(renderer);
                 AssetDatabase.CreateAsset(pipeline, EditorPaths.UrpAsset);
             }
+
+            EditorAssetUtil.SetFields(pipeline, so =>
+            {
+                SerializedProperty list = so.Require("m_RendererDataList");
+                list.arraySize = 2;
+                list.GetArrayElementAtIndex(RendererIndices.Renderer2D).objectReferenceValue = renderer;
+                list.GetArrayElementAtIndex(RendererIndices.Universal).objectReferenceValue = universal;
+                so.Require("m_DefaultRendererIndex").intValue = RendererIndices.Renderer2D;
+            });
 
             pipeline.supportsHDR = true;
             pipeline.msaaSampleCount = 1;
@@ -217,6 +236,9 @@ namespace RootAccess.EditorTools
             Allow(Layers.Ground, Layers.Ground, Layers.Wall, Layers.Water, Layers.Projectile, Layers.Interactable);
             Allow(Layers.Wall, Layers.Projectile);
             Allow(Layers.Projectile, Layers.Water);
+
+            for (int layer = 0; layer < 32; layer++)
+                Physics2D.IgnoreLayerCollision(Layers.IgnoreRaycast, layer, true);
 
             Physics2D.queriesStartInColliders = false;
             Physics2D.queriesHitTriggers = false;

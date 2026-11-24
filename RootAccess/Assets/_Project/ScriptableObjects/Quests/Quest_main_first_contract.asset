@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e89e8b47759a794fb90f8cb223e9d72, type: 3}
+  m_Name: Quest_main_first_contract
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
+  questId: main_first_contract
+  title: Primul contract
+  description: "Un client anonim vrea datele unui laborator de pe acoperi\u0219urile
+    Sectorului 7."
+  isMainStory: 1
+  objectives:
+  - objectiveId: reach_l1
+    description: "Ajunge pe acoperi\u0219urile din Sectorul 7"
+    type: 0
+    targetId: level01
+    requiredCount: 1
+    optional: 0
+  - objectiveId: hack_door
+    description: "Sparge terminalul u\u0219ii de serviciu"
+    type: 1
+    targetId: terminal_l1_door
+    requiredCount: 1
+    optional: 0
+  - objectiveId: collect_shard
+    description: "Recupereaz\u0103 fragmentul de date"
+    type: 2
+    targetId: data_shard
+    requiredCount: 1
+    optional: 0
+  - objectiveId: reach_exit
+    description: "Ajunge la punctul de extrac\u021Bie"
+    type: 0
+    targetId: exit_l1
+    requiredCount: 1
+    optional: 0
+  - objectiveId: stealth
+    description: "Bonus: nu declan\u0219a alarma"
+    type: 3
+    targetId: 
+    requiredCount: 1
+    optional: 1
+  rewardCredits: 300
+  rewardXp: 150

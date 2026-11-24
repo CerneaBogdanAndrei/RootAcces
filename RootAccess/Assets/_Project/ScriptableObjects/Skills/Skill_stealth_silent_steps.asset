@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd3e569f81691147b4ec7b973dd57f9, type: 3}
+  m_Name: Skill_stealth_silent_steps
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SkillDefinition
+  skillId: stealth_silent_steps
+  displayName: "Pa\u0219i silen\u021Bio\u0219i"
+  description: "Pa\u0219ii t\u0103i nu mai fac zgomot pe metal."
+  branch: 0
+  xpCost: 100
+  effect: 2
+  prerequisites: []

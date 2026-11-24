@@ -76,6 +76,13 @@ namespace RootAccess.Core
         };
     }
 
+    /// <summary>Indices into the URP asset's renderer list (ProjectSetup creates both).</summary>
+    public static class RendererIndices
+    {
+        public const int Renderer2D = 0;
+        public const int Universal = 1;
+    }
+
     public static class SceneNames
     {
         public const string Bootstrap = "Bootstrap";
@@ -100,7 +107,9 @@ namespace RootAccess.Core
         public const string Music = "MusicVolume";
         public const string Sfx = "SfxVolume";
         public const string UI = "UiVolume";
-        public const string Ambience = "AmbienceVolume";
+
+        /// <summary>Exposed volumes (driven by settings). Ambience stays unexposed so snapshots can duck it.</summary>
+        public static readonly string[] Exposed = { Master, Music, Sfx, UI };
     }
 
     public static class MixerSnapshotNames

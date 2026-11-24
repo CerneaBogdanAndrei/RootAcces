@@ -1,0 +1,21 @@
+{
+    "name": "RootAccess.UI",
+    "rootNamespace": "RootAccess.UI",
+    "references": [
+        "RootAccess.Core",
+        "RootAccess.Input",
+        "RootAccess.Systems",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd3e569f81691147b4ec7b973dd57f9, type: 3}
+  m_Name: Skill_hardware_servo_legs
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SkillDefinition
+  skillId: hardware_servo_legs
+  displayName: Servo-picioare
+  description: "Deblocheaz\u0103 s\u0103ritura dubl\u0103 (necesit\u0103 Pa\u0219i
+    silen\u021Bio\u0219i)."
+  branch: 2
+  xpCost: 150
+  effect: 1
+  prerequisites:
+  - {fileID: 11400000, guid: 3c31fecc1c257264e83debea85c43529, type: 2}

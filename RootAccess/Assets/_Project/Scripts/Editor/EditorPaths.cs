@@ -58,6 +58,7 @@ namespace RootAccess.EditorTools
 
         public const string UrpAsset = SettingsUrp + "/RootAccess_URP.asset";
         public const string UrpRenderer2D = SettingsUrp + "/RootAccess_Renderer2D.asset";
+        public const string UrpUniversalRenderer = SettingsUrp + "/RootAccess_UniversalRenderer.asset";
         public const string UrpPackage = "Packages/com.unity.render-pipelines.universal";
         public const string UrpDefaultPostProcessData = UrpPackage + "/Runtime/Data/PostProcessData.asset";
         public const string TmpEssentialsPackage = "Packages/com.unity.ugui/Package Resources/TMP Essential Resources.unitypackage";

@@ -1,0 +1,19 @@
+{
+    "name": "RootAccess.Hacking",
+    "rootNamespace": "RootAccess.Hacking",
+    "references": [
+        "RootAccess.Core",
+        "RootAccess.Input",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

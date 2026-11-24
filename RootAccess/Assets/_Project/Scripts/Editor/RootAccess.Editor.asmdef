@@ -4,11 +4,26 @@
     "references": [
         "RootAccess.Core",
         "RootAccess.Input",
+        "RootAccess.Systems",
+        "RootAccess.Audio",
+        "RootAccess.VFX",
+        "RootAccess.Player",
+        "RootAccess.AI",
+        "RootAccess.Gameplay",
+        "RootAccess.Hacking",
+        "RootAccess.UI",
+        "RootAccess.Cinematics",
+        "RootAccess.Net",
         "Unity.InputSystem",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.RenderPipelines.Universal.2D.Runtime",
-        "Unity.RenderPipelines.Universal.Editor"
+        "Unity.RenderPipelines.Universal.Editor",
+        "Unity.2D.Sprite.Editor",
+        "Unity.Cinemachine",
+        "Unity.Timeline",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"

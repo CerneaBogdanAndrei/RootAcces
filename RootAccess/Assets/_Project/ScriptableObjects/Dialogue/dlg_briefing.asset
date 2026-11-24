@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6557b1e53a44f84b969bfbed5b80472, type: 3}
+  m_Name: dlg_briefing
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.DialogueDefinition
+  dialogueId: dlg_briefing
+  lines:
+  - speaker: OPERATOR
+    text: "Contract nou pe darknet. Laboratorul de pe acoperi\u0219urile Sectorului
+      7 \u021Bine ceva pre\u021Bios."
+  - speaker: OPERATOR
+    text: "Intri, spargi u\u0219a de serviciu, iei fragmentul de date \u0219i ie\u0219i
+      f\u0103r\u0103 s\u0103 te vad\u0103 nimeni."
+  - speaker: TU
+    text: "Primit. Pornesc spre acoperi\u0219uri."

@@ -1,0 +1,449 @@
+using RootAccess.Core;
+using RootAccess.Hacking;
+using RootAccess.Input;
+using RootAccess.UI;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace RootAccess.EditorTools
+{
+    /// <summary>Builds the persistent UIRoot prefab (HUD and every overlay screen) and the scene-level menu canvases.</summary>
+    public static class UIRootBuilder
+    {
+        public static GameObject BuildUIRoot(BuildContext ctx)
+        {
+            GameObject root = UIFactory.Canvas("UIRoot", 100);
+            BuildHud(root.transform);
+            BuildInventory(root.transform, ctx);
+            BuildDialogue(root.transform, ctx);
+            BuildHacking(root.transform, ctx);
+            BuildPause(root.transform, ctx);
+            BuildSettings(root.transform, ctx);
+            BuildGameOver(root.transform);
+            BuildLevelComplete(root.transform);
+            BuildRubricPanel(root.transform, ctx);
+            BuildLoading(root.transform);
+
+            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, $"{EditorPaths.PrefabsUI}/UIRoot.prefab");
+            Object.DestroyImmediate(root);
+            ctx.Prefabs["UIRoot"] = prefab;
+            return prefab;
+        }
+
+        private static void BuildHud(Transform parent)
+        {
+            RectTransform hud = UIFactory.Stretch(UIFactory.Rect("HUD", parent));
+            CanvasGroup group = UIFactory.Group(hud.gameObject);
+            var view = hud.gameObject.AddComponent<HudView>();
+
+            Image panel = UIFactory.Image("StatusPanel", hud, new Color(0.03f, 0.02f, 0.08f, 0.7f));
+            UIFactory.Place(panel.rectTransform, new Vector2(0f, 1f), new Vector2(24f, -24f), new Vector2(480f, 150f));
+            TextMeshProUGUI healthLabel = UIFactory.Text("HealthLabel", panel.transform, Strings.Hud.Health, 24f);
+            UIFactory.Place(healthLabel.rectTransform, new Vector2(0f, 1f), new Vector2(16f, -10f), new Vector2(440f, 30f));
+            Image healthFill = UIFactory.FillBar("HealthBar", panel.transform, new Vector2(0f, 1f), new Vector2(16f, -44f), new Vector2(448f, 22f), new Color(1f, 0.25f, 0.45f));
+            TextMeshProUGUI traceLabel = UIFactory.Text("TraceLabel", panel.transform, Strings.Hud.Trace, 24f);
+            UIFactory.Place(traceLabel.rectTransform, new Vector2(0f, 1f), new Vector2(16f, -76f), new Vector2(440f, 30f));
+            Image traceFill = UIFactory.FillBar("TraceBar", panel.transform, new Vector2(0f, 1f), new Vector2(16f, -110f), new Vector2(448f, 22f), UIFactory.Cyan);
+            traceFill.fillAmount = 0f;
+
+            TextMeshProUGUI hidden = UIFactory.Text("HiddenLabel", hud, string.Empty, 26f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(hidden.rectTransform, new Vector2(0f, 1f), new Vector2(28f, -184f), new Vector2(400f, 36f));
+
+            TextMeshProUGUI credits = UIFactory.Text("Credits", hud, "0", 30f, TextAlignmentOptions.Right, UIFactory.Yellow, FontStyles.Bold);
+            UIFactory.Place(credits.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(500f, 40f));
+            TextMeshProUGUI questTitle = UIFactory.Text("QuestTitle", hud, Strings.Hud.NoActiveQuest, 26f, TextAlignmentOptions.Right, UIFactory.TextColor, FontStyles.Bold);
+            UIFactory.Place(questTitle.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -72f), new Vector2(700f, 36f));
+            TextMeshProUGUI objective = UIFactory.Text("QuestObjective", hud, string.Empty, 22f, TextAlignmentOptions.Right, UIFactory.Muted);
+            UIFactory.Place(objective.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -110f), new Vector2(700f, 60f));
+
+            TextMeshProUGUI prompt = UIFactory.Text("Prompt", hud, string.Empty, 30f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(prompt.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1000f, 50f));
+            TextMeshProUGUI toast = UIFactory.Text("Toast", hud, string.Empty, 28f, TextAlignmentOptions.Center, UIFactory.Yellow);
+            UIFactory.Place(toast.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1000f, 50f));
+
+            var gradient = new Gradient();
+            gradient.SetKeys(new[] { new GradientColorKey(UIFactory.Cyan, 0f), new GradientColorKey(UIFactory.Yellow, 0.5f), new GradientColorKey(new Color(1f, 0.2f, 0.25f), 1f) },
+                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
+
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("group").objectReferenceValue = group;
+                so.Require("healthFill").objectReferenceValue = healthFill;
+                so.Require("healthLabel").objectReferenceValue = healthLabel;
+                so.Require("traceFill").objectReferenceValue = traceFill;
+                so.Require("traceLabel").objectReferenceValue = traceLabel;
+                so.Require("creditsLabel").objectReferenceValue = credits;
+                so.Require("questTitle").objectReferenceValue = questTitle;
+                so.Require("questObjective").objectReferenceValue = objective;
+                so.Require("promptLabel").objectReferenceValue = prompt;
+                so.Require("hiddenLabel").objectReferenceValue = hidden;
+                so.Require("toastLabel").objectReferenceValue = toast;
+                so.Require("traceGradient").gradientValue = gradient;
+            });
+        }
+
+        private static void BuildInventory(Transform parent, BuildContext ctx)
+        {
+            Image panel = UIFactory.Image("InventoryPanel", parent, UIFactory.Panel);
+            UIFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1500f, 640f));
+            UIFactory.Group(panel.gameObject);
+            var view = panel.gameObject.AddComponent<InventoryView>();
+
+            TMP_Text Column(string title, float x)
+            {
+                TextMeshProUGUI header = UIFactory.Text(title, panel.transform, title, 32f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
+                UIFactory.Place(header.rectTransform, new Vector2(0f, 1f), new Vector2(x, -24f), new Vector2(460f, 44f));
+                TextMeshProUGUI body = UIFactory.Text(title + "Body", panel.transform, "-", 22f);
+                UIFactory.Place(body.rectTransform, new Vector2(0f, 1f), new Vector2(x, -80f), new Vector2(460f, 520f));
+                return body;
+            }
+
+            TMP_Text inventoryText = Column(Strings.Panels.Inventory, 30f);
+            TMP_Text questText = Column(Strings.Panels.Quests, 520f);
+            TMP_Text skillText = Column(Strings.Panels.Skills, 1010f);
+            TextMeshProUGUI hint = UIFactory.Text("Hint", panel.transform, Strings.Panels.InventoryHint, 20f, TextAlignmentOptions.Right, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(1f, 0f), new Vector2(-24f, 16f), new Vector2(400f, 30f));
+
+            var questLog = questText.gameObject.AddComponent<QuestLogView>();
+            EditorAssetUtil.SetField(questLog, "body", questText);
+            var skillTree = skillText.gameObject.AddComponent<SkillTreeView>();
+            EditorAssetUtil.SetField(skillTree, "body", skillText);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("inventoryText").objectReferenceValue = inventoryText;
+                so.Require("questLog").objectReferenceValue = questLog;
+                so.Require("skillTree").objectReferenceValue = skillTree;
+            });
+        }
+
+        private static void BuildDialogue(Transform parent, BuildContext ctx)
+        {
+            Image box = UIFactory.Image("DialogueBox", parent, UIFactory.Panel);
+            UIFactory.Place(box.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(1300f, 210f));
+            UIFactory.Group(box.gameObject);
+            var view = box.gameObject.AddComponent<DialogueBoxView>();
+            TextMeshProUGUI speaker = UIFactory.Text("Speaker", box.transform, string.Empty, 28f, TextAlignmentOptions.Left, UIFactory.Magenta, FontStyles.Bold);
+            UIFactory.Place(speaker.rectTransform, new Vector2(0f, 1f), new Vector2(28f, -16f), new Vector2(600f, 40f));
+            TextMeshProUGUI body = UIFactory.Text("Body", box.transform, string.Empty, 28f);
+            UIFactory.Place(body.rectTransform, new Vector2(0f, 1f), new Vector2(28f, -62f), new Vector2(1240f, 120f));
+            TextMeshProUGUI hint = UIFactory.Text("Hint", box.transform, Strings.Panels.Continue, 18f, TextAlignmentOptions.Right, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(1f, 0f), new Vector2(-20f, 10f), new Vector2(300f, 26f));
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("speakerLabel").objectReferenceValue = speaker;
+                so.Require("bodyLabel").objectReferenceValue = body;
+            });
+        }
+
+        private static void BuildHacking(Transform parent, BuildContext ctx)
+        {
+            RectTransform overlay = UIFactory.Stretch(UIFactory.Rect("HackingOverlay", parent));
+            CanvasGroup group = UIFactory.Group(overlay.gameObject);
+            UIFactory.FullscreenBackdrop(overlay, new Color(0.01f, 0.03f, 0.05f, 0.88f));
+            Image frame = UIFactory.Image("Frame", overlay, new Color(0.03f, 0.08f, 0.1f, 0.95f));
+            UIFactory.Place(frame.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1100f, 760f));
+            Image border = UIFactory.Image("Border", frame.transform, UIFactory.Cyan);
+            UIFactory.Place(border.rectTransform, new Vector2(0.5f, 1f), Vector2.zero, new Vector2(1100f, 4f));
+
+            TextMeshProUGUI title = UIFactory.Text("Title", frame.transform, Strings.Hacking.Title, 40f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -24f), new Vector2(1000f, 56f));
+            TextMeshProUGUI hint = UIFactory.Text("Hint", frame.transform, string.Empty, 24f, TextAlignmentOptions.Center, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -86f), new Vector2(1000f, 70f));
+            TextMeshProUGUI result = UIFactory.Text("Result", frame.transform, string.Empty, 44f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(result.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(1000f, 60f));
+
+            HackingMinigame Minigame<T>(string name) where T : HackingMinigame
+            {
+                RectTransform host = UIFactory.Rect(name, frame.transform);
+                UIFactory.Place(host, new Vector2(0.5f, 0.5f), new Vector2(0f, -10f), new Vector2(1000f, 520f));
+                RectTransform content = UIFactory.Rect("Content", host);
+                UIFactory.Place(content, new Vector2(0.5f, 0.5f), new Vector2(0f, 10f), new Vector2(900f, 440f));
+                Button template = UIFactory.Button("CellTemplate", content, string.Empty, 100f, 100f);
+                TextMeshProUGUI status = UIFactory.Text("Status", host, string.Empty, 26f, TextAlignmentOptions.Center, UIFactory.Yellow);
+                UIFactory.Place(status.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 6f), new Vector2(900f, 40f));
+                var minigame = host.gameObject.AddComponent<T>();
+                EditorAssetUtil.SetFields(minigame, so =>
+                {
+                    so.Require("content").objectReferenceValue = content;
+                    so.Require("buttonTemplate").objectReferenceValue = template;
+                    so.Require("statusLabel").objectReferenceValue = status;
+                });
+                return minigame;
+            }
+
+            HackingMinigame pattern = Minigame<PatternMemoryMinigame>("PatternMemory");
+            HackingMinigame wires = Minigame<WireConnectMinigame>("WireConnect");
+            HackingMinigame portScan = Minigame<PortScanMinigame>("PortScan");
+
+            var view = overlay.gameObject.AddComponent<HackingOverlay>();
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("group").objectReferenceValue = group;
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("titleLabel").objectReferenceValue = title;
+                so.Require("hintLabel").objectReferenceValue = hint;
+                so.Require("resultLabel").objectReferenceValue = result;
+                so.SetArray("minigames", new[] { pattern, wires, portScan });
+            });
+        }
+
+        private static RectTransform MenuColumn(Transform panel, float y = -150f)
+        {
+            RectTransform column = UIFactory.Rect("Buttons", panel);
+            UIFactory.Place(column, new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(520f, 500f), new Vector2(0.5f, 1f));
+            UIFactory.Vertical(column.gameObject, 14f);
+            return column;
+        }
+
+        private static Image CenterPanel(string name, Transform parent, Vector2 size, out TextMeshProUGUI title, string titleText)
+        {
+            RectTransform host = UIFactory.Stretch(UIFactory.Rect(name, parent));
+            UIFactory.FullscreenBackdrop(host, UIFactory.Backdrop);
+            Image panel = UIFactory.Image("Panel", host, UIFactory.Panel);
+            UIFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, size);
+            Image accent = UIFactory.Image("Accent", panel.transform, UIFactory.Magenta);
+            UIFactory.Place(accent.rectTransform, new Vector2(0.5f, 1f), Vector2.zero, new Vector2(size.x, 4f));
+            title = UIFactory.Text("Title", panel.transform, titleText, 46f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(size.x - 40f, 70f));
+            return panel;
+        }
+
+        private static void BuildPause(Transform parent, BuildContext ctx)
+        {
+            Image panel = CenterPanel("PauseMenu", parent, new Vector2(620f, 560f), out _, Strings.Menu.Paused);
+            RectTransform column = MenuColumn(panel.transform);
+            Button resume = UIFactory.Button("Resume", column, Strings.Menu.Resume);
+            Button settings = UIFactory.Button("Settings", column, Strings.Menu.Settings);
+            Button menu = UIFactory.Button("MainMenu", column, Strings.Menu.MainMenu);
+            Button quit = UIFactory.Button("Quit", column, Strings.Menu.Quit);
+            GameObject host = panel.transform.parent.gameObject;
+            var view = host.AddComponent<PauseMenuView>();
+            UIFactory.SetPanel(view, resume);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("resumeButton").objectReferenceValue = resume;
+                so.Require("settingsButton").objectReferenceValue = settings;
+                so.Require("mainMenuButton").objectReferenceValue = menu;
+                so.Require("quitButton").objectReferenceValue = quit;
+            });
+        }
+
+        private static void BuildSettings(Transform parent, BuildContext ctx)
+        {
+            Image panel = CenterPanel("SettingsMenu", parent, new Vector2(900f, 900f), out _, Strings.Settings.Title);
+            RectTransform column = UIFactory.Rect("Rows", panel.transform);
+            UIFactory.Place(column, new Vector2(0.5f, 1f), new Vector2(0f, -130f), new Vector2(800f, 740f), new Vector2(0.5f, 1f));
+            UIFactory.Vertical(column.gameObject, 10f);
+
+            Slider master = UIFactory.Slider("Master", column, Strings.Settings.MasterVolume);
+            Slider music = UIFactory.Slider("Music", column, Strings.Settings.MusicVolume);
+            Slider sfx = UIFactory.Slider("Sfx", column, Strings.Settings.SfxVolume);
+            Slider ui = UIFactory.Slider("UI", column, Strings.Settings.UiVolume);
+            TMP_Dropdown resolution = UIFactory.Dropdown("Resolution", column, Strings.Settings.Resolution);
+            Toggle fullscreen = UIFactory.Toggle("Fullscreen", column, Strings.Settings.Fullscreen);
+            Toggle vsync = UIFactory.Toggle("VSync", column, Strings.Settings.VSync);
+            RebindActionButton jump = RebindRow(column, InputActionNames.Jump, Strings.Settings.Jump);
+            RebindActionButton interact = RebindRow(column, InputActionNames.Interact, Strings.Settings.Interact);
+            Button reset = UIFactory.Button("ResetBindings", column, Strings.Settings.ResetBindings, 760f, 54f);
+            Button back = UIFactory.Button("Back", column, Strings.Menu.Back, 760f, 58f);
+
+            GameObject host = panel.transform.parent.gameObject;
+            var view = host.AddComponent<SettingsMenuView>();
+            UIFactory.SetPanel(view, master);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("masterSlider").objectReferenceValue = master;
+                so.Require("musicSlider").objectReferenceValue = music;
+                so.Require("sfxSlider").objectReferenceValue = sfx;
+                so.Require("uiSlider").objectReferenceValue = ui;
+                so.Require("resolutionDropdown").objectReferenceValue = resolution;
+                so.Require("fullscreenToggle").objectReferenceValue = fullscreen;
+                so.Require("vsyncToggle").objectReferenceValue = vsync;
+                so.SetArray("rebindButtons", new[] { jump, interact });
+                so.Require("resetBindingsButton").objectReferenceValue = reset;
+                so.Require("backButton").objectReferenceValue = back;
+            });
+        }
+
+        private static RebindActionButton RebindRow(Transform parent, string action, string label)
+        {
+            Button button = UIFactory.Button($"Rebind_{action}", parent, string.Empty, 760f, 54f);
+            TMP_Text existing = button.GetComponentInChildren<TMP_Text>();
+            existing.alignment = TextAlignmentOptions.Right;
+            existing.color = UIFactory.Yellow;
+            existing.name = "Binding";
+            TextMeshProUGUI actionLabel = UIFactory.Text("Action", button.transform, label, 28f);
+            UIFactory.Stretch(actionLabel.rectTransform, 12f);
+            var rebind = button.gameObject.AddComponent<RebindActionButton>();
+            EditorAssetUtil.SetFields(rebind, so =>
+            {
+                so.Require("actionName").stringValue = action;
+                so.Require("bindingGroup").stringValue = ControlSchemes.KeyboardMouse;
+                so.Require("actionLabel").objectReferenceValue = actionLabel;
+                so.Require("bindingLabel").objectReferenceValue = existing;
+                so.Require("displayName").stringValue = label;
+            });
+            return rebind;
+        }
+
+        private static void BuildGameOver(Transform parent)
+        {
+            Image panel = CenterPanel("GameOver", parent, new Vector2(760f, 460f), out TextMeshProUGUI title, Strings.Menu.GameOver);
+            title.color = UIFactory.Magenta;
+            TextMeshProUGUI hint = UIFactory.Text("Hint", panel.transform, Strings.Menu.GameOverHint, 26f, TextAlignmentOptions.Center, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(700f, 40f));
+            RectTransform column = MenuColumn(panel.transform, -190f);
+            Button retry = UIFactory.Button("Retry", column, Strings.Menu.Retry);
+            Button menu = UIFactory.Button("MainMenu", column, Strings.Menu.MainMenu);
+            var view = panel.transform.parent.gameObject.AddComponent<GameOverView>();
+            UIFactory.SetPanel(view, retry);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("titleLabel").objectReferenceValue = title;
+                so.Require("hintLabel").objectReferenceValue = hint;
+                so.Require("retryButton").objectReferenceValue = retry;
+                so.Require("mainMenuButton").objectReferenceValue = menu;
+            });
+        }
+
+        private static void BuildLevelComplete(Transform parent)
+        {
+            Image panel = CenterPanel("LevelComplete", parent, new Vector2(760f, 560f), out TextMeshProUGUI title, Strings.Menu.LevelComplete);
+            TextMeshProUGUI summary = UIFactory.Text("Summary", panel.transform, string.Empty, 28f, TextAlignmentOptions.Center);
+            UIFactory.Place(summary.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -130f), new Vector2(700f, 140f));
+            RectTransform column = MenuColumn(panel.transform, -300f);
+            Button next = UIFactory.Button("Continue", column, Strings.Menu.NextLevel);
+            Button menu = UIFactory.Button("MainMenu", column, Strings.Menu.MainMenu);
+            var view = panel.transform.parent.gameObject.AddComponent<LevelCompleteView>();
+            UIFactory.SetPanel(view, next);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("titleLabel").objectReferenceValue = title;
+                so.Require("summaryLabel").objectReferenceValue = summary;
+                so.Require("continueButton").objectReferenceValue = next;
+                so.Require("mainMenuButton").objectReferenceValue = menu;
+            });
+        }
+
+        private static void BuildRubricPanel(Transform parent, BuildContext ctx)
+        {
+            RectTransform host = UIFactory.Stretch(UIFactory.Rect("DebugRubricPanel", parent));
+            Image panel = UIFactory.Image("Panel", host, UIFactory.Panel, raycast: true);
+            UIFactory.Place(panel.rectTransform, new Vector2(0f, 0.5f), new Vector2(30f, 0f), new Vector2(1180f, 960f), new Vector2(0f, 0.5f));
+            TextMeshProUGUI title = UIFactory.Text("Title", panel.transform, Strings.Rubric.PanelTitle, 34f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(24f, -18f), new Vector2(1100f, 48f));
+            RectTransform list = UIFactory.Rect("List", panel.transform);
+            UIFactory.Place(list, new Vector2(0f, 1f), new Vector2(24f, -80f), new Vector2(1130f, 860f));
+            UIFactory.Vertical(list.gameObject, 6f, 0, TextAnchor.UpperLeft);
+
+            RectTransform row = UIFactory.Row("RowTemplate", list, 1130f, 56f);
+            TextMeshProUGUI label = UIFactory.Text("Label", row, string.Empty, 20f);
+            label.rectTransform.sizeDelta = new Vector2(960f, 56f);
+            label.textWrappingMode = TextWrappingModes.Normal;
+            UIFactory.Button("GoTo", row, Strings.Rubric.GoTo, 140f, 48f);
+
+            var view = host.gameObject.AddComponent<DebugRubricPanel>();
+            UIFactory.SetPanel(view, null);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("catalog").objectReferenceValue = ctx.Rubric;
+                so.Require("list").objectReferenceValue = list;
+                so.Require("rowTemplate").objectReferenceValue = row.gameObject;
+                so.Require("titleLabel").objectReferenceValue = title;
+            });
+        }
+
+        private static void BuildLoading(Transform parent)
+        {
+            RectTransform host = UIFactory.Stretch(UIFactory.Rect("LoadingScreen", parent));
+            UIFactory.Group(host.gameObject);
+            UIFactory.FullscreenBackdrop(host, new Color(0.02f, 0.01f, 0.05f, 1f));
+            TextMeshProUGUI title = UIFactory.Text("Title", host, Strings.Menu.Loading, 40f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, 60f), new Vector2(900f, 60f));
+            Image fill = UIFactory.FillBar("Progress", host, new Vector2(0.5f, 0.5f), new Vector2(0f, -10f), new Vector2(800f, 18f), UIFactory.Magenta);
+            fill.fillAmount = 0f;
+            TextMeshProUGUI percent = UIFactory.Text("Percent", host, "0%", 26f, TextAlignmentOptions.Center, UIFactory.Muted);
+            UIFactory.Place(percent.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0f, -60f), new Vector2(300f, 40f));
+            var view = host.gameObject.AddComponent<LoadingScreenView>();
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("progressFill").objectReferenceValue = fill;
+                so.Require("progressLabel").objectReferenceValue = percent;
+                so.Require("titleLabel").objectReferenceValue = title;
+            });
+        }
+
+        // ---------------------------------------------------------------- scene canvases
+
+        public static void BuildMainMenuCanvas(BuildContext ctx)
+        {
+            GameObject canvas = UIFactory.Canvas("MainMenuCanvas", 10);
+            RectTransform host = UIFactory.Stretch(UIFactory.Rect("MainMenu", canvas.transform));
+            Image side = UIFactory.Image("SidePanel", host, new Color(0.03f, 0.02f, 0.08f, 0.78f));
+            UIFactory.Place(side.rectTransform, new Vector2(0f, 0.5f), new Vector2(120f, 0f), new Vector2(620f, 1080f), new Vector2(0f, 0.5f));
+            TextMeshProUGUI title = UIFactory.Text("Title", side.transform, Strings.GameTitle, 72f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            title.textWrappingMode = TextWrappingModes.NoWrap;
+            UIFactory.Place(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -130f), new Vector2(600f, 100f));
+            TextMeshProUGUI subtitle = UIFactory.Text("Subtitle", side.transform, Strings.GameSubtitle, 26f, TextAlignmentOptions.Center, UIFactory.Magenta);
+            UIFactory.Place(subtitle.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -250f), new Vector2(600f, 40f));
+            RectTransform column = MenuColumn(side.transform, -340f);
+            Button cont = UIFactory.Button("Continue", column, Strings.Menu.Continue);
+            Button newGame = UIFactory.Button("NewGame", column, Strings.Menu.NewGame);
+            Button settings = UIFactory.Button("Settings", column, Strings.Menu.Settings);
+            Button rubric = UIFactory.Button("Rubric", column, Strings.Menu.RubricShowcase);
+            Button credits = UIFactory.Button("Credits", column, Strings.Menu.Credits);
+            Button quit = UIFactory.Button("Quit", column, Strings.Menu.Quit);
+            TextMeshProUGUI version = UIFactory.Text("Version", side.transform, Strings.Menu.Version, 20f, TextAlignmentOptions.Center, UIFactory.Muted);
+            UIFactory.Place(version.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(600f, 30f));
+
+            var view = host.gameObject.AddComponent<MainMenuView>();
+            UIFactory.SetPanel(view, newGame);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("continueButton").objectReferenceValue = cont;
+                so.Require("newGameButton").objectReferenceValue = newGame;
+                so.Require("settingsButton").objectReferenceValue = settings;
+                so.Require("rubricButton").objectReferenceValue = rubric;
+                so.Require("creditsButton").objectReferenceValue = credits;
+                so.Require("quitButton").objectReferenceValue = quit;
+                so.Require("versionLabel").objectReferenceValue = version;
+            });
+
+            ctx.Prefabs["MainMenuCanvas"] = PrefabUtility.SaveAsPrefabAsset(canvas, $"{EditorPaths.PrefabsUI}/MainMenuCanvas.prefab");
+            Object.DestroyImmediate(canvas);
+        }
+
+        public static void BuildCreditsCanvas(BuildContext ctx)
+        {
+            GameObject canvas = UIFactory.Canvas("CreditsCanvas", 10);
+            UIFactory.FullscreenBackdrop(canvas.transform, new Color(0.02f, 0.01f, 0.05f, 0.6f), false);
+            RectTransform viewport = UIFactory.Stretch(UIFactory.Rect("Viewport", canvas.transform));
+            viewport.gameObject.AddComponent<RectMask2D>();
+            RectTransform scroller = UIFactory.Rect("Scroller", viewport);
+            UIFactory.Place(scroller, new Vector2(0.5f, 0f), new Vector2(0f, -900f), new Vector2(1200f, 900f), new Vector2(0.5f, 1f));
+            TextMeshProUGUI body = UIFactory.Text("Body", scroller, string.Empty, 34f, TextAlignmentOptions.Top);
+            UIFactory.Stretch(body.rectTransform);
+            TextMeshProUGUI hint = UIFactory.Text("Hint", canvas.transform, string.Empty, 22f, TextAlignmentOptions.Right, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(1f, 0f), new Vector2(-30f, 20f), new Vector2(500f, 30f));
+            var view = canvas.AddComponent<CreditsView>();
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("scroller").objectReferenceValue = scroller;
+                so.Require("body").objectReferenceValue = body;
+                so.Require("hint").objectReferenceValue = hint;
+                so.Require("endY").floatValue = 2000f;
+            });
+
+            ctx.Prefabs["CreditsCanvas"] = PrefabUtility.SaveAsPrefabAsset(canvas, $"{EditorPaths.PrefabsUI}/CreditsCanvas.prefab");
+            Object.DestroyImmediate(canvas);
+        }
+    }
+}

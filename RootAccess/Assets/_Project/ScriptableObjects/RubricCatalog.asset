@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 614e19047c80607478a682383e9763ec, type: 3}
+  m_Name: RubricCatalog
+  m_EditorClassIdentifier: RootAccess.UI::RootAccess.UI.RubricCatalog
+  entries:
+  - title: "1. Mi\u0219care / s\u0103ritur\u0103"
+    summary: "Controller Rigidbody2D: accelera\u021Bie, s\u0103ritur\u0103 variabil\u0103,
+      coyote time, buffer, dublu salt, dash, wall-jump, ghemuire, \xEEnot."
+    sceneName: Level01_Rooftops
+    spawnId: l1_movement
+  - title: 2. Materiale / texturi
+    summary: "Materiale pe suprafe\u021Be (metal, sticl\u0103, neon, beton), shadere
+      dizolvare/hologram\u0103/neon, normal maps."
+    sceneName: RubricShowcase
+    spawnId: room_02
+  - title: "3. Mediu: copaci / iarb\u0103"
+    summary: "Copaci \u0219i iarb\u0103 cu v\xE2nt din script \u0219i shader care
+      se \xEEndoaie l\xE2ng\u0103 juc\u0103tor."
+    sceneName: Level01_Rooftops
+    spawnId: l1_park
+  - title: "4. Ap\u0103 / skybox"
+    summary: "Ap\u0103 cu arcuri dinamice, BuoyancyEffector2D, \xEEnot, snapshot
+      subacvatic; skybox de noapte."
+    sceneName: RubricShowcase
+    spawnId: room_04
+  - title: "5. Lumini / camer\u0103"
+    summary: "Lumini 2D Global/Point/Spot/Freeform, neon p\xE2lp\xE2itor, umbre,
+      Cinemachine cu confiner \u0219i shake."
+    sceneName: Hub
+    spawnId: hub_center
+  - title: 6. Prefab-uri
+    summary: "Prefab-uri \u0219i variante (Guard_Heavy/Sniper, Terminal_Door/Camera/Data),
+      obiecte din pool."
+    sceneName: RubricShowcase
+    spawnId: room_06
+  - title: 7. Particule / teleportare
+    summary: "Particule (sc\xE2ntei, ploaie, abur, date, praf, stropi) \u0219i teleportare
+      prin noduri de re\u021Bea."
+    sceneName: Level01_Rooftops
+    spawnId: l1_nodes
+  - title: 8. Meniu
+    summary: "Meniu principal, set\u0103ri cu rebinding, pauz\u0103, game over, nivel
+      complet, loading asincron."
+    sceneName: MainMenu
+    spawnId: 
+  - title: 9. Sunet
+    summary: "AudioMixer cu snapshot-uri, muzic\u0103 adaptiv\u0103 stealth/alert\u0103,
+      pa\u0219i pe suprafe\u021Be, surse din pool."
+    sceneName: RubricShowcase
+    spawnId: room_09
+  - title: "10. Anima\u021Bii / Animator"
+    summary: "Animator Controllers cu blend trees, Animation Events pentru pa\u0219i
+      \u0219i lovituri."
+    sceneName: RubricShowcase
+    spawnId: room_10
+  - title: 11. Coliziuni / triggere
+    summary: Matrice de coliziuni, OnCollisionEnter2D (daune, aterizare), triggere,
+      raycast-uri.
+    sceneName: Level01_Rooftops
+    spawnId: l1_security
+  - title: 12. Scripturi
+    summary: "Arhitectur\u0103 pe asmdef-uri, EventBus, A* propriu pentru drone,
+      teste EditMode/PlayMode."
+    sceneName: Level01_Rooftops
+    spawnId: l1_drone
+  - title: 'Bonus: Cinematice'
+    summary: "Cutscene-uri Timeline + Cinemachine, s\u0103rite cu Enter/Esc (P5)."
+    sceneName: RubricShowcase
+    spawnId: room_13
+  - title: 'Bonus: Multiplayer co-op'
+    summary: "Co-op asimetric Netcode + Relay: interfe\u021Be \u0219i bootstrap (P7)."
+    sceneName: RubricShowcase
+    spawnId: room_14
