@@ -1,0 +1,17 @@
+{
+    "name": "RootAccess.Input",
+    "rootNamespace": "RootAccess.Input",
+    "references": [
+        "RootAccess.Core",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

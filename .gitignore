@@ -1,0 +1,57 @@
+# ---- Unity (project lives in /RootAccess) ----
+/RootAccess/[Ll]ibrary/
+/RootAccess/[Tt]emp/
+/RootAccess/[Oo]bj/
+/RootAccess/[Bb]uild/
+/RootAccess/[Bb]uilds/
+/RootAccess/[Ll]ogs/
+/RootAccess/[Uu]ser[Ss]ettings/
+/RootAccess/[Mm]emoryCaptures/
+/RootAccess/[Rr]ecordings/
+/RootAccess/Assets/AssetStoreTools*
+/RootAccess/Assets/Plugins/Editor/JetBrains*
+
+# Generated IDE / solution files
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Unity crash / profiler leftovers
+sysinfo.txt
+mono_crash.*
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+crashlytics-build.properties
+/RootAccess/Assets/[Ss]treamingAssets/aa.meta
+/RootAccess/Assets/[Ss]treamingAssets/aa/*
+
+# Build output and delivery artifacts
+/Builds/
+/dist/
+*.apk
+*.aab
+
+# Local tooling
+/_logs/
+/_staging/
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
