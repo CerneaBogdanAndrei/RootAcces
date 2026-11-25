@@ -22,6 +22,10 @@ namespace RootAccess.EditorTools
         public const string Dissolve = "SG_SpriteDissolve";
         public const string NeonPulse = "SG_NeonPulse";
         public const string GrassWind = "SG_GrassWind";
+        public const string WaterDistortion = "SG_WaterDistortion";
+
+        /// <summary>Global texture of the 2D renderer: everything drawn up to <c>Renderer2DData.cameraSortingLayerTextureBound</c>.</summary>
+        public const string CameraSortingLayerTexture = "_CameraSortingLayerTexture";
 
         private const string GraphCategory = "RootAccess";
         private const string Folder = EditorPaths.Shaders + "/Graphs";
@@ -31,7 +35,7 @@ namespace RootAccess.EditorTools
         private const int WorldSpace = 2;
         private const int ObjectSpace = 0;
 
-        public static readonly string[] All = { Hologram, Dissolve, NeonPulse, GrassWind };
+        public static readonly string[] All = { Hologram, Dissolve, NeonPulse, GrassWind, WaterDistortion };
 
         public static string ShaderName(string graph) => $"{GraphCategory}/{graph}";
 
@@ -48,6 +52,7 @@ namespace RootAccess.EditorTools
             Write(Dissolve, BuildDissolve());
             Write(NeonPulse, BuildNeonPulse());
             Write(GrassWind, BuildGrassWind(includeGuid));
+            Write(WaterDistortion, BuildWaterDistortion());
             foreach (string graph in All) Validate(graph);
         }
 
@@ -184,6 +189,46 @@ namespace RootAccess.EditorTools
             LitInputs(g, maskTex, normalMap);
             g.Connect(spriteColor, ShaderGraphWriter.BinaryOut, g.BaseColor, 0);
             Node split = g.At(-380f, 380f).Unary("SplitNode", spriteColor, ShaderGraphWriter.BinaryOut);
+            g.Connect(split, Split.A, g.Alpha, 0);
+            return g.Serialize();
+        }
+
+        /// <summary>
+        /// Underwater refraction for the water mesh: samples what the 2D renderer drew behind the water
+        /// (<see cref="CameraSortingLayerTexture"/>) at a screen UV wobbled by scrolling world-space noise, then tints it
+        /// with the mesh's vertex colours (light surface band, dark depths) and adds a share of that colour on top.
+        /// </summary>
+        private static string BuildWaterDistortion()
+        {
+            var g = new ShaderGraphWriter(GraphCategory, WaterDistortion, ShaderGraphWriter.SpriteTarget.Unlit, ShaderGraphWriter.BlendMode.Alpha);
+            Property scene = g.Texture(CameraSortingLayerTexture, "Camera Sorting Layer Texture", false, WhiteTexture, exposed: false);
+            Property tint = g.Color("_Tint", "Tint", new Color(0.55f, 0.85f, 1f, 1f), false);
+            Property strength = g.Float("_Strength", "Distortion Strength", 0.012f, new Vector2(0f, 0.05f));
+            Property speed = g.Float("_Speed", "Flow Speed", 0.6f);
+            Property noiseScale = g.Float("_NoiseScale", "Ripple Scale", 2.5f);
+            Property glow = g.Float("_Glow", "Water Colour", 0.35f, new Vector2(0f, 1f));
+
+            Node world = g.At(-1700f, 300f).Position(WorldSpace);
+            Node time = g.At(-1700f, 460f).Add("TimeNode");
+            Node flow = g.At(-1500f, 460f).Binary("MultiplyNode", time, ShaderGraphWriter.TimeOut, g.At(-1700f, 560f).PropertyNode(speed), 0);
+            Node noiseUv = g.At(-1300f, 360f).Binary("AddNode", world, 0, flow, ShaderGraphWriter.BinaryOut);
+            Node noise = g.At(-1100f, 360f).Add("NoiseNode", 1, new[] { ("m_HashType", "0") });
+            g.Connect(noiseUv, ShaderGraphWriter.BinaryOut, noise, ShaderGraphWriter.NoiseUv);
+            g.Connect(g.At(-1300f, 520f).PropertyNode(noiseScale), 0, noise, ShaderGraphWriter.NoiseScale);
+            Node offset = g.At(-880f, 400f).Binary("MultiplyNode", noise, ShaderGraphWriter.NoiseOut, g.At(-1100f, 540f).PropertyNode(strength), 0);
+            Node screen = g.At(-880f, 160f).Add("ScreenPositionNode", 0, new[] { ("m_ScreenSpaceType", "0") });
+            Node uv = g.At(-680f, 260f).Binary("AddNode", screen, 0, offset, ShaderGraphWriter.BinaryOut);
+
+            Node sample = g.At(-420f, 120f).SampleTexture(scene);
+            g.Connect(uv, ShaderGraphWriter.BinaryOut, sample, Sample.Uv);
+            Node vertexColor = g.At(-420f, 400f).Add("VertexColorNode");
+            Node shaded = g.At(-200f, 160f).Binary("MultiplyNode", sample, Sample.Rgba, vertexColor, 0);
+            Node tinted = g.At(-40f, 200f).Binary("MultiplyNode", shaded, ShaderGraphWriter.BinaryOut, g.At(-200f, 320f).PropertyNode(tint), 0);
+            // Own colour on top of the refraction, so the water reads even over a black background (bright surface band).
+            Node own = g.At(-40f, 400f).Binary("MultiplyNode", vertexColor, 0, g.At(-200f, 520f).PropertyNode(glow), 0);
+            Node water = g.At(120f, 260f).Binary("AddNode", tinted, ShaderGraphWriter.BinaryOut, own, ShaderGraphWriter.BinaryOut);
+            g.Connect(water, ShaderGraphWriter.BinaryOut, g.BaseColor, 0);
+            Node split = g.At(-200f, 460f).Unary("SplitNode", vertexColor, 0);
             g.Connect(split, Split.A, g.Alpha, 0);
             return g.Serialize();
         }

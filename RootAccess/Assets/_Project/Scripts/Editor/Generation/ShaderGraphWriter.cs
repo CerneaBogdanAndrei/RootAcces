@@ -93,10 +93,12 @@ namespace RootAccess.EditorTools
 
         // ---------------------------------------------------------------- properties
 
-        public Property Texture(string reference, string display, bool isMain, int defaultType)
+        /// <param name="exposed">False for global textures set by the renderer (e.g. _CameraSortingLayerTexture): an exposed
+        /// property would be shadowed by the material's own (empty) value.</param>
+        public Property Texture(string reference, string display, bool isMain, int defaultType, bool exposed = true)
         {
             string id = NewId();
-            _objects.Add(Obj(PropertyHeader(0, "Texture2DShaderProperty", id, reference, display, true).Concat(new[]
+            _objects.Add(Obj(PropertyHeader(0, "Texture2DShaderProperty", id, reference, display, exposed).Concat(new[]
             {
                 ("m_Precision", "0"), ("overrideHLSLDeclaration", "false"), ("hlslDeclarationOverride", "0"), ("m_Hidden", "false"),
                 ("m_PerRendererData", "false"), ("m_customAttributes", "[]"), ("m_Value", "{\"m_SerializedTexture\":\"\",\"m_Guid\":\"\"}"),

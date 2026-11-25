@@ -91,6 +91,9 @@ namespace RootAccess.Core
     {
         void EnterWater(in WaterVolumeInfo water);
         void ExitWater(Collider2D volume);
+
+        /// <summary>The water level of a volume the swimmer is in changed (flooding).</summary>
+        void UpdateWaterSurface(float surfaceY);
     }
 
     /// <summary>Implemented by the player so network nodes / teleport pads can move it with a VFX sequence.</summary>

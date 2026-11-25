@@ -321,6 +321,8 @@ namespace RootAccess.Player
             WaterSurfaceY = water.SurfaceY;
         }
 
+        public void UpdateWaterSurface(float surfaceY) => WaterSurfaceY = surfaceY;
+
         public void ExitWater(Collider2D volume)
         {
             _waterVolumes = Mathf.Max(0, _waterVolumes - 1);

@@ -50,4 +50,4 @@ MonoBehaviour:
     optional: 1
   rewardCredits: 400
   rewardXp: 220
-  followUpQuest: {fileID: 0}
+  followUpQuest: {fileID: 11400000, guid: 79872d024a039f6488cf194a2fb21592, type: 2}

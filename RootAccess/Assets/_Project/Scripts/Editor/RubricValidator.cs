@@ -157,8 +157,15 @@ namespace RootAccess.EditorTools
             Add(item, "Skybox real în MainMenu și Level01", index.ScenesWithSkybox.Contains(SceneNames.MainMenu) && index.ScenesWithSkybox.Contains(SceneNames.Level01),
                 "RenderSettings.skybox în: " + string.Join(", ", index.ScenesWithSkybox));
             Add(item, "Particule de stropire (splash) + snapshot Underwater", index.FindPrefab("VFX_Splash") != null, "VFX_Splash.prefab");
-            Add(item, "Shader de distorsiune a apei", Shader.Find(ShaderPrefix + "Water Distortion") != null, "acum: shimmer pe suprafață (P4)", Severity.Planned);
-            Add(item, "Nivelul Sewers (Level04) construit", SceneInBuild(SceneNames.Level04), "P4 în ROADMAP.md", Severity.Planned);
+            Material waterDistortion = materials.FirstOrDefault(m => m.name == "M_WaterDistortion");
+            GameObject waterPrefab = index.FindPrefab("WaterBody");
+            Add(item, "Shader Graph de distorsiune a apei (refracție din _CameraSortingLayerTexture) pe prefab-ul WaterBody",
+                waterDistortion != null && IsShaderGraph(waterDistortion) && waterPrefab != null &&
+                waterPrefab.GetComponent<MeshRenderer>()?.sharedMaterial == waterDistortion,
+                waterDistortion != null ? $"M_WaterDistortion → {Path.GetFileName(AssetDatabase.GetAssetPath(waterDistortion.shader))}" : "material lipsă");
+            Add(item, "Nivelul Sewers (Level04): bazine, scufundare, stavilă care inundă puțul (FloodControl)",
+                SceneInBuild(SceneNames.Level04) && index.InScene("WaterBody2D", SceneNames.Level04) && index.InScene("FloodControl", SceneNames.Level04),
+                $"WaterBody2D în: {string.Join(", ", index.ScenesOf("WaterBody2D"))}");
 
             // 5. Lights / camera
             item = Strings.Rubric.Lighting;
@@ -272,8 +279,10 @@ namespace RootAccess.EditorTools
             Add(item, "AI gardieni: auz (PlayerNoise → Investigate), răspuns la AlarmRaised, lunetist cu proiectile",
                 FindType("GuardInvestigateState") != null && FindType("Hearing") != null && sniperRifle,
                 "AI/Guard/GuardStates.cs, AI/Perception/Hearing.cs, Guard_Sniper.prefab");
-            Add(item, "Niveluri construite din segmente (LevelLayout): Level01 + Level02 în build",
-                SceneInBuild(SceneNames.Level01) && SceneInBuild(SceneNames.Level02), "Editor/Generation/LevelLayout.cs");
+            string[] levels = { SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05 };
+            string[] missingLevels = levels.Where(l => !SceneInBuild(l)).ToArray();
+            Add(item, "Hub + 5 niveluri construite din segmente (LevelLayout), toate în build", missingLevels.Length == 0,
+                missingLevels.Length == 0 ? string.Join(", ", levels) : "lipsesc: " + string.Join(", ", missingLevels));
             (bool testsGreen, string testEvidence) = ReadTestResults();
             Add(item, "Ultima rulare a testelor: verde", testsGreen, testEvidence);
 

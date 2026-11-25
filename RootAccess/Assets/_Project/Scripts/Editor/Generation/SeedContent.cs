@@ -41,6 +41,16 @@ namespace RootAccess.EditorTools
             public const string TerminalLevel02Elevator = "l2_elevator";
             public const string TerminalLevel02Vault = "l2_vault";
             public const string ExitLevel02 = "exit_l2";
+            public const string MainQuestLevel03 = "main_server_farm";
+            public const string MainQuestLevel04 = "main_sewers";
+            public const string MainQuestLevel05 = "main_root_access";
+            public const string TerminalLevel03Core = "l3_core";
+            public const string TerminalLevel04Sluice = "l4_sluice";
+            public const string TerminalLevel05Elevator = "l5_elevator";
+            public const string TerminalLevel05Mainframe = "l5_mainframe";
+            public const string ExitLevel03 = "exit_l3";
+            public const string ExitLevel04 = "exit_l4";
+            public const string ExitLevel05 = "exit_l5";
         }
 
         public static class Items
@@ -97,6 +107,22 @@ namespace RootAccess.EditorTools
             public const string OfficeElevator = "Repornește liftul de serviciu";
             public const string OfficeVault = "Sparge seiful de date de la etajul 2";
             public const string OfficeExit = "Ieși prin acoperișul turnului";
+            public const string FarmTitle = "Ferma de servere";
+            public const string FarmDesc = "Seiful Halden trimitea totul către ferma de servere a corporației. Acolo e cheia de acces la sediu.";
+            public const string FarmReach = "Intră în ferma de servere";
+            public const string FarmCore = "Sparge nucleul de servere";
+            public const string FarmExit = "Ieși prin tunelul de răcire";
+            public const string SewersTitle = "Sub oraș";
+            public const string SewersDesc = "Sediul e sigilat. Singura intrare nesupravegheată trece prin canalizare, pe sub ziduri.";
+            public const string SewersReach = "Coboară în canalizare";
+            public const string SewersSluice = "Deschide stavila și urcă pe apă";
+            public const string SewersExit = "Ajunge sub fundația sediului";
+            public const string HqTitle = "Root Access";
+            public const string HqDesc = "Ultimul pas: mainframe-ul din vârful sediului. Cu el, orașul întreg e al tău.";
+            public const string HqReach = "Pătrunde în sediul corporației";
+            public const string HqElevator = "Pornește liftul executiv";
+            public const string HqMainframe = "Obține root access pe mainframe";
+            public const string HqExit = "Fugi pe acoperiș";
         }
 
         public static class Dialogue
@@ -112,6 +138,13 @@ namespace RootAccess.EditorTools
             public const string Office1 = "Turnul Halden. Camere pe fiecare hol, gardieni care ascultă și un lunetist la etajul doi.";
             public const string Office2 = "Liftul de serviciu e blocat. Sparge-i terminalul și urcă la seif.";
             public const string Office3 = "Am înțeles. Intru pe ușa din spate.";
+            public const string Farm1 = "Ferma de servere: zeci de drone de pază și noduri de rețea între rafturi.";
+            public const string Farm2 = "Sari din nod în nod peste rafturi. Nucleul e la capătul halei.";
+            public const string Sewers1 = "Canalizarea e inundată pe alocuri. Poți înota, dar ai grijă sub ziduri.";
+            public const string Sewers2 = "Un puț e prea înalt: deschide stavila și lasă apa să te ridice.";
+            public const string Hq1 = "Sediul. Gardieni grei, lunetiști, turele și lasere peste tot.";
+            public const string Hq2 = "Liftul executiv duce la mainframe. După asta, fugi pe acoperiș.";
+            public const string Hq3 = "Hai să terminăm ce am început.";
         }
 
         public static class Rubric
@@ -119,7 +152,7 @@ namespace RootAccess.EditorTools
             public const string Movement = "Controller Rigidbody2D: accelerație, săritură variabilă, coyote time, buffer, dublu salt, dash, wall-jump, ghemuire, înot.";
             public const string Materials = "Materiale pe suprafețe (metal, sticlă, neon, beton), shadere dizolvare/hologramă/neon, normal maps.";
             public const string Environment = "Copaci și iarbă cu vânt din script și shader care se îndoaie lângă jucător.";
-            public const string Water = "Apă cu arcuri dinamice, BuoyancyEffector2D, înot, snapshot subacvatic; skybox de noapte.";
+            public const string Water = "Apă cu arcuri dinamice și refracție (Shader Graph), plutire, înot, stavilă care inundă puțul; skybox de noapte.";
             public const string Lighting = "Lumini 2D Global/Point/Spot/Freeform, neon pâlpâitor, umbre, Cinemachine cu confiner și shake.";
             public const string Prefabs = "Prefab-uri și variante (Guard_Heavy/Sniper, Terminal_Door/Camera/Data), obiecte din pool.";
             public const string Particles = "Particule (scântei, ploaie, abur, date, praf, stropi) și teleportare prin noduri de rețea.";
@@ -149,6 +182,13 @@ namespace RootAccess.EditorTools
             public const string L2Elevator = "Liftul e blocat: sparge terminalul, urcă pe platformă și apasă E";
             public const string L2Sniper = "Lunetistul trage de departe: stai la adăpost";
             public const string L2Turrets = "Turelele: adăpostește-te după lăzi sau oprește-le cu EMP";
+            public const string L3Start = "Rafturi de servere cât vezi cu ochii. Dronele patrulează pe sus";
+            public const string L3Chain = "Turnurile de servere: nod → nod → nod. Căderea te costă o viață";
+            public const string L4Start = "Apa e caldă, dar adâncă: Space la suprafață te scoate afară";
+            public const string L4Dive = "Zidul coboară în apă: scufundă-te (S) și treci pe dedesubt";
+            public const string L4Sluice = "Sparge terminalul stavilei: apa umple puțul";
+            public const string L5Start = "Ultimul nivel: toate sistemele de securitate, deodată";
+            public const string L5Mainframe = "Mainframe-ul: root access e la un hack distanță";
         }
 
         public static class LevelInfo

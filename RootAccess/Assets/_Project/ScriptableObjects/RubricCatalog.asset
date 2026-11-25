@@ -29,10 +29,10 @@ MonoBehaviour:
     sceneName: Level01_Rooftops
     spawnId: l1_park
   - title: "4. Ap\u0103 / skybox"
-    summary: "Ap\u0103 cu arcuri dinamice, BuoyancyEffector2D, \xEEnot, snapshot
-      subacvatic; skybox de noapte."
-    sceneName: RubricShowcase
-    spawnId: room_04
+    summary: "Ap\u0103 cu arcuri dinamice \u0219i refrac\u021Bie (Shader Graph),
+      plutire, \xEEnot, stavil\u0103 care inund\u0103 pu\u021Bul; skybox de noapte."
+    sceneName: Level04_Sewers
+    spawnId: l4_water
   - title: "5. Lumini / camer\u0103"
     summary: "Lumini 2D Global/Point/Spot/Freeform, neon p\xE2lp\xE2itor, umbre,
       Cinemachine cu confiner \u0219i shake."

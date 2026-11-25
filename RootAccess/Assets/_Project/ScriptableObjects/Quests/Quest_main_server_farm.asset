@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e89e8b47759a794fb90f8cb223e9d72, type: 3}
+  m_Name: Quest_main_server_farm
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
+  questId: main_server_farm
+  title: Ferma de servere
+  description: "Seiful Halden trimitea totul c\u0103tre ferma de servere a corpora\u021Biei.
+    Acolo e cheia de acces la sediu."
+  isMainStory: 1
+  objectives:
+  - objectiveId: reach_l3
+    description: "Intr\u0103 \xEEn ferma de servere"
+    type: 0
+    targetId: level03
+    requiredCount: 1
+    optional: 0
+  - objectiveId: hack_core
+    description: Sparge nucleul de servere
+    type: 1
+    targetId: l3_core
+    requiredCount: 1
+    optional: 0
+  - objectiveId: reach_exit_l3
+    description: "Ie\u0219i prin tunelul de r\u0103cire"
+    type: 0
+    targetId: exit_l3
+    requiredCount: 1
+    optional: 0
+  - objectiveId: stealth_l3
+    description: "Bonus: nu declan\u0219a alarma"
+    type: 3
+    targetId: 
+    requiredCount: 1
+    optional: 1
+  rewardCredits: 450
+  rewardXp: 260
+  followUpQuest: {fileID: 11400000, guid: bde6a4e62ff92f0408d949db3e303fd8, type: 2}

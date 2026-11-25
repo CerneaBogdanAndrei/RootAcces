@@ -4,6 +4,7 @@ using RootAccess.AI;
 using RootAccess.Core;
 using RootAccess.Gameplay;
 using RootAccess.Net;
+using RootAccess.Systems;
 using RootAccess.VFX;
 using TMPro;
 using Unity.Cinemachine;
@@ -25,8 +26,8 @@ namespace RootAccess.EditorTools
     {
         public static readonly string[] BuildOrder =
         {
-            SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.RubricShowcase,
-            SceneNames.Credits
+            SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.Level03,
+            SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits
         };
 
         internal sealed class GameplayScene
@@ -60,6 +61,9 @@ namespace RootAccess.EditorTools
                 BuildHub(ctx);
                 BuildLevel01(ctx);
                 BuildLevel02(ctx);
+                BuildLevel03(ctx);
+                BuildLevel04(ctx);
+                BuildLevel05(ctx);
                 BuildRubricShowcase(ctx);
                 BuildCredits(ctx);
                 ConfigureBuildSettings();
@@ -535,6 +539,113 @@ namespace RootAccess.EditorTools
             layout.Exit(SeedContent.Ids.ExitLevel02, SeedContent.Ids.Level02, ctx.Level03);
             layout.Finish();
             Save(scene, SceneNames.Level02);
+        }
+
+        // ---------------------------------------------------------------- Levels 03–05
+
+        /// <summary>Lobby of an interior level: intro dialogue trigger, tutorial hint, decor.</summary>
+        private static void IntroRoom(LevelLayout layout, DialogueDefinition dialogue, string hint, string decor, int width = 12)
+        {
+            GameObject zone = PrefabFactory.Go("DialogueZone_Intro", layout.Props, Layers.Trigger, layout.P(7f, 1f));
+            zone.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
+            EditorAssetUtil.SetField(zone.AddComponent<DialogueZone>(), "dialogue", BuildContext.Fresh(dialogue));
+            if (decor != null) layout.Dress(decor, 2, width - 1, 3, decor == "SewerPipe" ? 6.5f : 0f);
+            layout.Flat(width, hint);
+        }
+
+        /// <summary>
+        /// Server farm (6–7 min): rack halls patrolled by drones, a long laser corridor, a chain of server towers crossed
+        /// node to node, a hard camera gate, a heavy guard and the server core (story hack), then the turret hall.
+        /// </summary>
+        private static void BuildLevel03(BuildContext ctx)
+        {
+            Scene scene = NewScene();
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level03, ctx.Level03Profile, new Color(0.35f, 0.55f, 0.9f), 0.32f,
+                new Rect(-8f, -2f, 40f, 16f), new Vector3(0f, 0f), "l3_start", false);
+            var layout = new LevelLayout(ctx, level, "l3", -6, ceiling: 11);
+            IntroRoom(layout, ctx.Level03Intro, SeedContent.Labels.L3Start, "ServerRack");
+
+            layout.Dress("ServerRack", 2, 22, 4);
+            layout.DroneArena(2, "l3_drones");
+            layout.LaserCorridor(4, "l3_lasers");
+            layout.Checkpoint("l3_cp1");
+            layout.Hint(SeedContent.Labels.L3Chain, 6f, 5f, 14f);
+            layout.NodeChain(3, "l3_nodes");
+            layout.CameraGate("l3_gate_camera", "l3_gate_door", doorDifficulty: 3);
+            layout.Dress("ServerRack", 1, 17, 5);
+            layout.GuardPatrol("Guard_Heavy", 18, catwalk: true);
+            layout.Dress("ServerRack", 2, 22, 4);
+            layout.DroneArena(3);
+            layout.Checkpoint("l3_cp2", "l3_core");
+            layout.DataVault(SeedContent.Ids.TerminalLevel03Core, "Terminal_Core", 3);
+            layout.TurretHall(2);
+            layout.Exit(SeedContent.Ids.ExitLevel03, SeedContent.Ids.Level03, ctx.Level04);
+            layout.Finish();
+            Save(scene, SceneNames.Level03);
+        }
+
+        /// <summary>
+        /// Sewers (6–7 min): swimming basins with floating crates, walls that force a dive, the sluice puzzle (flood the
+        /// shaft to reach the ledge), lasers, drones and a guarded gate under the HQ foundations.
+        /// </summary>
+        private static void BuildLevel04(BuildContext ctx)
+        {
+            Scene scene = NewScene();
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level04, ctx.Level04Profile, new Color(0.4f, 0.7f, 0.55f), 0.32f,
+                new Rect(-8f, -2f, 40f, 16f), new Vector3(0f, 0f), "l4_start", false);
+            var layout = new LevelLayout(ctx, level, "l4", -6, ceiling: 10);
+            IntroRoom(layout, ctx.Level04Intro, SeedContent.Labels.L4Start, "SewerPipe");
+
+            layout.Spawn("l4_water", -3f);
+            layout.WaterPool(12, 4, dive: false, crates: 3);
+            layout.GuardPatrol("Guard", 16, catwalk: true);
+            layout.Hint(SeedContent.Labels.L4Dive, 8f, 6f, 14f);
+            layout.WaterPool(16, 5, dive: true, crates: 1);
+            layout.Checkpoint("l4_cp1");
+            layout.Hint(SeedContent.Labels.L4Sluice, 3f, 4.5f, 12f);
+            layout.FloodShaft(SeedContent.Ids.TerminalLevel04Sluice, "l4_sluice");
+            layout.Dress("SewerPipe", 0, 20, 8, 6.5f);
+            layout.LaserCorridor(3, "l4_lasers");
+            layout.DroneArena(2);
+            layout.WaterPool(14, 4, dive: true, crates: 2);
+            layout.Checkpoint("l4_cp2", "l4_gate");
+            layout.CameraGate("l4_gate_camera", "l4_gate_door", doorDifficulty: 3);
+            layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
+            layout.Exit(SeedContent.Ids.ExitLevel04, SeedContent.Ids.Level04, ctx.Level05);
+            layout.Finish();
+            Save(scene, SceneNames.Level04);
+        }
+
+        /// <summary>
+        /// Corporate HQ, the finale (7–8 min): every mechanic in sequence (gate, heavy guard, lasers, executive elevator,
+        /// sniper, drones, turrets, node chain, mainframe hack) and a rooftop exit that rolls the credits.
+        /// </summary>
+        private static void BuildLevel05(BuildContext ctx)
+        {
+            Scene scene = NewScene();
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level05, ctx.Level05Profile, new Color(0.75f, 0.55f, 0.5f), 0.34f,
+                new Rect(-8f, -2f, 40f, 16f), new Vector3(0f, 0f), "l5_start", false);
+            var layout = new LevelLayout(ctx, level, "l5", -6, ceiling: 10);
+            IntroRoom(layout, ctx.Level05Intro, SeedContent.Labels.L5Start, null);
+
+            layout.CameraGate("l5_gate_camera", "l5_gate_door", doorDifficulty: 3);
+            layout.Spawn("l5_security", 1f);
+            layout.GuardPatrol("Guard_Heavy", 18, catwalk: true);
+            layout.LaserCorridor(4, "l5_lasers", 0.45f);
+            layout.Checkpoint("l5_cp1");
+            layout.ElevatorUp(SeedContent.Ids.TerminalLevel05Elevator, 10, "l5_elevator");
+            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
+            layout.DroneArena(3, "l5_drones");
+            layout.TurretHall(2);
+            layout.Checkpoint("l5_cp2");
+            layout.Dress("ServerRack", 1, 6, 4);
+            layout.NodeChain(2, "l5_nodes");
+            layout.Hint(SeedContent.Labels.L5Mainframe, 6f, 5f, 12f);
+            layout.DataVault(SeedContent.Ids.TerminalLevel05Mainframe, "Terminal_Mainframe", 4);
+            layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
+            layout.Exit(SeedContent.Ids.ExitLevel05, SeedContent.Ids.Level05, null, SceneNames.Credits);
+            layout.Finish();
+            Save(scene, SceneNames.Level05);
         }
 
         internal static void ConfigureTerminal(GameObject terminal, string id, params MonoBehaviour[] targets)

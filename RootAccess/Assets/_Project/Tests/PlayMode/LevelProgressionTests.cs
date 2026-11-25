@@ -62,14 +62,46 @@ namespace RootAccess.Tests.PlayMode
         }
 
         [UnityTest, Timeout(120000)]
-        public IEnumerator Level02_ExitCompletesLevelAndUnlocksServerFarm()
+        [TestCase(SceneNames.Level02, "level02", "level03", ExpectedResult = null)]
+        [TestCase(SceneNames.Level03, "level03", "level04", ExpectedResult = null)]
+        [TestCase(SceneNames.Level04, "level04", "level05", ExpectedResult = null)]
+        [TestCase(SceneNames.Level05, "level05", null, ExpectedResult = null)]
+        public IEnumerator Level_ExitCompletesLevelAndUnlocksTheNext(string scene, string levelId, string unlocks)
         {
             SessionService session = FreshSession();
-            yield return SliceTestUtil.LoadScene(SceneNames.Level02);
+            yield return SliceTestUtil.LoadScene(scene);
             yield return new WaitForSecondsRealtime(0.5f);
-            Assert.IsTrue(SliceTestUtil.Player.IsGrounded, "The player must stand on the office lobby floor.");
-            yield return ReachExit(Level02Id);
-            Assert.IsTrue(session.Session.IsLevelUnlocked(Level03Id), "Finishing Level 2 must unlock the server farm.");
+            Assert.IsTrue(SliceTestUtil.Player.IsGrounded, $"The player must stand on the first floor of {scene}.");
+            string next = Object.FindFirstObjectByType<LevelExit>().TargetScene;
+            yield return ReachExit(levelId);
+            if (unlocks != null) Assert.IsTrue(session.Session.IsLevelUnlocked(unlocks), $"Finishing {levelId} must unlock {unlocks}.");
+            else Assert.AreEqual(SceneNames.Credits, next, "The finale's exit rolls the credits.");
+        }
+
+        [UnityTest, Timeout(90000)]
+        public IEnumerator Sewers_SluiceFloodsTheShaftAndLiftsTheSwimmer()
+        {
+            FreshSession();
+            yield return SliceTestUtil.LoadScene(SceneNames.Level04, "l4_sluice");
+            FloodControl sluice = Object.FindFirstObjectByType<FloodControl>();
+            Assert.IsNotNull(sluice, "Level 4 needs a sluice.");
+            Terminal terminal = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None).Single(t => t.TerminalId == "l4_sluice");
+            Assert.IsTrue(terminal.Targets.Contains(sluice), "The sluice terminal drives the flood control.");
+            WaterBody2D water = Object.FindObjectsByType<WaterBody2D>(FindObjectsSortMode.None)
+                .OrderBy(w => Vector2.Distance(w.transform.position, sluice.transform.position)).First();
+            float dryDepth = water.Depth;
+
+            PlayerController player = SliceTestUtil.Player;
+            player.Respawn(new Vector3(water.transform.position.x, water.BottomY + 0.4f, 0f));
+            yield return new WaitForSeconds(0.5f);
+            sluice.ApplyHack(HackAction.Activate);
+            yield return SliceTestUtil.WaitUntil(() => sluice.IsFlooded, 20f, "the shaft to flood");
+
+            Assert.Greater(water.Depth, dryDepth + 8f, "Opening the sluice raises the water by the height of the shaft.");
+            Assert.IsTrue(player.InWater, "The player standing in the shaft ends up in the water.");
+            Assert.AreEqual(water.SurfaceY, player.WaterSurfaceY, 0.01f, "Swimmers learn the new surface level.");
+            yield return new WaitForSeconds(2f);
+            Assert.Greater(player.Position.y, water.BottomY + 4f, "Buoyancy carries the swimmer up with the water.");
         }
 
         [UnityTest, Timeout(60000)]
