@@ -15,5 +15,6 @@ MonoBehaviour:
   levelId: rubric
   sceneName: RubricShowcase
   displayName: Prezentare barem
+  description: 
   unlockedByDefault: 1
   order: 99

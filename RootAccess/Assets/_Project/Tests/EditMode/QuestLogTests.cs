@@ -184,5 +184,35 @@ namespace RootAccess.Tests.EditMode
             Assert.AreEqual(1, progress.Objectives[2].Count);
             Assert.IsTrue(progress.Objectives[3].Failed);
         }
+
+        [Test]
+        public void TryComplete_StartsTheFollowUpQuest()
+        {
+            QuestDefinition office = Quest("office", true, new ObjectiveDefinition("vault", "Hack the vault", ObjectiveType.Hack, "l2_vault"));
+            _heist.SetFollowUp(office);
+            var log = new QuestLog();
+            var started = new List<string>();
+            log.QuestStarted += q => started.Add(q.Definition.QuestId);
+            log.Start(_heist);
+            CompleteRequired(log);
+
+            Assert.IsNull(log.Get("office"), "The follow-up waits until the current quest completes.");
+            Assert.IsTrue(log.TryComplete("heist"));
+            Assert.AreEqual(QuestStatus.Active, log.GetStatus("office"));
+            Assert.AreSame(office, log.ActiveMainQuest.Definition, "The chain moves the main story on to the next quest.");
+            CollectionAssert.AreEqual(new[] { "heist", "office" }, started);
+        }
+
+        [Test]
+        public void SetFollowUp_IgnoresSelfReference()
+        {
+            _heist.SetFollowUp(_heist);
+            Assert.IsNull(_heist.FollowUpQuest);
+            var log = new QuestLog();
+            log.Start(_heist);
+            CompleteRequired(log);
+            Assert.IsTrue(log.TryComplete("heist"));
+            Assert.AreEqual(1, new List<QuestProgress>(log.All).Count);
+        }
     }
 }

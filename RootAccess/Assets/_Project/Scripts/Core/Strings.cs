@@ -73,6 +73,7 @@ namespace RootAccess.Core
             public const string Skills = "ABILITĂȚI";
             public const string Shop = "MAGAZIN";
             public const string Contracts = "CONTRACTE";
+            public const string Travel = "CĂLĂTORIE";
             public const string Title = "TERMINAL PERSONAL";
             public const string InventoryHint = "[Tab] Închide";
             public const string CloseHint = "[Esc] Închide";
@@ -105,6 +106,14 @@ namespace RootAccess.Core
             public const string Optional = " (opțional)";
             public const string Stealth = "Rămâi nedetectat";
             public const string NotEnoughCredits = "Credite insuficiente";
+            public const string TravelAction = "Călătorește";
+            public const string LevelOpen = "deblocat";
+            public const string LevelLocked = "blocat";
+            public const string LevelHere = "ești aici";
+            public const string TravelLockedHint = "Termină nivelul anterior ca să deblochezi această destinație.";
+            public const string TravelReadyHint = "Gata de plecare. Progresul se salvează înainte de călătorie.";
+            public const string TravelHereHint = "Te afli deja aici.";
+            public const string TravelStarted = "Călătorie spre: {0}";
         }
 
         public static class Branches

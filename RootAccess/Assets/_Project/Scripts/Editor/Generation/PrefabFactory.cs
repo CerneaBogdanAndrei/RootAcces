@@ -20,6 +20,9 @@ namespace RootAccess.EditorTools
     /// <summary>Builds every reusable gameplay prefab (and its variants) plus the persistent SystemsRoot.</summary>
     public static class PrefabFactory
     {
+        /// <summary>How far (world units) a normal footstep of the player carries; crouch-walking has no footstep events.</summary>
+        private const float PlayerFootstepNoise = 4.5f;
+
         public static void BuildAll(BuildContext ctx)
         {
             BuildPlayer(ctx);
@@ -168,6 +171,7 @@ namespace RootAccess.EditorTools
             {
                 so.Require("feet").objectReferenceValue = root.transform;
                 so.Require("silencedBySkill").boolValue = true;
+                so.Require("noiseRadius").floatValue = PlayerFootstepNoise;
             });
 
             Light(root.transform, "PlayerGlow", Light2D.LightType.Point, new Color(0.3f, 0.9f, 1f), 0.5f, 2.4f, new Vector3(0f, 1f, 0f));
@@ -220,6 +224,14 @@ namespace RootAccess.EditorTools
 
         private static void BuildEnemies(BuildContext ctx)
         {
+            GameObject projectile = Go("Projectile", null, Layers.Projectile);
+            var pBody = projectile.AddComponent<Rigidbody2D>();
+            pBody.gravityScale = 0f;
+            pBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            Box<CircleCollider2D>(projectile, new Vector2(0.2f, 0.2f), Vector2.zero, true);
+            Sprite(projectile, "projectile", ctx.SpriteUnlit, SortingLayers.VFX);
+            GameObject projectilePrefab = Save(ctx, projectile.AddComponent<Projectile>().gameObject, EditorPaths.PrefabsEnemies);
+
             GameObject guard = Go("Guard", null, Layers.Enemy);
             guard.tag = Tags.Enemy;
             var gBody = guard.AddComponent<Rigidbody2D>();
@@ -260,6 +272,12 @@ namespace RootAccess.EditorTools
             });
             Variant(ctx, guardPrefab, "Guard_Sniper", EditorPaths.PrefabsEnemies, v =>
             {
+                Transform rifle = Go("Muzzle", v.transform, Layers.Enemy, new Vector3(0.55f, 1.15f, 0f)).transform;
+                EditorAssetUtil.SetFields(v.GetComponent<Guard>(), so =>
+                {
+                    so.Require("projectilePrefab").objectReferenceValue = projectilePrefab.GetComponent<Projectile>();
+                    so.Require("muzzle").objectReferenceValue = rifle;
+                });
                 EditorAssetUtil.SetField(v.GetComponent<Guard>(), "config", ctx.GuardSniper);
                 v.transform.Find("Visual").GetComponent<SpriteRenderer>().color = new Color(0.75f, 0.85f, 1f);
             });
@@ -299,13 +317,6 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetField(d, "eye", eyeSprite);
             Save(ctx, drone, EditorPaths.PrefabsEnemies);
 
-            GameObject projectile = Go("Projectile", null, Layers.Projectile);
-            var pBody = projectile.AddComponent<Rigidbody2D>();
-            pBody.gravityScale = 0f;
-            pBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            Box<CircleCollider2D>(projectile, new Vector2(0.2f, 0.2f), Vector2.zero, true);
-            Sprite(projectile, "projectile", ctx.SpriteUnlit, SortingLayers.VFX);
-            GameObject projectilePrefab = Save(ctx, projectile.AddComponent<Projectile>().gameObject, EditorPaths.PrefabsEnemies);
 
             GameObject turret = Go("Turret", null, Layers.Enemy);
             Sprite(turret, "turret_base", ctx.SpriteLit, SortingLayers.Interactables, 3);
@@ -679,6 +690,8 @@ namespace RootAccess.EditorTools
             var composer = vcamGo.AddComponent<CinemachinePositionComposer>();
             composer.CameraDistance = 10f;
             composer.Damping = new Vector3(0.6f, 0.45f, 0f);
+            // Frame the player in the lower third: more of what is ahead and above (catwalks, cameras), less floor.
+            composer.TargetOffset = new Vector3(0f, 2f, 0f);
             composer.Lookahead = new LookaheadSettings { Enabled = true, Time = 0.35f, Smoothing = 8f, IgnoreY = true };
             var confiner = vcamGo.AddComponent<CinemachineConfiner2D>();
             confiner.Damping = 0.4f;

@@ -15,5 +15,7 @@ MonoBehaviour:
   levelId: level05
   sceneName: Level05_HQ
   displayName: "Sediul corpora\u021Biei"
+  description: "Sediul corpora\u021Biei: finalul. Toate sistemele de securitate,
+    deodat\u0103."
   unlockedByDefault: 0
   order: 5

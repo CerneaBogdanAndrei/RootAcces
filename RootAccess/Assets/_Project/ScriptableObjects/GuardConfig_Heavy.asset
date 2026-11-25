@@ -21,7 +21,11 @@ MonoBehaviour:
   awarenessDecayPerSecond: 0.5
   loseSightSeconds: 1.5
   searchSeconds: 4
-  attackRange: 1.1
-  attackCooldown: 1.1
+  attackRange: 1.25
+  attackCooldown: 1.3
   attackDamage: 2
   tracePerSecondWhileSeen: 22
+  hearingSensitivity: 1.2
+  investigateSeconds: 3
+  alarmResponseRadius: 26
+  ranged: 0

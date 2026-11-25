@@ -9,12 +9,14 @@ namespace RootAccess.Core
         [SerializeField] private string levelId;
         [SerializeField] private string sceneName;
         [SerializeField] private string displayName;
+        [SerializeField, TextArea] private string description;
         [SerializeField] private bool unlockedByDefault;
         [SerializeField] private int order;
 
         public string LevelId => levelId;
         public string SceneName => sceneName;
         public string DisplayName => displayName;
+        public string Description => description;
         public bool UnlockedByDefault => unlockedByDefault;
         public int Order => order;
 
@@ -26,5 +28,7 @@ namespace RootAccess.Core
             unlockedByDefault = unlocked;
             order = sortOrder;
         }
+
+        public void SetDescription(string text) => description = text;
     }
 }

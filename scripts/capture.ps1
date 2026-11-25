@@ -50,6 +50,14 @@ $shots = @(
     @{ Name = '17-panou-barem-f1';         Scene = 'Hub';              Spawn = 'hub_center';   Interact = '';              Command = 'rubric';    Delay = 2.5 }
     @{ Name = '18-game-over';              Scene = 'Hub';              Spawn = 'hub_center';   Interact = '';              Command = 'gameover';  Delay = 3 }
     @{ Name = '19-credite';                Scene = 'Credits';          Spawn = '';             Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '20-nivel1-start';           Scene = 'Level01_Rooftops'; Spawn = 'l1_start';     Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '21-nivel1-acoperisuri';     Scene = 'Level01_Rooftops'; Spawn = 'l1_movement';  Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '22-terminal-calatorie';     Scene = 'Hub';              Spawn = 'hub_center';   Interact = 'FastTravel_Levels'; Command = '';      Delay = 2.5 }
+    @{ Name = '23-nivel2-hol';             Scene = 'Level02_Office';   Spawn = 'l2_start';     Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '24-nivel2-securitate';      Scene = 'Level02_Office';   Spawn = 'l2_security';  Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '25-nivel2-lift';            Scene = 'Level02_Office';   Spawn = 'l2_elevator';  Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '26-nivel2-etaj';            Scene = 'Level02_Office';   Spawn = 'l2_upper';     Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '27-nivel2-seif';            Scene = 'Level02_Office';   Spawn = 'l2_vault';     Interact = '';              Command = '';          Delay = 3 }
 )
 for ($i = 1; $i -le 14; $i++) {
     $room = 'room_{0:D2}' -f $i

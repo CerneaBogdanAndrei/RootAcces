@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6557b1e53a44f84b969bfbed5b80472, type: 3}
+  m_Name: dlg_level02_intro
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.DialogueDefinition
+  dialogueId: dlg_level02_intro
+  lines:
+  - speaker: OPERATOR
+    text: "Turnul Halden. Camere pe fiecare hol, gardieni care ascult\u0103 \u0219i
+      un lunetist la etajul doi."
+  - speaker: OPERATOR
+    text: "Liftul de serviciu e blocat. Sparge-i terminalul \u0219i urc\u0103 la
+      seif."
+  - speaker: TU
+    text: "Am \xEEn\u021Beles. Intru pe u\u0219a din spate."

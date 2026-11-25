@@ -430,3 +430,4 @@ MonoBehaviour:
   fallbackSurface: 0
   silent: 0
   silencedBySkill: 1
+  noiseRadius: 4.5

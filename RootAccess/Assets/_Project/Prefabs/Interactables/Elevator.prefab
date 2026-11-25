@@ -300,3 +300,4 @@ MonoBehaviour:
   speed: 2.5
   locked: 1
   animator: {fileID: 7519715578179489639}
+  autoReturnSeconds: 0

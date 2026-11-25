@@ -59,6 +59,7 @@ namespace RootAccess.EditorTools
             public int Scene(string type) => SceneComponents.TryGetValue(type, out int n) ? n : 0;
             public int Any(string type) => Prefab(type) + Scene(type);
             public bool InScene(string type, string scene) => ComponentScenes.TryGetValue(type, out HashSet<string> s) && s.Contains(scene);
+            public IEnumerable<string> ScenesOf(string type) => ComponentScenes.TryGetValue(type, out HashSet<string> s) ? s : Enumerable.Empty<string>();
             public GameObject FindPrefab(string name) => Prefabs.FirstOrDefault(p => p.name == name);
         }
 
@@ -253,6 +254,8 @@ namespace RootAccess.EditorTools
             Add(item, "OnCollisionEnter2D (daune, impact la aterizare)", collisionTypes.Length >= 2, string.Join(", ", collisionTypes));
             Add(item, "Raycast-uri pentru con de vedere și senzori sol/perete", FindType("VisionCone") != null && FindType("PlayerSensors") != null,
                 "VisionCone, PlayerSensors");
+            Add(item, "Gropi între acoperișuri (FallZone, trigger) în Level01", index.InScene("FallZone", SceneNames.Level01),
+                $"{index.Scene("FallZone")} FallZone în scene");
 
             // 12. Scripts
             item = Strings.Rubric.Scripts;
@@ -261,6 +264,16 @@ namespace RootAccess.EditorTools
             Add(item, "Asmdef-uri de test EditMode + PlayMode",
                 File.Exists($"{EditorPaths.Tests}/EditMode/RootAccess.Tests.EditMode.asmdef") && File.Exists($"{EditorPaths.Tests}/PlayMode/RootAccess.Tests.PlayMode.asmdef"),
                 EditorPaths.Tests);
+            Add(item, "A* propriu în nivelurile reale (PathfindingGrid în Level01 și Level02)",
+                index.InScene("PathfindingGrid", SceneNames.Level01) && index.InScene("PathfindingGrid", SceneNames.Level02),
+                $"PathfindingGrid în: {string.Join(", ", index.ScenesOf("PathfindingGrid"))}");
+            Component sniper = index.FindPrefab("Guard_Sniper")?.GetComponents<Component>().FirstOrDefault(c => c != null && c.GetType().Name == "Guard");
+            bool sniperRifle = sniper != null && new SerializedObject(sniper).FindProperty("projectilePrefab")?.objectReferenceValue != null;
+            Add(item, "AI gardieni: auz (PlayerNoise → Investigate), răspuns la AlarmRaised, lunetist cu proiectile",
+                FindType("GuardInvestigateState") != null && FindType("Hearing") != null && sniperRifle,
+                "AI/Guard/GuardStates.cs, AI/Perception/Hearing.cs, Guard_Sniper.prefab");
+            Add(item, "Niveluri construite din segmente (LevelLayout): Level01 + Level02 în build",
+                SceneInBuild(SceneNames.Level01) && SceneInBuild(SceneNames.Level02), "Editor/Generation/LevelLayout.cs");
             (bool testsGreen, string testEvidence) = ReadTestResults();
             Add(item, "Ultima rulare a testelor: verde", testsGreen, testEvidence);
 

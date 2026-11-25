@@ -12,7 +12,7 @@ namespace RootAccess.UI
 {
     /// <summary>
     /// Full-screen personal terminal with tabs: inventory, skill tree (three branches), quest log and, when opened from a
-    /// hub console, the shop or the darknet contracts. Time stops while it is open (<see cref="GameState.Terminal"/>).
+    /// hub console, the shop, the darknet contracts or fast travel (levels unlocked by finishing the previous one). Time stops while it is open (<see cref="GameState.Terminal"/>).
     /// Lists are rebuilt from a button template; the right-hand panel shows details and the tab's action.
     /// </summary>
     public sealed class TerminalScreenView : UIPanel
@@ -40,6 +40,7 @@ namespace RootAccess.UI
         private TerminalTab _tab;
         private ShopOffer[] _offers;
         private QuestDefinition[] _contracts;
+        private LevelDefinition[] _destinations;
         private bool _allowSkillUnlock;
         private int _selected = -1;
 
@@ -100,9 +101,11 @@ namespace RootAccess.UI
             if (!ServiceLocator.TryGet(out GameManager gameManager) || !gameManager.EnterTerminal()) return false;
             _offers = request.Offers;
             _contracts = request.Contracts;
+            _destinations = request.Destinations;
             _allowSkillUnlock = request.AllowSkillUnlock;
             SetTabVisible(TerminalTab.Shop, _offers is { Length: > 0 });
             SetTabVisible(TerminalTab.Contracts, _contracts is { Length: > 0 });
+            SetTabVisible(TerminalTab.Travel, _destinations is { Length: > 0 });
             if (statusLabel != null) statusLabel.text = string.Empty;
             Show();
             SelectTab(request.Tab);
@@ -115,6 +118,7 @@ namespace RootAccess.UI
             Hide();
             _offers = null;
             _contracts = null;
+            _destinations = null;
             _allowSkillUnlock = false;
             if (ServiceLocator.TryGet(out GameManager gameManager)) gameManager.ExitTerminal();
         }
@@ -166,6 +170,10 @@ namespace RootAccess.UI
                     session.StartQuest(contract);
                     SetStatus(string.Format(Strings.Hub.ContractAccepted, contract.Title));
                     break;
+                case TerminalTab.Travel when _data[_selected] is LevelDefinition level:
+                    if (!CanTravelTo(session.Session, level)) break;
+                    Travel(session, level);
+                    return;
             }
 
             Rebuild(keepSelection: true);
@@ -233,6 +241,11 @@ namespace RootAccess.UI
                         if (offer.IsValid)
                             AddEntry(offer, $"{offer.Item.DisplayName} · {offer.Price} cr",
                                 Shop.CanBuy(game.Wallet, game.Inventory, offer) == PurchaseResult.Success ? availableColor : lockedColor);
+                    break;
+                case TerminalTab.Travel:
+                    foreach (LevelDefinition level in SortedLevels(_destinations))
+                        AddEntry(level, $"{level.Order}. {level.DisplayName} ({LevelStateText(game, level)})",
+                            CanTravelTo(game, level) ? availableColor : IsCurrentScene(level) ? unlockedColor : lockedColor);
                     break;
                 case TerminalTab.Contracts:
                     foreach (QuestDefinition contract in _contracts ?? new QuestDefinition[0])
@@ -331,6 +344,14 @@ namespace RootAccess.UI
                     AppendQuest(contract, progress);
                     SetAction(true, Strings.Panels.Accept, progress == null);
                     break;
+                case LevelDefinition level:
+                    title = level.DisplayName;
+                    if (!string.IsNullOrEmpty(level.Description)) _text.AppendLine(level.Description).AppendLine();
+                    _text.Append(IsCurrentScene(level) ? Strings.Panels.TravelHereHint
+                        : IsUnlocked(game, level) ? Strings.Panels.TravelReadyHint
+                        : Strings.Panels.TravelLockedHint);
+                    SetAction(true, Strings.Panels.TravelAction, CanTravelTo(game, level));
+                    break;
             }
 
             if (detailTitle != null) detailTitle.text = title;
@@ -377,8 +398,40 @@ namespace RootAccess.UI
         {
             TerminalTab.Shop => _offers is { Length: > 0 },
             TerminalTab.Contracts => _contracts is { Length: > 0 },
+            TerminalTab.Travel => _destinations is { Length: > 0 },
             _ => true
         };
+
+        // ---------------------------------------------------------------- travel
+
+        private void Travel(SessionService session, LevelDefinition level)
+        {
+            session.SaveGame();
+            EventBus<ToastRequested>.Publish(new ToastRequested(string.Format(Strings.Panels.TravelStarted, level.DisplayName)));
+            Close();
+            if (ServiceLocator.TryGet(out GameManager gameManager)) gameManager.LoadScene(level.SceneName);
+        }
+
+        /// <summary>Unlocked by progress and actually shipped: levels whose scene is not in the build stay locked.</summary>
+        private static bool IsUnlocked(GameSession game, LevelDefinition level) =>
+            (level.UnlockedByDefault || game.IsLevelUnlocked(level.LevelId)) && Application.CanStreamedLevelBeLoaded(level.SceneName);
+
+        private static bool IsCurrentScene(LevelDefinition level) =>
+            level.SceneName == UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+        private static bool CanTravelTo(GameSession game, LevelDefinition level) => IsUnlocked(game, level) && !IsCurrentScene(level);
+
+        private static string LevelStateText(GameSession game, LevelDefinition level) =>
+            IsCurrentScene(level) ? Strings.Panels.LevelHere : IsUnlocked(game, level) ? Strings.Panels.LevelOpen : Strings.Panels.LevelLocked;
+
+        private static List<LevelDefinition> SortedLevels(LevelDefinition[] levels)
+        {
+            var sorted = new List<LevelDefinition>();
+            foreach (LevelDefinition level in levels ?? new LevelDefinition[0])
+                if (level != null) sorted.Add(level);
+            sorted.Sort((a, b) => a.Order.CompareTo(b.Order));
+            return sorted;
+        }
 
         private void SetTabVisible(TerminalTab tab, bool visible)
         {

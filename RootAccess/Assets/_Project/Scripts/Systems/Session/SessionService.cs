@@ -110,6 +110,9 @@ namespace RootAccess.Systems
                 Debug.Log($"[SessionService] Saved to {_saveSystem.GetPath(SaveSlots.Main)}");
         }
 
+        /// <summary>Test hook: keep automated runs (exits, checkpoints, travel) away from the developer's real save.</summary>
+        internal void UseSaveDirectory(string directory) => _saveSystem = new SaveSystem(directory);
+
         public bool TryAddItem(ItemDefinition item, int quantity = 1)
         {
             if (Session == null || item == null) return false;

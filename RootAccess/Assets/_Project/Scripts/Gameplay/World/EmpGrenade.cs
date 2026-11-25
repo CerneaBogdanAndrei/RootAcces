@@ -14,6 +14,9 @@ namespace RootAccess.Gameplay
     {
         private const float CapacitorRadiusMultiplier = 1.5f;
 
+        /// <summary>The bang carries well past the blast itself: guards this far away come to look.</summary>
+        private const float NoiseRadiusMultiplier = 2.5f;
+
         [SerializeField, Min(0.1f)] private float fuseSeconds = 1.1f;
         [SerializeField, Min(0.5f)] private float radius = 3.2f;
         [SerializeField, Min(0.5f)] private float disableSeconds = 6f;
@@ -63,6 +66,7 @@ namespace RootAccess.Gameplay
             EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.EmpBlast, center));
             EventBus<ScreenShakeRequested>.Publish(new ScreenShakeRequested(0.7f));
             EventBus<TraceNoise>.Publish(new TraceNoise(traceNoise, TraceSource.Noise, center));
+            EventBus<PlayerNoise>.Publish(new PlayerNoise(center, blastRadius * NoiseRadiusMultiplier));
             if (_affected.Count > 0) EventBus<ToastRequested>.Publish(new ToastRequested(string.Format(Strings.Hud.EmpDetonated, _affected.Count)));
 
             int affected = _affected.Count;

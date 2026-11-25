@@ -91,6 +91,22 @@ namespace RootAccess.Core
         public AlarmRaised(Vector2 position) => Position = position;
     }
 
+    /// <summary>
+    /// A sound the player caused (footstep, hard landing, EMP blast). Guards inside <see cref="Radius"/> turn to
+    /// investigate <see cref="Position"/>; quieter sources (silent-steps skill) simply publish a smaller radius.
+    /// </summary>
+    public readonly struct PlayerNoise : IEvent
+    {
+        public readonly Vector2 Position;
+        public readonly float Radius;
+
+        public PlayerNoise(Vector2 position, float radius)
+        {
+            Position = position;
+            Radius = radius;
+        }
+    }
+
     public readonly struct CheckpointReached : IEvent
     {
         public readonly string CheckpointId;

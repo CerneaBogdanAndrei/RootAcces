@@ -329,5 +329,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RootAccess.Gameplay::RootAccess.Gameplay.FastTravelTerminal
   destination: {fileID: 11400000, guid: e039e08e571879c45bdeec03f7470958, type: 2}
+  destinations: []
   arrivalSpawnId: 
   departDelay: 0.6

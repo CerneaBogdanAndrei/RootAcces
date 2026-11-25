@@ -102,7 +102,7 @@ Toate evenimentele sunt `readonly struct : IEvent`, definite în `Core/Events/*.
 |---|---|
 | Scene / stare | `SceneLoadStarted`, `SceneLoadProgress`, `SceneLoadCompleted`, `GameStateChanged`, `SettingsChanged`, `LevelCompleted` |
 | Jucător | `PlayerHealthChanged`, `PlayerDied`, `PlayerRespawnRequested`, `PlayerRespawned`, `PlayerHiddenChanged`, `CheckpointReached`, `InteractionPromptChanged` |
-| Stealth | `TraceNoise`, `TraceChanged`, `TraceLevelChanged`, `AlarmRaised` |
+| Stealth | `TraceNoise`, `TraceChanged`, `TraceLevelChanged`, `AlarmRaised`, `PlayerNoise` |
 | Hacking | `HackRequested`, `HackSessionStarted`, `HackResolved`, `HackSessionEnded` |
 | Progres | `ObjectiveReported`, `QuestChanged`, `InventoryChanged`, `CreditsChanged`, `XpChanged`, `SkillUnlockedEvent`, `ToastRequested`, `TerminalScreenRequested` |
 | Dialog | `DialogueRequested`, `DialogueLineShown`, `DialogueEnded` |
@@ -124,7 +124,18 @@ Exemplu, detecția: `VisionCone.CanSee` (raycast) ─► `Guard` intră în Susp
 zonele de alarmă publică `TraceNoise` (camerele și `AlarmZone` publică și `AlarmRaised`). `SessionService` trimite
 zgomotul în `TraceMeter`, care trece pragurile 25 / 60 / 100 și publică `TraceLevelChanged`. La acest eveniment
 reacționează `MusicDirector` (muzica de alertă), `MixerSnapshots` (snapshot-ul `Alarm`) și HUD-ul (la 100 afișează
-„BLOCARE TOTALĂ”). `AlarmRaised` nu are încă abonați: e punctul de legătură pentru gardienii care converg spre alarmă (P3).
+„BLOCARE TOTALĂ”). Gardienii aflați la cel mult `GuardConfig.alarmResponseRadius` de un `AlarmRaised` intră în Search
+la poziția alarmei.
+
+Exemplu, auzul: pașii jucătorului (`FootstepPlayer.noiseRadius` × volum × suprafață; abilitatea „Pași silențioși” dă
+volum 0,3, iar mersul ghemuit nu are evenimente de pas), aterizările dure (`PlayerController`, 4–9 u) și exploziile EMP
+publică `PlayerNoise(poziție, rază)`. Fiecare `Guard` aplică regula pură `Hearing.CanHear` (un zid între sursă și gardian
+lasă să treacă 45% din rază) și trece în starea Investigate: merge la sursă, se uită în ambele părți, apoi revine la rută.
+
+Exemplu, progresia: `LevelExit` raportează `ObjectiveReported(Reach, exitId)`, deblochează `unlocksLevel` și salvează.
+`QuestLog.TryComplete` pornește automat `QuestDefinition.followUpQuest` (misiunea principală a nivelului următor), iar
+consola de călătorie din Hub deschide tab-ul `TerminalTab.Travel` cu nivelurile 1–5 (cele blocate sau încă neconstruite
+nu pot fi alese).
 
 Exemplu, magazinul din Hub: `ShopTerminal.Interact` ─► `TerminalScreenRequested(Shop, oferte)` ─► `TerminalScreenView.Open`
 ─► `GameManager.EnterTerminal` (timp oprit) ─► „Cumpără” ─► `SessionService.Buy` ─► `Shop.TryBuy(Wallet, Inventory, ofertă)`
@@ -143,8 +154,11 @@ raza EMP). Hacking-ul nu depinde de Systems, așa că efectele de spargere sunt 
 - **A\***: grilă de celule (`AStarGrid`, construită de `PathfindingGrid` din layerele Ground/Wall), heap binar,
   vecinătate 8 fără tăierea colțurilor, buffere refolosite și ștampile de generație în loc de ștergerea array-urilor.
   `PathRequestQueue` limitează numărul de căutări pe cadru.
-- **Guard**: FSM Patrol → Suspicious → Chase → Search → Return. Variantele Heavy/Sniper diferă doar prin `GuardConfig`
-  și prefab variant.
+- **Guard**: FSM Patrol → Suspicious → Chase → Search → Return, plus Investigate (zgomot auzit) și Search declanșat de
+  `AlarmRaised`. Variantele Heavy/Sniper diferă prin `GuardConfig` (auz, rază de răspuns la alarmă, atac la distanță)
+  și prefab variant: lunetistul trage proiectile din pool prin `Muzzle`.
+- **Gropi**: `FallZone` (trigger) apelează `IFallRecoverable.RecoverFromFall` pe jucător: −1 viață și revenire pe
+  marginea dinaintea gropii, fără restart de la checkpoint.
 
 ## 6. Formatul de salvare
 
@@ -197,7 +211,10 @@ SceneBuilder.BuildAll
   ├─ VfxFactory        prefab-urile ParticleSystem
   ├─ UIRootBuilder     UIRoot, canvas-urile din meniu și credite
   ├─ PrefabFactory     jucător, inamici + variante, interactive, mediu, CameraRig, SystemsRoot
-  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops, RubricShowcase, Credits + Build Settings
+  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops, Level02_Office, RubricShowcase, Credits + Build Settings
+                       (nivelurile se compun din segmentele lui LevelLayout: acoperișuri cu gropi, horn de wall-jump,
+                       patrulă, poartă cu cameră, coridor cu lasere, salt prin noduri, arenă de drone, lift, seif,
+                       sală cu turele, checkpoint, ieșire; Finish() dimensionează confiner-ul și grila A*)
 BuildScript.BuildWindows
 ```
 

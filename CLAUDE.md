@@ -72,7 +72,8 @@ Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-r
 -ra-newgame -ra-screenshot <png> -ra-screenshot-delay <s> -ra-quit-after <s> -ra-interact <ObjectName>
 -ra-command inventory,skills,quests,pause,rubric,settings,gameover -ra-default-settings` (in-memory settings: scripts
 must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses them to photograph every screen. Spawn ids: `hub_center`, `l1_start`,
-`l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `showcase_start`, `room_01`..`room_14`.
+`l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
+`l2_vault`, `showcase_start`, `room_01`..`room_14`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments.
 
 ## Unity 6000.3 gotchas learned the hard way
 
@@ -88,15 +89,18 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 - Non-sequential enums (`Light2D.NormalMapQuality`) must be set via `intValue`, not `enumValueIndex`.
 - PlayMode tests: the runner adds its own `InitTestScene…` to Build Settings — filter to `Assets/_Project/Scenes/`.
 - Regenerating content rewrites sub-asset fileIDs (controllers, volume profiles): large but harmless diffs.
+- Opening a new scene in batchmode can unload ScriptableObjects the build context still holds (the C# wrapper turns
+  fake-null and a SerializedProperty silently stores None). Wrap SO references wired into scenes in `BuildContext.Fresh(...)`.
+- Raycasts that start exactly on a collider's surface do not report it: start ground/wall probes ~0.5 above the feet.
 - Shader Graphs are generated (`Editor/Generation/ShaderGraphFactory.cs` + `ShaderGraphWriter.cs`): nodes are written without
   slots (Shader Graph recreates them on load), only custom-function slots and constants are explicit. Edit the factory,
   not the `.shadergraph` files; the factory fails the build if a graph does not import as an error-free shader.
 
 ## Testing
 
-- EditMode (`Tests/EditMode`, 92 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
+- EditMode (`Tests/EditMode`, 103 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
   SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet.
-- PlayMode (`Tests/PlayMode`, 10 tests): every project scene in Build Settings boots with no logged errors and the player
+- PlayMode (`Tests/PlayMode`, 23 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
   teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
   Wire Connect through the real overlay (camera disabled, data shard + credits awarded).

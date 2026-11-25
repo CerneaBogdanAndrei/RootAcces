@@ -89,12 +89,14 @@ namespace RootAccess.Systems
         Skills,
         Quests,
         Shop,
-        Contracts
+        Contracts,
+        Travel
     }
 
     /// <summary>
     /// Opens the full-screen personal terminal. Hub consoles add their own content: a vendor's offers, the job board's
-    /// contracts, or permission to unlock skills (only the hideout's skill terminal grants it).
+    /// contracts, permission to unlock skills (only the hideout's skill terminal grants it) or the fast-travel
+    /// destinations (levels; locked ones are listed but cannot be selected).
     /// </summary>
     public readonly struct TerminalScreenRequested : RootAccess.Core.IEvent
     {
@@ -102,13 +104,16 @@ namespace RootAccess.Systems
         public readonly ShopOffer[] Offers;
         public readonly QuestDefinition[] Contracts;
         public readonly bool AllowSkillUnlock;
+        public readonly RootAccess.Core.LevelDefinition[] Destinations;
 
-        public TerminalScreenRequested(TerminalTab tab, ShopOffer[] offers = null, QuestDefinition[] contracts = null, bool allowSkillUnlock = false)
+        public TerminalScreenRequested(TerminalTab tab, ShopOffer[] offers = null, QuestDefinition[] contracts = null, bool allowSkillUnlock = false,
+            RootAccess.Core.LevelDefinition[] destinations = null)
         {
             Tab = tab;
             Offers = offers;
             Contracts = contracts;
             AllowSkillUnlock = allowSkillUnlock;
+            Destinations = destinations;
         }
     }
 

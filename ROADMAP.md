@@ -55,7 +55,13 @@ Total estimat: aproximativ 140–185 de ore.
 **Barem închis:** mecanicile avansate „interacțiune cu obiecte” și „inventar”; 7 (particula EMP folosită în gameplay).
 **Teste noi:** EditMode pentru shop (credite insuficiente, stack), PlayMode pentru grenada EMP (dezactivează camera și drona).
 
-## P3: AI, pathfinding, Nivelurile 1–2 (24–30 h)
+## P3: AI, pathfinding, Nivelurile 1–2 (24–30 h) ✅ făcut (PR „P3”)
+
+Realizat: `LevelLayout` (constructor pe segmente), Level01 refăcut (~230 de tile-uri: parc, gropi, horn de wall-jump,
+patrulă, poartă cu cameră, lasere, salt prin noduri, arena dronelor), `Level02_Office` (interior pe două etaje, lift,
+lunetist, turele, seif), lanțul de misiuni (`followUpQuest`), tab-ul Călătorie, auzul gardienilor + răspunsul la alarmă,
+lunetistul cu proiectile, gropile cu `FallZone`. Reparate pe drum: gardienii nu patrulau (sonda de podea pornea din
+podea), referințele la ScriptableObject-uri din scene se salvau goale (dialogul din Level01, terminalul spre showcase).
 
 **Livrabile**
 - Gardienii: auz (zgomotul din `TraceNoise` atrage gardienii), convergența spre `AlarmRaised`, căutare din ultima poziție,
@@ -130,5 +136,5 @@ per cameră de nivel).
 
 - Regenerarea conținutului rescrie fileID-urile sub-asset-urilor (controllere, profile de volum), ceea ce produce diff-uri
   mari. Opțional: ID-uri deterministe sau regenerare doar la schimbare.
-- `AlarmRaised` nu are încă abonați (P3).
+- Dronele nu au încă waypoint-uri de patrulare (stau pe loc până văd jucătorul).
 - `RubricValidator` numără dovezi, nu calitate: demonstrațiile din RUBRIC.md rămân verificarea finală.

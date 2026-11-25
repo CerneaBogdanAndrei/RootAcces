@@ -20,6 +20,8 @@ namespace RootAccess.Tests.PlayMode
     {
         private const string Spawn = "l1_nodes";
         private const string DataShardId = "data_shard";
+        private const string CameraTerminalId = "terminal_l1_camera";
+        private const string DataTerminalId = "terminal_l1_data";
 
         [TearDown]
         public void TearDown() => SliceTestUtil.ResetTime();
@@ -29,8 +31,8 @@ namespace RootAccess.Tests.PlayMode
         {
             yield return LoadFreshLevel();
             PlayerController player = SliceTestUtil.Player;
-            Terminal terminal = Terminal(TerminalKind.Camera);
-            SecurityCamera camera = Object.FindFirstObjectByType<SecurityCamera>();
+            Terminal terminal = Terminal(CameraTerminalId, TerminalKind.Camera);
+            SecurityCamera camera = terminal.Targets.OfType<SecurityCamera>().Single();
             Assert.IsFalse(camera.IsHacked);
 
             terminal.Interact(player);
@@ -58,7 +60,7 @@ namespace RootAccess.Tests.PlayMode
         {
             yield return LoadFreshLevel();
             PlayerController player = SliceTestUtil.Player;
-            Terminal terminal = Terminal(TerminalKind.Data);
+            Terminal terminal = Terminal(DataTerminalId, TerminalKind.Data);
             Assert.IsTrue(ServiceLocator.TryGet(out SessionService session), "SessionService missing.");
             int creditsBefore = session.Session.Wallet.Credits;
 
@@ -87,8 +89,12 @@ namespace RootAccess.Tests.PlayMode
             yield return SliceTestUtil.LoadScene(SceneNames.Level01, Spawn);
         }
 
-        private static Terminal Terminal(TerminalKind kind) =>
-            Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None).Single(t => t.Kind == kind);
+        private static Terminal Terminal(string id, TerminalKind kind)
+        {
+            Terminal terminal = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None).Single(t => t.TerminalId == id);
+            Assert.AreEqual(kind, terminal.Kind, $"Terminal '{id}' has the wrong variant.");
+            return terminal;
+        }
 
         private static int RightSocketFor(WireConnectModel model, int color)
         {

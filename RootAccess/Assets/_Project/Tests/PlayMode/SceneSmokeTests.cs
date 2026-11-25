@@ -36,7 +36,7 @@ namespace RootAccess.Tests.PlayMode
         public void BuildSettings_ContainTheVerticalSliceScenes()
         {
             CollectionAssert.IsSubsetOf(
-                new[] { SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.RubricShowcase, SceneNames.Credits },
+                new[] { SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.RubricShowcase, SceneNames.Credits },
                 new List<string>(BuildScenes()));
             Assert.AreEqual(SceneNames.Bootstrap, Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(0)),
                 "Bootstrap must be build index 0.");

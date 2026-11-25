@@ -15,5 +15,7 @@ MonoBehaviour:
   levelId: level01
   sceneName: Level01_Rooftops
   displayName: "Acoperi\u0219uri \u0219i parc"
+  description: "Acoperi\u0219urile Sectorului 7: s\u0103rituri \xEEntre cl\u0103diri,
+    primul gardian, o poart\u0103 de securitate \u0219i arena dronelor."
   unlockedByDefault: 1
   order: 1

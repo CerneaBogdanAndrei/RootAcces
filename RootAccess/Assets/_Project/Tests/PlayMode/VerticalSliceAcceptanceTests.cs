@@ -23,6 +23,8 @@ namespace RootAccess.Tests.PlayMode
     public sealed class VerticalSliceAcceptanceTests
     {
         private const string NodesSpawn = "l1_nodes";
+        private const string DroneSpawn = "l1_drone";
+        private const string StoryDoorTerminalId = "terminal_l1_door";
         private const float TestMusicVolume = 0.25f;
 
         private float _previousMusicVolume = -1f;
@@ -87,8 +89,9 @@ namespace RootAccess.Tests.PlayMode
 
         private static IEnumerator HackDoorTerminal(PlayerController player)
         {
-            Terminal terminal = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None).Single(t => t.Kind == TerminalKind.Door);
-            Door door = Object.FindFirstObjectByType<Door>();
+            Terminal terminal = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None).Single(t => t.TerminalId == StoryDoorTerminalId);
+            Assert.AreEqual(TerminalKind.Door, terminal.Kind, "The story door terminal is a Terminal_Door variant.");
+            Door door = terminal.Targets.OfType<Door>().Single();
             Assert.IsFalse(door.IsOpen, "The service door starts closed.");
             Assert.IsTrue(terminal.CanInteract(player));
 
@@ -126,10 +129,13 @@ namespace RootAccess.Tests.PlayMode
 
         private static IEnumerator TeleportThroughNetworkNode(PlayerController player)
         {
-            NetworkNode[] nodes = Object.FindObjectsByType<NetworkNode>(FindObjectsSortMode.None).OrderBy(n => n.transform.position.y).ToArray();
+            NetworkNode[] nodes = Object.FindObjectsByType<NetworkNode>(FindObjectsSortMode.None)
+                .OrderBy(n => Vector2.Distance(n.transform.position, player.Position)).ToArray();
             Assert.GreaterOrEqual(nodes.Length, 2, "Level 1 needs a linked network node pair.");
             NetworkNode ground = nodes[0];
-            NetworkNode rooftop = nodes[^1];
+            NetworkNode rooftop = ground.LinkedNode;
+            Assert.IsNotNull(rooftop, "The node next to the l1_nodes spawn must be linked.");
+            Assert.Greater(rooftop.transform.position.y, ground.transform.position.y + 5f, "The linked node sits on the tower roof.");
             Assert.IsTrue(ground.CanInteract(player), "The ground node should be usable.");
 
             ground.Interact(player);
@@ -144,11 +150,14 @@ namespace RootAccess.Tests.PlayMode
 
         private static IEnumerator DroneChases(PlayerController player)
         {
-            Drone drone = Object.FindFirstObjectByType<Drone>();
+            SpawnPoint arena = SpawnPoint.Find(DroneSpawn);
+            Assert.IsNotNull(arena, $"Level 1 needs the '{DroneSpawn}' spawn at the drone arena.");
+            Drone drone = Object.FindObjectsByType<Drone>(FindObjectsSortMode.None)
+                .OrderBy(d => Vector2.Distance(d.transform.position, arena.transform.position)).FirstOrDefault();
             Assert.IsNotNull(drone, "Level 1 needs a drone.");
             Assert.IsFalse(drone.IsChasing, "The drone should idle until it sees the player.");
 
-            Vector3 below = new(drone.transform.position.x, 0f, 0f);
+            Vector3 below = new(drone.transform.position.x, arena.transform.position.y, 0f);
             player.Respawn(below);
             yield return SliceTestUtil.WaitUntil(() => drone.IsChasing, 5f, "the drone to spot the player");
             yield return SliceTestUtil.WaitUntil(() => drone.CurrentPath.Count > 1, 5f, "an A* path from the drone to the player");

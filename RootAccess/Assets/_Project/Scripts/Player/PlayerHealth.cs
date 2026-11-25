@@ -6,7 +6,7 @@ namespace RootAccess.Player
 {
     /// <summary>Hit points, invulnerability frames, death and checkpoint respawn for the player.</summary>
     [RequireComponent(typeof(PlayerController))]
-    public sealed class PlayerHealth : MonoBehaviour, IDamageable
+    public sealed class PlayerHealth : MonoBehaviour, IDamageable, IFallRecoverable
     {
         [SerializeField] private SpriteRenderer flashRenderer;
 
@@ -84,6 +84,17 @@ namespace RootAccess.Player
             EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.Death, transform.position));
             _controller.OnDied();
             EventBus<PlayerDied>.Publish(new PlayerDied(transform.position));
+        }
+
+        /// <summary>Pit fall: one hit of damage (ignores invulnerability), then back on the ledge the pit belongs to.</summary>
+        public void RecoverFromFall(int damage, Vector3 safePosition)
+        {
+            if (!IsAlive) return;
+            _invulnerableUntil = 0f;
+            TakeDamage(new DamageInfo(Mathf.Max(1, damage), transform.position, 0f, DamageType.Generic));
+            if (!IsAlive) return;
+            _controller.Respawn(safePosition);
+            EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.TeleportIn, safePosition));
         }
 
         public void Heal(int amount)

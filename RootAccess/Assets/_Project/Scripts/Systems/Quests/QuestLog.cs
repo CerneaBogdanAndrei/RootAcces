@@ -106,7 +106,7 @@ namespace RootAccess.Systems
         public bool Report(ObjectiveType type, string targetId, int amount = 1)
         {
             if (type == ObjectiveType.AvoidDetection || amount <= 0) return false;
-            bool advanced = false;
+            var changed = new List<QuestProgress>();
             foreach (QuestProgress quest in _quests.Values)
             {
                 if (quest.Status != QuestStatus.Active) continue;
@@ -119,33 +119,39 @@ namespace RootAccess.Systems
                     questChanged = true;
                 }
 
-                if (!questChanged) continue;
-                advanced = true;
-                QuestUpdated?.Invoke(quest);
+                if (questChanged) changed.Add(quest);
             }
 
-            return advanced;
+            // Listeners may complete a quest and start its follow-up, so notify after the iteration.
+            foreach (QuestProgress quest in changed) QuestUpdated?.Invoke(quest);
+            return changed.Count > 0;
         }
 
         /// <summary>Marks "avoid detection" objectives of active quests as failed.</summary>
         public void ReportDetected()
         {
+            var changed = new List<QuestProgress>();
             foreach (QuestProgress quest in _quests.Values)
             {
                 if (quest.Status != QuestStatus.Active) continue;
-                bool changed = false;
+                bool failed = false;
                 foreach (ObjectiveProgress objective in quest.Objectives)
                 {
                     if (objective.Definition.Type != ObjectiveType.AvoidDetection || objective.Failed) continue;
                     objective.Failed = true;
-                    changed = true;
+                    failed = true;
                 }
 
-                if (changed) QuestUpdated?.Invoke(quest);
+                if (failed) changed.Add(quest);
             }
+
+            foreach (QuestProgress quest in changed) QuestUpdated?.Invoke(quest);
         }
 
-        /// <summary>Completes the quest if its required objectives are done. Failed stealth objectives only forfeit bonus rewards.</summary>
+        /// <summary>
+        /// Completes the quest if its required objectives are done (failed stealth objectives only forfeit bonus rewards),
+        /// then starts its follow-up quest, if any: the main story is a chain, one quest per level.
+        /// </summary>
         public bool TryComplete(string questId)
         {
             QuestProgress quest = Get(questId);
@@ -155,6 +161,7 @@ namespace RootAccess.Systems
                 if (objective.Definition.Type == ObjectiveType.AvoidDetection && !objective.Failed)
                     objective.Count = objective.Definition.RequiredCount;
             QuestCompleted?.Invoke(quest);
+            Start(quest.Definition.FollowUpQuest);
             return true;
         }
 
