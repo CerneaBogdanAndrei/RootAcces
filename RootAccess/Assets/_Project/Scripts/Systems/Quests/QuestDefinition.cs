@@ -51,6 +51,8 @@ namespace RootAccess.Systems
         [SerializeField] private ObjectiveDefinition[] objectives = new ObjectiveDefinition[0];
         [SerializeField, Min(0)] private int rewardCredits;
         [SerializeField, Min(0)] private int rewardXp;
+        [SerializeField, Tooltip("Started automatically when this quest completes (main story chain).")]
+        private QuestDefinition followUpQuest;
 
         public string QuestId => questId;
         public string Title => title;
@@ -59,6 +61,7 @@ namespace RootAccess.Systems
         public ObjectiveDefinition[] Objectives => objectives;
         public int RewardCredits => rewardCredits;
         public int RewardXp => rewardXp;
+        public QuestDefinition FollowUpQuest => followUpQuest;
 
         public void Configure(string id, string questTitle, string desc, bool mainStory, int credits, int xp,
             params ObjectiveDefinition[] questObjectives)
@@ -71,5 +74,8 @@ namespace RootAccess.Systems
             rewardXp = xp;
             objectives = questObjectives ?? new ObjectiveDefinition[0];
         }
+
+        /// <summary>Chains this quest to the next one; null ends the chain.</summary>
+        public void SetFollowUp(QuestDefinition next) => followUpQuest = next == this ? null : next;
     }
 }

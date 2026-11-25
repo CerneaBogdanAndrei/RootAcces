@@ -9,17 +9,21 @@ namespace RootAccess.AI
         Suspicious,
         Chase,
         Search,
-        Return
+        Return,
+        Investigate
     }
 
     /// <summary>
     /// Patrolling guard: Patrol → Suspicious → Chase → Search → Return, driven by an awareness meter fed by its
-    /// vision cone. Melee hits resolve on the attack animation's hit frame (Animation Event).
+    /// vision cone. Player noises (<see cref="PlayerNoise"/>) send it to Investigate; a raised alarm inside its response
+    /// radius sends it to Search at the alarm. Melee hits resolve on the attack animation's hit frame (Animation Event);
+    /// ranged guards (sniper) fire pooled projectiles instead.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public sealed class Guard : MonoBehaviour, IEmpTarget
     {
         private const float EmpStunFraction = 0.5f;
+        private const float EarHeight = 1.2f;
 
         [SerializeField] private GuardConfig config;
         [SerializeField] private VisionCone vision;
@@ -29,6 +33,8 @@ namespace RootAccess.AI
         [SerializeField] private SpriteRenderer alertIcon;
         [SerializeField] private Color suspiciousColor = new(1f, 0.85f, 0.2f);
         [SerializeField] private Color alertColor = new(1f, 0.2f, 0.25f);
+        [SerializeField, Tooltip("Ranged guards only.")] private Projectile projectilePrefab;
+        [SerializeField, Tooltip("Ranged guards only: where projectiles leave the rifle.")] private Transform muzzle;
 
         private readonly StateMachine _fsm = new();
         private GuardPatrolState _patrol;
@@ -36,7 +42,9 @@ namespace RootAccess.AI
         private GuardChaseState _chase;
         private GuardSearchState _search;
         private GuardReturnState _return;
+        private GuardInvestigateState _investigate;
         private Rigidbody2D _body;
+        private PoolService _pool;
         private float _attackReadyAt;
         private float _stunnedUntil;
         private bool _attackPending;
@@ -50,6 +58,9 @@ namespace RootAccess.AI
         public int Facing { get; private set; } = 1;
         public Vector2 Position => _body.position;
         public IPlayerTarget Target { get; private set; }
+
+        /// <summary>Where the last heard noise came from (the Investigate state walks there).</summary>
+        public Vector2 NoisePosition { get; private set; }
 
         /// <summary>An EMP fries the guard's visor: blind and dazed for a fraction of the blast duration.</summary>
         public bool IsEmpDisabled => Time.time < _stunnedUntil;
@@ -75,10 +86,58 @@ namespace RootAccess.AI
             _chase = new GuardChaseState(this);
             _search = new GuardSearchState(this);
             _return = new GuardReturnState(this);
+            _investigate = new GuardInvestigateState(this);
             _fsm.StateChanged += (_, current) => StateId = ((GuardStateBase)current).Id;
         }
 
-        private void Start() => _fsm.ChangeState(_patrol);
+        private void Start()
+        {
+            ServiceLocator.TryGet(out _pool);
+            _fsm.ChangeState(_patrol);
+        }
+
+        private void OnEnable()
+        {
+            EventBus<PlayerNoise>.Subscribe(OnPlayerNoise);
+            EventBus<AlarmRaised>.Subscribe(OnAlarmRaised);
+        }
+
+        private void OnDisable()
+        {
+            EventBus<PlayerNoise>.Unsubscribe(OnPlayerNoise);
+            EventBus<AlarmRaised>.Unsubscribe(OnAlarmRaised);
+        }
+
+        /// <summary>
+        /// Hears a player noise unless busy chasing or stunned. Walls between the guard and the noise muffle it
+        /// (<see cref="Hearing.OcclusionFactor"/>). Already searching guards simply retarget.
+        /// </summary>
+        internal void OnPlayerNoise(PlayerNoise noise)
+        {
+            if (!isActiveAndEnabled || _body == null || IsEmpDisabled || StateId == GuardStateId.Chase) return;
+            Vector2 ears = _body.position + Vector2.up * EarHeight;
+            bool occluded = Physics2D.Linecast(ears, noise.Position + Vector2.up * 0.2f, Layers.ObstacleMask).collider != null;
+            if (!Hearing.CanHear(ears, noise.Position, noise.Radius, occluded, config.HearingSensitivity)) return;
+
+            NoisePosition = noise.Position;
+            if (StateId == GuardStateId.Search)
+            {
+                LastKnownPlayerPosition = noise.Position;
+                return;
+            }
+
+            if (StateId != GuardStateId.Investigate) ChangeState(GuardStateId.Investigate);
+            else _investigate.Retarget();
+        }
+
+        /// <summary>An alarm (camera, motion sensor) inside the response radius makes the guard search its position.</summary>
+        internal void OnAlarmRaised(AlarmRaised alarm)
+        {
+            if (!isActiveAndEnabled || _body == null || IsEmpDisabled || StateId == GuardStateId.Chase) return;
+            if (Vector2.Distance(_body.position, alarm.Position) > config.AlarmResponseRadius) return;
+            LastKnownPlayerPosition = alarm.Position;
+            if (StateId != GuardStateId.Search) ChangeState(GuardStateId.Search);
+        }
 
         public void ApplyEmp(float seconds)
         {
@@ -140,6 +199,7 @@ namespace RootAccess.AI
                 GuardStateId.Suspicious => _suspicious,
                 GuardStateId.Chase => _chase,
                 GuardStateId.Search => _search,
+                GuardStateId.Investigate => _investigate,
                 _ => _return
             };
             _fsm.ChangeState(next);
@@ -185,6 +245,14 @@ namespace RootAccess.AI
         {
             if (Target == null || Time.time < _attackReadyAt) return;
             if (Vector2.Distance(Target.Position, _body.position) > config.AttackRange) return;
+            if (config.Ranged)
+            {
+                if (!CanSeePlayer) return;
+                _attackReadyAt = Time.time + config.AttackCooldown;
+                Shoot();
+                return;
+            }
+
             _attackReadyAt = Time.time + config.AttackCooldown;
             _attackPending = true;
             if (animator != null) animator.SetTrigger(AnimatorParams.Attack);
@@ -200,6 +268,19 @@ namespace RootAccess.AI
             if (Vector2.Distance(Target.Position, _body.position) > config.AttackRange * 1.3f) return;
             if (Target.Transform.TryGetComponent(out IDamageable damageable))
                 damageable.TakeDamage(new DamageInfo(config.AttackDamage, _body.position, 7f, DamageType.Contact));
+        }
+
+        private void Shoot()
+        {
+            if (projectilePrefab == null || _pool == null) return;
+            Vector2 origin = muzzle != null ? (Vector2)muzzle.position : _body.position + Vector2.up * EarHeight;
+            Vector2 aim = Target.Position + Vector2.up * 0.6f - origin;
+            Face(aim.x >= 0f ? 1 : -1);
+            Projectile projectile = _pool.Spawn(projectilePrefab, origin, Quaternion.identity);
+            if (projectile == null) return;
+            projectile.Launch(aim, gameObject);
+            EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.TurretShot, origin));
+            if (animator != null) animator.SetTrigger(AnimatorParams.Attack);
         }
 
         private bool IsBlocked(int direction)
@@ -221,7 +302,7 @@ namespace RootAccess.AI
             }
 
             if (alertIcon == null) return;
-            bool show = StateId is GuardStateId.Suspicious or GuardStateId.Chase or GuardStateId.Search;
+            bool show = StateId is GuardStateId.Suspicious or GuardStateId.Chase or GuardStateId.Search or GuardStateId.Investigate;
             alertIcon.enabled = show;
             if (show) alertIcon.color = StateId == GuardStateId.Chase ? alertColor : suspiciousColor;
         }

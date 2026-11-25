@@ -39,6 +39,16 @@ namespace RootAccess.Core
         void TakeDamage(in DamageInfo damage);
     }
 
+    /// <summary>
+    /// Something that can fall into a pit and be put back on solid ground (the player). Pits cost health instead of
+    /// killing outright, so a missed jump between rooftops is a setback, not a restart.
+    /// </summary>
+    public interface IFallRecoverable
+    {
+        /// <summary>Takes <paramref name="damage"/>; if still alive, reappears at <paramref name="safePosition"/>.</summary>
+        void RecoverFromFall(int damage, Vector3 safePosition);
+    }
+
     /// <summary>Anything a terminal (or EMP) can affect: doors, cameras, lights, elevators, network nodes.</summary>
     public interface IHackable
     {

@@ -4,23 +4,37 @@ using UnityEngine;
 
 namespace RootAccess.Gameplay
 {
-    /// <summary>Hub fast travel: teleports the player out (dissolve + particles) and loads an unlocked level.</summary>
+    /// <summary>
+    /// Hub fast travel. With a list of <see cref="destinations"/> it opens the terminal's Travel tab (every level, locked
+    /// ones greyed out); with a single <see cref="destination"/> it teleports the player out (dissolve + particles) and
+    /// loads that level directly.
+    /// </summary>
     public sealed class FastTravelTerminal : HubConsole
     {
         [SerializeField] private LevelDefinition destination;
+        [SerializeField, Tooltip("Non-empty: open the Travel tab with these levels instead of travelling directly.")]
+        private LevelDefinition[] destinations = new LevelDefinition[0];
         [SerializeField] private string arrivalSpawnId;
         [SerializeField] private float departDelay = 0.6f;
 
         private float _loadAt = -1f;
 
-        public override string Prompt => destination != null
+        private bool OpensTravelTab => destinations is { Length: > 0 };
+
+        public override string Prompt => !OpensTravelTab && destination != null
             ? string.Format(Strings.Hub.TargetSuffix, Strings.Prompts.FastTravel, destination.DisplayName)
             : Strings.Prompts.FastTravel;
 
-        public override bool CanInteract(IInteractor interactor) => destination != null && _loadAt < 0f;
+        public override bool CanInteract(IInteractor interactor) => (OpensTravelTab || destination != null) && _loadAt < 0f;
 
         protected override void Use(IInteractor interactor)
         {
+            if (OpensTravelTab)
+            {
+                EventBus<TerminalScreenRequested>.Publish(new TerminalScreenRequested(TerminalTab.Travel, destinations: destinations));
+                return;
+            }
+
             bool unlocked = destination.UnlockedByDefault ||
                             (TryGetSession(out SessionService session) && session.Session.IsLevelUnlocked(destination.LevelId));
             if (!unlocked)

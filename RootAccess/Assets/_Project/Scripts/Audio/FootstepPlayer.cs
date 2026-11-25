@@ -16,6 +16,8 @@ namespace RootAccess.Audio
         [SerializeField] private bool silent;
         [SerializeField, Tooltip("Player only: the 'silent steps' skill makes these footsteps much quieter.")]
         private bool silencedBySkill;
+        [SerializeField, Tooltip("Player only: footsteps publish a PlayerNoise that guards can hear (radius x volume).")]
+        private float noiseRadius;
 
         private const float SilentStepsVolume = 0.3f;
 
@@ -35,6 +37,17 @@ namespace RootAccess.Audio
                 ? SilentStepsVolume
                 : 1f;
             EventBus<FootstepRequested>.Publish(new FootstepRequested(surface, origin, volume));
+            if (noiseRadius > 0f) EventBus<PlayerNoise>.Publish(new PlayerNoise(origin, noiseRadius * volume * SurfaceLoudness(surface)));
         }
+
+        /// <summary>Metal and glass ring out, grass muffles: the surface scales how far a footstep carries.</summary>
+        public static float SurfaceLoudness(SurfaceType surface) => surface switch
+        {
+            SurfaceType.Metal => 1.25f,
+            SurfaceType.Glass => 1.2f,
+            SurfaceType.Grass => 0.6f,
+            SurfaceType.Water => 1.1f,
+            _ => 1f
+        };
     }
 }

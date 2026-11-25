@@ -148,4 +148,70 @@ namespace RootAccess.AI
             if (Owner.MoveTowardsX(targetX, Owner.Config.PatrolSpeed)) Owner.ChangeState(GuardStateId.Patrol);
         }
     }
+
+    /// <summary>
+    /// Walks to a heard noise, looks both ways for a few seconds and returns to the route. Seeing the player on the way
+    /// hands over to Suspicious (awareness keeps filling from the vision cone).
+    /// </summary>
+    public sealed class GuardInvestigateState : GuardStateBase
+    {
+        private const float GiveUpSeconds = 12f;
+        private const float SpeedMultiplier = 1.3f;
+        private const float ArriveTolerance = 0.5f;
+
+        private float _arrivedAt = -1f;
+        private float _nextTurn;
+        private float _startedAt;
+
+        public GuardInvestigateState(Guard owner) : base(owner) { }
+        public override GuardStateId Id => GuardStateId.Investigate;
+
+        public override void Enter()
+        {
+            Retarget();
+            EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.Spotted, Owner.transform.position, true, 0.4f));
+        }
+
+        /// <summary>A new noise while investigating: walk to the new spot and restart the look-around timer.</summary>
+        public void Retarget()
+        {
+            _arrivedAt = -1f;
+            _startedAt = Time.time;
+            float dx = Owner.NoisePosition.x - Owner.Position.x;
+            if (Mathf.Abs(dx) > 0.1f) Owner.Face(dx > 0f ? 1 : -1);
+        }
+
+        public override void Tick(float deltaTime)
+        {
+            if (Owner.CanSeePlayer && Owner.Awareness > 0.05f)
+            {
+                Owner.ChangeState(GuardStateId.Suspicious);
+                return;
+            }
+
+            bool lookedLongEnough = _arrivedAt >= 0f && Time.time - _arrivedAt >= Owner.Config.InvestigateSeconds;
+            if (lookedLongEnough || Time.time - _startedAt >= GiveUpSeconds)
+            {
+                Owner.ChangeState(GuardStateId.Return);
+                return;
+            }
+
+            if (_arrivedAt < 0f || Time.time < _nextTurn) return;
+            _nextTurn = Time.time + 1f;
+            Owner.Face(-Owner.Facing);
+        }
+
+        public override void FixedTick(float deltaTime)
+        {
+            if (_arrivedAt >= 0f)
+            {
+                Owner.Stop();
+                return;
+            }
+
+            if (!Owner.MoveTowardsX(Owner.NoisePosition.x, Owner.Config.PatrolSpeed * SpeedMultiplier, ArriveTolerance)) return;
+            _arrivedAt = Time.time;
+            _nextTurn = Time.time + 0.8f;
+        }
+    }
 }

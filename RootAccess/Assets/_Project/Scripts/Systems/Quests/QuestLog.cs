@@ -145,7 +145,10 @@ namespace RootAccess.Systems
             }
         }
 
-        /// <summary>Completes the quest if its required objectives are done. Failed stealth objectives only forfeit bonus rewards.</summary>
+        /// <summary>
+        /// Completes the quest if its required objectives are done (failed stealth objectives only forfeit bonus rewards),
+        /// then starts its follow-up quest, if any: the main story is a chain, one quest per level.
+        /// </summary>
         public bool TryComplete(string questId)
         {
             QuestProgress quest = Get(questId);
@@ -155,6 +158,7 @@ namespace RootAccess.Systems
                 if (objective.Definition.Type == ObjectiveType.AvoidDetection && !objective.Failed)
                     objective.Count = objective.Definition.RequiredCount;
             QuestCompleted?.Invoke(quest);
+            Start(quest.Definition.FollowUpQuest);
             return true;
         }
 

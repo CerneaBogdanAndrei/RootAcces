@@ -56,6 +56,10 @@ namespace RootAccess.Player
         public event Action Jumped;
         public event Action Landed;
 
+        /// <summary>How far a hard landing carries (world units), from the softest counted impact to terminal velocity.</summary>
+        private const float LandingNoiseMin = 4f;
+        private const float LandingNoiseMax = 9f;
+
         internal Rigidbody2D Body { get; private set; }
         internal CapsuleCollider2D Capsule { get; private set; }
         internal PlayerSensors Sensors { get; private set; }
@@ -185,6 +189,8 @@ namespace RootAccess.Player
             EventBus<ScreenShakeRequested>.Publish(new ScreenShakeRequested(Mathf.InverseLerp(config.LandingImpactSpeed, config.MaxFallSpeed, -_previousVelocityY) + 0.4f));
             EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.LandingDust, feet));
             EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.Land, feet));
+            float impact = Mathf.InverseLerp(config.LandingImpactSpeed, config.MaxFallSpeed, -_previousVelocityY);
+            EventBus<PlayerNoise>.Publish(new PlayerNoise(feet, Mathf.Lerp(LandingNoiseMin, LandingNoiseMax, impact)));
         }
 
         internal void ChangeState(PlayerStateId id) => _fsm.ChangeState(StateFor(id));
