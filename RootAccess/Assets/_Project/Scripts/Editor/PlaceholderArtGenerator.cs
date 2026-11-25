@@ -326,6 +326,23 @@ namespace RootAccess.EditorTools
             ac.Rect(0, 0, 48, 28, new Color32(120, 126, 136, 255)).Circle(16, 14, 9, new Color32(60, 64, 72, 255)).Rect(30, 6, 14, 2, new Color32(80, 84, 92, 255)).Rect(30, 12, 14, 2, new Color32(80, 84, 92, 255));
             SaveSprite("rooftop_ac", ac.Outline(Outline), new Vector2(0.5f, 0f), withNormal: true);
             SaveSprite("antenna", new PixelCanvas(16, 64).Rect(7, 0, 2, 60, new Color32(90, 96, 110, 255)).Circle(8, 60, 3, Magenta), new Vector2(0.5f, 0f));
+
+            // Server farm rack: blade slots with status LEDs (Level03 / Level05 decor).
+            var rack = new PixelCanvas(48, 96);
+            rack.Rect(0, 0, 48, 96, new Color32(34, 38, 48, 255)).Rect(3, 3, 42, 90, new Color32(22, 25, 32, 255));
+            for (int y = 8, row = 0; y < 88; y += 10, row++)
+            {
+                rack.Rect(6, y, 36, 6, new Color32(52, 58, 70, 255)).Rect(9, y + 2, 3, 2, Cyan);
+                rack.Rect(15, y + 2, 3, 2, row % 3 == 0 ? Magenta : Cyan).Rect(28, y + 2, 11, 1, new Color32(90, 96, 110, 255));
+            }
+
+            SaveSprite("server_rack", rack.Noise(0.02f, 7).Outline(Outline), new Vector2(0.5f, 0f), withNormal: true);
+
+            // Sewer pipe segment, tiled along the walls of Level04.
+            var pipe = new PixelCanvas(32, 16);
+            pipe.Rect(0, 2, 32, 12, new Color32(70, 92, 74, 255)).Rect(0, 10, 32, 2, new Color32(110, 140, 112, 255))
+                .Rect(0, 2, 32, 2, new Color32(40, 54, 44, 255)).Rect(14, 0, 4, 16, new Color32(56, 74, 60, 255));
+            SaveSprite("sewer_pipe", pipe.Noise(0.04f, 11).Outline(Outline), new Vector2(0.5f, 0.5f), withNormal: true);
         }
 
         private static PixelCanvas PaintSkyline(int width, int height, int seed, Color32 color, float windowDensity)

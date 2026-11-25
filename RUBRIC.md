@@ -23,7 +23,7 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 | 1 | Mișcare / săritură | ✅ (înot: 🟡) | Level01 `l1_movement` | `room_01` |
 | 2 | Materiale / texturi | ✅ | RubricShowcase `room_02` | `room_02` |
 | 3 | Mediu: copaci / iarbă | 🟡 | Level01 `l1_park` | `room_03` |
-| 4 | Apă / skybox | 🟡 | RubricShowcase `room_04` | `room_04` |
+| 4 | Apă / skybox | ✅ | Level04 `l4_water` | `room_04` |
 | 5 | Lumini / cameră | ✅ | Hub `hub_center` | `room_05` |
 | 6 | Prefab-uri | ✅ | RubricShowcase `room_06` | `room_06` |
 | 7 | Particule / teleportare | ✅ | Level01 `l1_nodes` | `room_07` |
@@ -82,15 +82,22 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 - **Demonstrație:** F1 → 3 → Mergi. Copacii se leagănă, iar iarba se îndoaie când alergi prin ea. Intră în WindZone (rafală)
   și urmărește straturile parallax din fundal.
 
-## 4. Apă / skybox (opțional) 🟡
+## 4. Apă / skybox (opțional) ✅
 
-- **Scene:** `RubricShowcase` camera 4 (bazin cu lăzi care plutesc), `MainMenu` și `Level01_Rooftops` (skybox de noapte).
-- **Prefab-uri:** `Environment/WaterBody.prefab` (WaterBody2D + BuoyancyEffector2D + trigger), `VFX/VFX_Splash.prefab`.
-- **Scripturi:** `Gameplay/World/WaterBody2D.cs` (suprafață cu arcuri, valuri la intrare), `Player/States/PlayerSwimState.cs`,
+- **Scene:** `Level04_Sewers` (bazine, ziduri sub care te scufunzi, puțul cu stavilă: spawn `l4_water`, `l4_sluice`),
+  `RubricShowcase` camera 4 (bazin cu lăzi care plutesc), `MainMenu` și `Level01_Rooftops` (skybox de noapte).
+- **Prefab-uri:** `Environment/WaterBody.prefab` (WaterBody2D + BuoyancyEffector2D + trigger, material `M_WaterDistortion`),
+  `VFX/VFX_Splash.prefab`.
+- **Shader Graph:** `SG_WaterDistortion` (Sprite Unlit): eșantionează `_CameraSortingLayerTexture` (tot ce a desenat
+  rendererul 2D până la layer-ul Characters) la coordonate de ecran deformate de zgomot care curge în timp, apoi colorează
+  cu gradientul suprafeței (refracție reală: lăzile și jucătorul se văd deformați prin apă). Rendererul 2D are
+  „Camera Sorting Layer Texture” activat de `AssetFactory`.
+- **Scripturi:** `Gameplay/World/WaterBody2D.cs` (suprafață cu arcuri, valuri la intrare, `SetDepth` pentru inundare),
+  `Gameplay/World/FloodControl.cs` (stavila: apa urcă până sub marginea puțului), `Player/States/PlayerSwimState.cs`,
   `Audio/MixerSnapshots.cs` (snapshot Underwater), `VFX/SkyboxBackdrop.cs` (skybox real randat în spatele scenei 2D).
-- **Ce lipsește:** shaderul de distorsiune subacvatică și nivelul Sewers (**P4**). Skybox-ul e gata.
-- **Demonstrație:** Prezentare barem → camera 4. Sari în apă (stropi, valuri, sunet înăbușit), înoată, lăzile plutesc și se
-  balansează. Apoi Esc → meniu principal pentru skybox-ul de noapte (cerul cu stele din spatele meniului).
+- **Demonstrație:** F1 → 4 → Mergi (canalizarea). Sari în apă (stropi, valuri, sunet înăbușit), privește lăzile deformate
+  prin apă, scufundă-te pe sub zid; la `l4_sluice` sparge terminalul stavilei și urcă odată cu apa. Apoi Esc → meniu
+  principal pentru skybox-ul de noapte.
 
 ## 5. Lumini / cameră (obligatoriu) ✅
 

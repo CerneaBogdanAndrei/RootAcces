@@ -29,8 +29,12 @@ namespace RootAccess.Gameplay
         private Vector3[] _vertices;
         private Mesh _mesh;
         private BoxCollider2D _volume;
+        private BuoyancyEffector2D _buoyancy;
+        private readonly System.Collections.Generic.HashSet<IWaterAffectable> _swimmers = new();
 
         public float SurfaceY => transform.position.y + depth * 0.5f;
+        public float Depth => depth;
+        public float BottomY => transform.position.y - depth * 0.5f;
 
         private void Awake()
         {
@@ -38,6 +42,7 @@ namespace RootAccess.Gameplay
             _volume.isTrigger = true;
             _volume.size = new Vector2(width, depth);
             _volume.offset = Vector2.zero;
+            TryGetComponent(out _buoyancy);
 
             _heights = new float[columns];
             _velocities = new float[columns];
@@ -108,7 +113,9 @@ namespace RootAccess.Gameplay
             }
 
             IWaterAffectable swimmer = other.GetComponentInParent<IWaterAffectable>();
-            swimmer?.EnterWater(new WaterVolumeInfo(SurfaceY, density, _volume));
+            if (swimmer == null) return;
+            _swimmers.Add(swimmer);
+            swimmer.EnterWater(new WaterVolumeInfo(SurfaceY, density, _volume));
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -116,7 +123,26 @@ namespace RootAccess.Gameplay
             Rigidbody2D body = other.attachedRigidbody;
             if (body != null) Splash(other.transform.position.x, body.linearVelocity.y * 0.5f);
             IWaterAffectable swimmer = other.GetComponentInParent<IWaterAffectable>();
-            swimmer?.ExitWater(_volume);
+            if (swimmer == null) return;
+            _swimmers.Remove(swimmer);
+            swimmer.ExitWater(_volume);
+        }
+
+        /// <summary>
+        /// Raises or lowers the water with the bottom kept in place (sluice / flood puzzles): moves the volume, resizes the
+        /// trigger and the buoyancy surface, rebuilds the mesh and tells every swimmer inside about the new surface.
+        /// </summary>
+        public void SetDepth(float newDepth)
+        {
+            newDepth = Mathf.Max(0.2f, newDepth);
+            if (Mathf.Approximately(newDepth, depth)) return;
+            float bottom = BottomY;
+            depth = newDepth;
+            transform.position = new Vector3(transform.position.x, bottom + depth * 0.5f, transform.position.z);
+            if (_volume != null) _volume.size = new Vector2(width, depth);
+            if (_buoyancy != null) _buoyancy.surfaceLevel = depth * 0.5f;
+            if (_mesh != null) UpdateMesh();
+            foreach (IWaterAffectable swimmer in _swimmers) swimmer.UpdateWaterSurface(SurfaceY);
         }
 
         private void BuildMesh()

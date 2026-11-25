@@ -52,6 +52,15 @@ namespace RootAccess.EditorTools
             ctx.Dissolve = Mat("M_Dissolve", ShaderGraphFactory.ShaderName(ShaderGraphFactory.Dissolve));
             ctx.GrassWind = Mat("M_GrassWind", ShaderGraphFactory.ShaderName(ShaderGraphFactory.GrassWind));
             ctx.Water = Mat("M_Water", WaterShader);
+            ctx.WaterDistortion = Mat("M_WaterDistortion", ShaderGraphFactory.ShaderName(ShaderGraphFactory.WaterDistortion), m =>
+            {
+                m.SetColor("_Tint", new Color(0.55f, 0.85f, 1f, 1f));
+                m.SetFloat("_Strength", 0.012f);
+                m.SetFloat("_Speed", 0.6f);
+                m.SetFloat("_NoiseScale", 2.5f);
+                m.SetFloat("_Glow", 0.35f);
+            });
+            CaptureBehindWater();
             Texture2D soft = GeneratedArt.Sprite("soft_circle").texture;
             ctx.ParticlesAdditive = Mat("M_ParticlesAdditive", ParticlesShader, m => m.SetTexture("_MainTex", soft));
             ctx.ParticlesAlpha = Mat("M_ParticlesAlpha", SpriteUnlitShader, m => m.SetTexture("_MainTex", GeneratedArt.Sprite("smoke").texture));
@@ -76,6 +85,22 @@ namespace RootAccess.EditorTools
                 ctx.NoFriction = new PhysicsMaterial2D("PM_NoFriction") { friction = 0f, bounciness = 0f };
                 AssetDatabase.CreateAsset(ctx.NoFriction, physicsPath);
             }
+        }
+
+        /// <summary>
+        /// The water distortion graph samples the 2D renderer's camera sorting layer texture: capture everything up to the
+        /// Characters layer (background, level, crates, the swimming player); water itself draws later, in Foreground.
+        /// </summary>
+        private static void CaptureBehindWater()
+        {
+            var renderer = AssetDatabase.LoadAssetAtPath<Renderer2DData>(EditorPaths.UrpRenderer2D);
+            if (renderer == null) throw new System.InvalidOperationException($"Renderer2DData missing at {EditorPaths.UrpRenderer2D} (run ProjectSetup).");
+            EditorAssetUtil.SetFields(renderer, so =>
+            {
+                so.Require("m_UseCameraSortingLayersTexture").boolValue = true;
+                so.Require("m_CameraSortingLayersTextureBound").intValue = SortingLayer.NameToID(SortingLayers.Characters);
+            });
+            EditorUtility.SetDirty(renderer);
         }
 
         private static Material Mat(string name, string shaderName, System.Action<Material> configure = null)
@@ -142,8 +167,29 @@ namespace RootAccess.EditorTools
                 new ObjectiveDefinition("hack_vault", SeedContent.Quests.OfficeVault, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel02Vault),
                 new ObjectiveDefinition("reach_exit_l2", SeedContent.Quests.OfficeExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel02),
                 new ObjectiveDefinition("stealth_l2", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
+            ctx.FarmQuest = Quest(SeedContent.Ids.MainQuestLevel03, SeedContent.Quests.FarmTitle, SeedContent.Quests.FarmDesc, true, 450, 260,
+                new ObjectiveDefinition("reach_l3", SeedContent.Quests.FarmReach, ObjectiveType.Reach, SeedContent.Ids.Level03),
+                new ObjectiveDefinition("hack_core", SeedContent.Quests.FarmCore, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel03Core),
+                new ObjectiveDefinition("reach_exit_l3", SeedContent.Quests.FarmExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel03),
+                new ObjectiveDefinition("stealth_l3", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
+            ctx.SewersQuest = Quest(SeedContent.Ids.MainQuestLevel04, SeedContent.Quests.SewersTitle, SeedContent.Quests.SewersDesc, true, 450, 260,
+                new ObjectiveDefinition("reach_l4", SeedContent.Quests.SewersReach, ObjectiveType.Reach, SeedContent.Ids.Level04),
+                new ObjectiveDefinition("hack_sluice", SeedContent.Quests.SewersSluice, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel04Sluice),
+                new ObjectiveDefinition("reach_exit_l4", SeedContent.Quests.SewersExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel04),
+                new ObjectiveDefinition("stealth_l4", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
+            ctx.HqQuest = Quest(SeedContent.Ids.MainQuestLevel05, SeedContent.Quests.HqTitle, SeedContent.Quests.HqDesc, true, 1000, 400,
+                new ObjectiveDefinition("reach_l5", SeedContent.Quests.HqReach, ObjectiveType.Reach, SeedContent.Ids.Level05),
+                new ObjectiveDefinition("hack_exec_elevator", SeedContent.Quests.HqElevator, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel05Elevator),
+                new ObjectiveDefinition("hack_mainframe", SeedContent.Quests.HqMainframe, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel05Mainframe),
+                new ObjectiveDefinition("reach_exit_l5", SeedContent.Quests.HqExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel05),
+                new ObjectiveDefinition("stealth_l5", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
             ctx.MainQuest.SetFollowUp(ctx.OfficeQuest);
-            EditorUtility.SetDirty(ctx.MainQuest);
+            ctx.OfficeQuest.SetFollowUp(ctx.FarmQuest);
+            ctx.FarmQuest.SetFollowUp(ctx.SewersQuest);
+            ctx.SewersQuest.SetFollowUp(ctx.HqQuest);
+            ctx.HqQuest.SetFollowUp(null);
+            foreach (QuestDefinition quest in new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest })
+                EditorUtility.SetDirty(quest);
             ctx.GhostQuest = Quest(SeedContent.Ids.GhostQuest, SeedContent.Quests.GhostTitle, SeedContent.Quests.GhostDesc, false, 200, 120,
                 new ObjectiveDefinition("ghost_exit", SeedContent.Quests.GhostExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel01),
                 new ObjectiveDefinition("ghost_stealth", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty));
@@ -169,12 +215,22 @@ namespace RootAccess.EditorTools
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office1),
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office2),
                 new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Office3));
+            ctx.Level03Intro = Dialogue("dlg_level03_intro",
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Farm1),
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Farm2));
+            ctx.Level04Intro = Dialogue("dlg_level04_intro",
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Sewers1),
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Sewers2));
+            ctx.Level05Intro = Dialogue("dlg_level05_intro",
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq1),
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq2),
+                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Hq3));
 
             ctx.Database = EditorAssetUtil.LoadOrCreateAsset<GameDatabase>(EditorPaths.ScriptableObjects + "/GameDatabase.asset");
             EditorAssetUtil.SetFields(ctx.Database, so =>
             {
                 so.Require("items").objectReferenceValue = itemDb;
-                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.SideQuest, ctx.GhostQuest });
+                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest, ctx.SideQuest, ctx.GhostQuest });
                 so.SetArray("skills", ctx.Skills);
                 so.SetArray("levels", ctx.Levels);
                 so.Require("startingQuest").objectReferenceValue = ctx.MainQuest;
@@ -263,6 +319,9 @@ namespace RootAccess.EditorTools
             ctx.HubProfile = Profile("VP_Hub", new Color(1f, 0.88f, 0.95f), 0.9f);
             ctx.Level01Profile = Profile("VP_Level01_Rooftops", new Color(0.82f, 0.92f, 1f), 0.8f);
             ctx.Level02Profile = Profile("VP_Level02_Office", new Color(0.9f, 0.95f, 1f), 0.75f);
+            ctx.Level03Profile = Profile("VP_Level03_ServerFarm", new Color(0.75f, 0.92f, 1f), 1f);
+            ctx.Level04Profile = Profile("VP_Level04_Sewers", new Color(0.78f, 1f, 0.85f), 0.7f);
+            ctx.Level05Profile = Profile("VP_Level05_HQ", new Color(1f, 0.88f, 0.8f), 0.95f);
             ctx.ShowcaseProfile = Profile("VP_RubricShowcase", Color.white, 0.8f);
         }
 
@@ -343,7 +402,7 @@ namespace RootAccess.EditorTools
                 new RubricEntry(Strings.Rubric.Movement, SeedContent.Rubric.Movement, SceneNames.Level01, "l1_movement"),
                 new RubricEntry(Strings.Rubric.Materials, SeedContent.Rubric.Materials, SceneNames.RubricShowcase, "room_02"),
                 new RubricEntry(Strings.Rubric.Environment, SeedContent.Rubric.Environment, SceneNames.Level01, "l1_park"),
-                new RubricEntry(Strings.Rubric.Water, SeedContent.Rubric.Water, SceneNames.RubricShowcase, "room_04"),
+                new RubricEntry(Strings.Rubric.Water, SeedContent.Rubric.Water, SceneNames.Level04, "l4_water"),
                 new RubricEntry(Strings.Rubric.Lighting, SeedContent.Rubric.Lighting, SceneNames.Hub, "hub_center"),
                 new RubricEntry(Strings.Rubric.Prefabs, SeedContent.Rubric.Prefabs, SceneNames.RubricShowcase, "room_06"),
                 new RubricEntry(Strings.Rubric.Particles, SeedContent.Rubric.Particles, SceneNames.Level01, "l1_nodes"),

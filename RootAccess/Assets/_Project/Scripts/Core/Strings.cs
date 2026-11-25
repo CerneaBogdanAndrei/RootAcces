@@ -64,6 +64,7 @@ namespace RootAccess.Core
             public const string NoEmp = "Nu ai grenade EMP";
             public const string EmpDetonated = "EMP: {0} sisteme dezactivate";
             public const string ExtraAttempt = "Încercare suplimentară (abilitate)";
+            public const string SluiceOpened = "Stavila e deschisă: apa urcă";
         }
 
         public static class Panels
@@ -162,6 +163,7 @@ namespace RootAccess.Core
             public const string Turret = "Turelă";
             public const string Laser = "Laser";
             public const string MotionSensor = "Senzor de mișcare";
+            public const string Sluice = "Stavilă";
         }
 
         public static class Hacking

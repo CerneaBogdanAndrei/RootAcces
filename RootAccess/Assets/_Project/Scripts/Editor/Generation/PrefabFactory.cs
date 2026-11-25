@@ -600,7 +600,7 @@ namespace RootAccess.EditorTools
             buoyancy.angularDamping = 1f;
             water.AddComponent<MeshFilter>();
             var waterRenderer = water.AddComponent<MeshRenderer>();
-            waterRenderer.sharedMaterial = ctx.Water;
+            waterRenderer.sharedMaterial = ctx.WaterDistortion;
             waterRenderer.sortingLayerName = SortingLayers.Foreground;
             water.AddComponent<WaterBody2D>();
             Save(ctx, water, EditorPaths.PrefabsEnvironment);
@@ -652,6 +652,17 @@ namespace RootAccess.EditorTools
             ac.AddComponent<SurfaceTag>().SetSurface(SurfaceType.Metal);
             ShadowCaster(ac);
             Save(ctx, ac, EditorPaths.PrefabsEnvironment);
+
+            GameObject rack = Go("ServerRack", null, Layers.Default);
+            Sprite(rack, "server_rack", ctx.SpriteLit, SortingLayers.Environment, -1);
+            Light(rack.transform, "StatusGlow", Light2D.LightType.Point, new Color(0.3f, 0.9f, 1f), 0.45f, 2.2f, new Vector3(0f, 1.6f, 0f));
+            Save(ctx, rack, EditorPaths.PrefabsEnvironment);
+
+            GameObject pipe = Go("SewerPipe", null, Layers.Default);
+            SpriteRenderer pipeSprite = Sprite(pipe, "sewer_pipe", ctx.SpriteLit, SortingLayers.Environment, -1);
+            pipeSprite.drawMode = SpriteDrawMode.Tiled;
+            pipeSprite.size = new Vector2(8f, 0.5f);
+            Save(ctx, pipe, EditorPaths.PrefabsEnvironment);
 
             GameObject spawn = Go("SpawnPoint", null, Layers.Default);
             spawn.tag = Tags.SpawnPoint;

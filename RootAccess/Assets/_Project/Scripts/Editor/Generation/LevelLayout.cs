@@ -417,6 +417,127 @@ namespace RootAccess.EditorTools
             return this;
         }
 
+        /// <summary>
+        /// Flooded basin: the floor drops <paramref name="depth"/> tiles and the hole is full of water (springy surface,
+        /// buoyancy, crates that float). With <paramref name="dive"/> a wall hangs from the ceiling into the water, so the
+        /// only way on is to swim under it.
+        /// </summary>
+        public WaterBody2D WaterPool(int width, int depth, bool dive = false, int crates = 2)
+        {
+            Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - depth - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+            if (Indoor) Shell(0, width, Floor);
+            WaterBody2D water = Water(X + width * 0.5f, Floor - depth, width, depth - 0.5f);
+            for (int i = 0; i < crates; i++) Put("Crate", P(2f + i * (width - 4f) / Mathf.Max(1, crates - 1), 0.5f));
+            if (dive) Wall(width / 2 - 1, width / 2 + 1, -2, Indoor ? Ceiling : 8, _ctx.TileConcrete);
+            Advance(width);
+            Block(0, 2);
+            Advance(2);
+            return water;
+        }
+
+        /// <summary>
+        /// Sluice puzzle: a dry shaft whose far ledge is one tile higher than a double jump. Hacking the sluice terminal
+        /// floods the shaft until the surface sits just under the ledge; swim up and jump out. The floor stays raised
+        /// afterwards. A step inside the shaft lets the player climb back out before flooding it.
+        /// </summary>
+        public FloodControl FloodShaft(string terminalId, string spawnId = null, int shaftDepth = 6, int ledge = 6)
+        {
+            const int width = 10;
+            Block(0, 6);
+            if (spawnId != null) Spawn(spawnId, 1f);
+            Advance(6);
+            Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - shaftDepth - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+            if (Indoor) Shell(0, width, Floor + ledge);
+            if (Indoor) Fill(_scene.Backdrop, X, X + width - 1, Floor - shaftDepth, Floor + ledge - 1, _ctx.TileBrick);
+            Platform(1, 3, -3);
+            WaterBody2D water = Water(X + width * 0.5f, Floor - shaftDepth, width, 1f);
+            var control = PrefabFactory.Go("FloodControl", Hazards, Layers.Default, P(width * 0.5f, 0f)).AddComponent<FloodControl>();
+            EditorAssetUtil.SetFields(control, so =>
+            {
+                so.Require("water").objectReferenceValue = water;
+                so.Require("floodedDepth").floatValue = shaftDepth + ledge - 0.5f;
+            });
+            HackTerminal("Terminal", -2.5f, terminalId, "Terminal_Sluice", control);
+            Put("SewerPipe", P(width * 0.5f, ledge + 1.5f));
+            Advance(width);
+            Floor += ledge;
+            Block(0, 6);
+            Put("Pickup_Credits", P(2f, 0f));
+            Advance(6);
+            return control;
+        }
+
+        /// <summary>
+        /// Chain of server towers over a pit: each tower top has an arrival and a departure node, linked to the next
+        /// tower, so the way across is node → node → node; the last tower drops back down to the floor.
+        /// </summary>
+        public List<NetworkNode> NodeChain(int towers, string spawnId = null)
+        {
+            int[] heights = { 6, 9, 7, 10 };
+            var nodes = new List<NetworkNode>();
+            Block(0, 6);
+            if (spawnId != null) Spawn(spawnId, 1f);
+            GameObject departure = Put("NetworkNode", P(4f), Props, "NetworkNode_Chain_0");
+            Advance(6);
+            int floor = Floor;
+            int highest = 0;
+            for (int i = 0; i < towers; i++) highest = Mathf.Max(highest, heights[i % heights.Length]);
+            int ceiling = floor + highest + Mathf.Max(6, Ceiling - 3);
+            for (int i = 0; i < towers; i++)
+            {
+                Pit(0, 5, -2.5f, 0);
+                if (Indoor) ShellTo(0, 5, BaseY, ceiling);
+                Advance(5);
+                Floor = floor + heights[i % heights.Length];
+                Fill(_scene.Ground, X, X + 5, BaseY, Floor - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+                _maxTop = Mathf.Max(_maxTop, Floor);
+                if (Indoor) ShellTo(0, 6, Floor, ceiling);
+                GameObject arrival = Put("NetworkNode", P(1.2f), Props, $"NetworkNode_Chain_{i + 1}a");
+                SceneBuilder.LinkNodes(departure, arrival, false);
+                nodes.Add(departure.GetComponent<NetworkNode>());
+                nodes.Add(arrival.GetComponent<NetworkNode>());
+                if (i % 2 == 0) Put("ServerRack", P(3f));
+                Put("Pickup_Credits", P(3f, 0f));
+                if (i < towers - 1) departure = Put("NetworkNode", P(4.8f), Props, $"NetworkNode_Chain_{i + 1}b");
+                Advance(6);
+            }
+
+            Floor = floor;
+            Block(0, 4);
+            Advance(4);
+            return nodes;
+        }
+
+        /// <summary>Interior shell between explicit rows (used where neighbouring floors differ, e.g. the node towers).</summary>
+        private void ShellTo(int from, int to, int bottom, int ceiling)
+        {
+            Fill(_scene.Backdrop, X + from, X + to - 1, bottom, ceiling - 1, _ctx.TileBrick);
+            Fill(_scene.Walls, X + from, X + to - 1, ceiling, ceiling + 1, _ctx.TileConcrete);
+            _shells.Add((X + from, X + to - 1, ceiling + 2));
+            _maxTop = Mathf.Max(_maxTop, ceiling - Ceiling);
+        }
+
+        /// <summary>Decor along the back wall: server racks (Level03/05) or pipes (Level04), no colliders.</summary>
+        public void Dress(string prefab, int from, int to, int spacing, float height = 0f)
+        {
+            for (int x = from; x < to; x += spacing) Put(prefab, P(x + 0.5f, height));
+        }
+
+        private WaterBody2D Water(float centerX, float bottom, float width, float depth)
+        {
+            GameObject go = Put("WaterBody", new Vector3(centerX, bottom + depth * 0.5f), Hazards);
+            var water = go.GetComponent<WaterBody2D>();
+            EditorAssetUtil.SetFields(water, so =>
+            {
+                so.Require("width").floatValue = width;
+                so.Require("depth").floatValue = depth;
+                so.Require("columns").intValue = Mathf.Clamp(Mathf.RoundToInt(width * 5f), 16, 256);
+            });
+            go.GetComponent<BoxCollider2D>().size = new Vector2(width, depth);
+            go.GetComponent<BuoyancyEffector2D>().surfaceLevel = depth * 0.5f;
+            return water;
+        }
+
         public LevelLayout Checkpoint(string checkpointId, string spawnId = null)
         {
             Block(0, 5);

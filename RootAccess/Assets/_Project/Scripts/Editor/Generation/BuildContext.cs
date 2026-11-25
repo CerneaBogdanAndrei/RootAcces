@@ -18,7 +18,7 @@ namespace RootAccess.EditorTools
     public sealed class BuildContext
     {
         public Material SpriteLit, SpriteUnlit, Metal, Concrete, Glass, NeonCyan, NeonMagenta, Hologram, Dissolve, GrassWind;
-        public Material Water, ParticlesAdditive, ParticlesAlpha, VisionCone, Skybox, SkyBackdrop;
+        public Material Water, WaterDistortion, ParticlesAdditive, ParticlesAlpha, VisionCone, Skybox, SkyBackdrop;
         public PhysicsMaterial2D NoFriction;
 
         public InputReader Input;
@@ -28,10 +28,10 @@ namespace RootAccess.EditorTools
         public SkillDefinition[] Skills;
         public QuestDefinition GhostQuest;
         public SkillDefinition SilentSteps, Overclock, ServoLegs;
-        public QuestDefinition MainQuest, SideQuest, OfficeQuest;
+        public QuestDefinition MainQuest, SideQuest, OfficeQuest, FarmQuest, SewersQuest, HqQuest;
         public LevelDefinition HubLevel, Level01, Level02, Level03, Level04, Level05, RubricLevel;
         public LevelDefinition[] Levels;
-        public DialogueDefinition Briefing, Level01Intro, Level02Intro;
+        public DialogueDefinition Briefing, Level01Intro, Level02Intro, Level03Intro, Level04Intro, Level05Intro;
         public GameDatabase Database;
         public SfxLibrary Sfx;
         public VfxLibrary Vfx;
@@ -42,7 +42,7 @@ namespace RootAccess.EditorTools
         public RuntimeAnimatorController PulseAnimator, ElevatorAnimator;
 
         public TileBase TileMetal, TileMetalTop, TileConcrete, TileBrick, TileGlass;
-        public VolumeProfile MenuProfile, HubProfile, Level01Profile, Level02Profile, ShowcaseProfile;
+        public VolumeProfile MenuProfile, HubProfile, Level01Profile, Level02Profile, Level03Profile, Level04Profile, Level05Profile, ShowcaseProfile;
 
         /// <summary>Levels 1–5 in order: what the hideout's fast-travel console lists.</summary>
         public LevelDefinition[] StoryLevels => new[] { Level01, Level02, Level03, Level04, Level05 };

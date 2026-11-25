@@ -21,6 +21,15 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/Level02_Office/Level02_Office.unity
     guid: ce41845024837974eaffc689f80f4fe6
   - enabled: 1
+    path: Assets/_Project/Scenes/Level03_ServerFarm/Level03_ServerFarm.unity
+    guid: 370c0956485b7d24d8e27a37623f60d9
+  - enabled: 1
+    path: Assets/_Project/Scenes/Level04_Sewers/Level04_Sewers.unity
+    guid: 174488781afb8324190227006885b028
+  - enabled: 1
+    path: Assets/_Project/Scenes/Level05_HQ/Level05_HQ.unity
+    guid: 776affe05adbeda4ab694d459ff02747
+  - enabled: 1
     path: Assets/_Project/Scenes/RubricShowcase/RubricShowcase.unity
     guid: fca872c4b30bb2345a75dcb836f12e6b
   - enabled: 1

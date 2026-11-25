@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e89e8b47759a794fb90f8cb223e9d72, type: 3}
+  m_Name: Quest_main_root_access
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
+  questId: main_root_access
+  title: Root Access
+  description: "Ultimul pas: mainframe-ul din v\xE2rful sediului. Cu el, ora\u0219ul
+    \xEEntreg e al t\u0103u."
+  isMainStory: 1
+  objectives:
+  - objectiveId: reach_l5
+    description: "P\u0103trunde \xEEn sediul corpora\u021Biei"
+    type: 0
+    targetId: level05
+    requiredCount: 1
+    optional: 0
+  - objectiveId: hack_exec_elevator
+    description: "Porne\u0219te liftul executiv"
+    type: 1
+    targetId: l5_elevator
+    requiredCount: 1
+    optional: 0
+  - objectiveId: hack_mainframe
+    description: "Ob\u021Bine root access pe mainframe"
+    type: 1
+    targetId: l5_mainframe
+    requiredCount: 1
+    optional: 0
+  - objectiveId: reach_exit_l5
+    description: "Fugi pe acoperi\u0219"
+    type: 0
+    targetId: exit_l5
+    requiredCount: 1
+    optional: 0
+  - objectiveId: stealth_l5
+    description: "Bonus: nu declan\u0219a alarma"
+    type: 3
+    targetId: 
+    requiredCount: 1
+    optional: 1
+  rewardCredits: 1000
+  rewardXp: 400
+  followUpQuest: {fileID: 0}

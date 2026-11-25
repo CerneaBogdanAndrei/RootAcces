@@ -75,7 +75,12 @@ podea), referințele la ScriptableObject-uri din scene se salvau goale (dialogul
 per cameră de nivel).
 **Teste noi:** EditMode pentru FSM-ul gardianului (tranziții), PlayMode „nivelul se poate termina” (traseu scriptat până la ieșire).
 
-## P4: skill tree, quest-uri, Nivelurile 3–5 cu apă (30–40 h)
+## P4: skill tree, quest-uri, Nivelurile 3–5 cu apă (30–40 h) ✅ făcut (PR „P4”)
+
+Realizat: `Level03_ServerFarm` (hale cu rafturi, drone, coridor cu 4 lasere, lanț de turnuri traversat prin noduri,
+nucleul de servere), `Level04_Sewers` (bazine cu lăzi plutitoare, ziduri sub care te scufunzi, puțul cu stavilă care se
+inundă), `Level05_HQ` (finalul, toate mecanicile, ieșirea duce la credite), Shader Graph `SG_WaterDistortion` (refracție),
+misiunile principale înlănțuite pe toate cele 5 niveluri. Skill tree-ul și jurnalul de misiuni erau deja făcute în P2.
 
 **Livrabile**
 - Skill tree UI (3 ramuri: Stealth / Hacking / Hardware, XP, prerechizite) și toate efectele aplicate în gameplay.

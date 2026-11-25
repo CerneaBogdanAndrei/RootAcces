@@ -157,6 +157,8 @@ raza EMP). Hacking-ul nu depinde de Systems, așa că efectele de spargere sunt 
 - **Guard**: FSM Patrol → Suspicious → Chase → Search → Return, plus Investigate (zgomot auzit) și Search declanșat de
   `AlarmRaised`. Variantele Heavy/Sniper diferă prin `GuardConfig` (auz, rază de răspuns la alarmă, atac la distanță)
   și prefab variant: lunetistul trage proiectile din pool prin `Muzzle`.
+- **Apă**: `WaterBody2D` (arcuri pe suprafață, `SetDepth` cu fundul fix) + `BuoyancyEffector2D`; înotătorii
+  (`IWaterAffectable`) află noul nivel prin `UpdateWaterSurface`. `FloodControl` (IHackable) ridică apa în puțul cu stavilă.
 - **Gropi**: `FallZone` (trigger) apelează `IFallRecoverable.RecoverFromFall` pe jucător: −1 viață și revenire pe
   marginea dinaintea gropii, fără restart de la checkpoint.
 
@@ -211,10 +213,11 @@ SceneBuilder.BuildAll
   ├─ VfxFactory        prefab-urile ParticleSystem
   ├─ UIRootBuilder     UIRoot, canvas-urile din meniu și credite
   ├─ PrefabFactory     jucător, inamici + variante, interactive, mediu, CameraRig, SystemsRoot
-  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops, Level02_Office, RubricShowcase, Credits + Build Settings
+  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops … Level05_HQ, RubricShowcase, Credits + Build Settings
                        (nivelurile se compun din segmentele lui LevelLayout: acoperișuri cu gropi, horn de wall-jump,
-                       patrulă, poartă cu cameră, coridor cu lasere, salt prin noduri, arenă de drone, lift, seif,
-                       sală cu turele, checkpoint, ieșire; Finish() dimensionează confiner-ul și grila A*)
+                       patrulă, poartă cu cameră, coridor cu lasere, salt prin noduri, lanț de turnuri cu noduri,
+                       arenă de drone, lift, seif, sală cu turele, bazin cu apă, puț cu stavilă, checkpoint, ieșire;
+                       Finish() dimensionează confiner-ul și grila A*)
 BuildScript.BuildWindows
 ```
 

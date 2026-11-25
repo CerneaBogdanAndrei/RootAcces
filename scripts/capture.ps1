@@ -58,6 +58,12 @@ $shots = @(
     @{ Name = '25-nivel2-lift';            Scene = 'Level02_Office';   Spawn = 'l2_elevator';  Interact = '';              Command = '';          Delay = 3 }
     @{ Name = '26-nivel2-etaj';            Scene = 'Level02_Office';   Spawn = 'l2_upper';     Interact = '';              Command = '';          Delay = 3 }
     @{ Name = '27-nivel2-seif';            Scene = 'Level02_Office';   Spawn = 'l2_vault';     Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '28-nivel3-servere';         Scene = 'Level03_ServerFarm'; Spawn = 'l3_start';   Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '29-nivel3-noduri';          Scene = 'Level03_ServerFarm'; Spawn = 'l3_nodes';   Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '30-nivel4-apa';             Scene = 'Level04_Sewers';   Spawn = 'l4_water';     Interact = '';              Command = '';          Delay = 4 }
+    @{ Name = '31-nivel4-stavila';         Scene = 'Level04_Sewers';   Spawn = 'l4_sluice';    Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '32-nivel5-sediu';           Scene = 'Level05_HQ';       Spawn = 'l5_start';     Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '33-nivel5-lift';            Scene = 'Level05_HQ';       Spawn = 'l5_elevator';  Interact = '';              Command = '';          Delay = 3 }
 )
 for ($i = 1; $i -le 14; $i++) {
     $room = 'room_{0:D2}' -f $i
