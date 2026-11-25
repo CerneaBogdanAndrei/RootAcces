@@ -32,6 +32,7 @@ namespace RootAccess.EditorTools
         private int _counter;
         private int _maxTop;
         private readonly List<(int x0, int x1, int above)> _shells = new();
+        private readonly List<(string segment, float seconds)> _estimate = new();
 
         public LevelLayout(BuildContext ctx, SceneBuilder.GameplayScene scene, string idPrefix, int startX, int ceiling = 0)
         {
@@ -62,6 +63,15 @@ namespace RootAccess.EditorTools
         public Transform Hazards { get; }
         public Transform Lights { get; }
         public BuildContext Ctx => _ctx;
+
+        /// <summary>Segment-by-segment playtime estimate for a first run (see <see cref="Estimate"/>).</summary>
+        public IReadOnlyList<(string segment, float seconds)> PlaytimeBreakdown => _estimate;
+
+        /// <summary>
+        /// Adds a segment's estimated first-run time: walking, waiting for patrols/lasers, one attempt per hacking minigame
+        /// (~20–25 s each) and reading hints. Deaths and retries are added on top by <c>PlaytimeReport</c>.
+        /// </summary>
+        public void Estimate(string segment, float seconds) => _estimate.Add((segment, seconds));
 
         // ---------------------------------------------------------------- primitives
 
@@ -163,6 +173,7 @@ namespace RootAccess.EditorTools
         /// <summary>Flat stretch with a lamp; optional tutorial hint.</summary>
         public LevelLayout Flat(int width, string hint = null)
         {
+            Estimate("Culoar", 6f + width * 0.25f);
             Block(0, width);
             Decor(width);
             if (hint != null) Hint(hint, width * 0.5f);
@@ -176,6 +187,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public LevelLayout Rooftops(int gaps, string hint = null)
         {
+            Estimate($"Acoperișuri ({gaps} gropi)", 8f + gaps * 9f);
             int[] rises = { 0, 2, 1, 3, 1, 0 };
             int[] gapWidths = { 3, 4, 3, 4, 3 };
             int baseFloor = Floor;
@@ -211,6 +223,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public LevelLayout WallJumpChimney(int height = 10, string hint = null)
         {
+            Estimate("Horn de wall-jump", 30f);
             const int width = 14;
             Block(0, width);
             int hangTop = Indoor ? Ceiling : height + 3;
@@ -228,6 +241,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public GameObject GuardPatrol(string guardPrefab = "Guard", int width = 18, bool catwalk = true, bool guardOnCatwalk = false)
         {
+            Estimate($"Patrulă ({guardPrefab})", guardPrefab == "Guard_Sniper" ? 50f : 40f);
             Block(0, width);
             int walkHeight = 5;
             if (catwalk) Platform(3, width - 3, walkHeight);
@@ -251,6 +265,7 @@ namespace RootAccess.EditorTools
         public (Terminal cameraTerminal, Terminal doorTerminal, Door door, SecurityCamera camera) CameraGate(string cameraId, string doorId,
             string cameraTerminalName = null, string doorTerminalName = null, int doorDifficulty = 1)
         {
+            Estimate("Poartă cu cameră (2 spargeri)", 65f + doorDifficulty * 5f);
             const int width = 16;
             Block(0, width);
             int wallTop = Indoor ? Ceiling : OutdoorHeadroom;
@@ -273,6 +288,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public Terminal LaserCorridor(int lasers, string terminalId, float cycleOffset = 0.55f)
         {
+            Estimate($"Coridor cu {lasers} lasere", 25f + lasers * 6f);
             int width = 5 + lasers * 3 + 2;
             Block(0, width);
             Wall(3, width - 1, 4, Indoor ? Ceiling : 8, _ctx.TileConcrete);
@@ -304,6 +320,7 @@ namespace RootAccess.EditorTools
         public (NetworkNode ground, NetworkNode roof) NodeHop(string spawnId, int height = 10, string rooftopPrefab = null,
             bool requiresHack = false, string hackTerminalId = null)
         {
+            Estimate("Salt prin noduri", 25f);
             Block(0, 8);
             if (spawnId != null) Spawn(spawnId, 1f);
             GameObject ground = Put("NetworkNode", P(4f), Props, "NetworkNode_A");
@@ -329,6 +346,7 @@ namespace RootAccess.EditorTools
         /// <summary>Hall with pillars for the A* drones to path around, plus crates to break line of sight.</summary>
         public List<GameObject> DroneArena(int drones, string spawnId = null, string reward = null)
         {
+            Estimate($"Arenă cu {drones} drone", 30f + drones * 10f);
             const int width = 24;
             Block(0, width);
             if (spawnId != null) Spawn(spawnId, 1f);
@@ -353,6 +371,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public Elevator ElevatorUp(string terminalId, int rise, string spawnId = null)
         {
+            Estimate("Lift (spargere + urcare)", 50f);
             Block(0, 6);
             if (spawnId != null) Spawn(spawnId, 1f);
             Advance(6);
@@ -388,6 +407,7 @@ namespace RootAccess.EditorTools
         /// <summary>Vault room: the data terminal (Wire Connect) pays out a data shard; a neon-lit, guarded dead end.</summary>
         public Terminal DataVault(string terminalId, string terminalName = "Terminal_Vault", int difficulty = 2)
         {
+            Estimate("Seif de date", 35f + difficulty * 5f);
             const int width = 12;
             Block(0, width);
             Wall(0, 1, 0, 1, _ctx.TileConcrete);
@@ -403,6 +423,7 @@ namespace RootAccess.EditorTools
         /// <summary>Turret hall: an EMP pickup at the entrance, one turret on the floor and one on a ledge, crates for cover.</summary>
         public LevelLayout TurretHall(int turrets = 2)
         {
+            Estimate($"Sală cu {turrets} turele", 30f + turrets * 6f);
             const int width = 22;
             Block(0, width);
             Put("Pickup_Emp", P(2f));
@@ -424,6 +445,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public WaterBody2D WaterPool(int width, int depth, bool dive = false, int crates = 2)
         {
+            Estimate(dive ? "Bazin cu scufundare" : "Bazin", dive ? 35f : 22f);
             Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - depth - 1, _ctx.TileMetal, _ctx.TileMetalTop);
             if (Indoor) Shell(0, width, Floor);
             WaterBody2D water = Water(X + width * 0.5f, Floor - depth, width, depth - 0.5f);
@@ -442,6 +464,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public FloodControl FloodShaft(string terminalId, string spawnId = null, int shaftDepth = 6, int ledge = 6)
         {
+            Estimate("Puț cu stavilă", 60f);
             const int width = 10;
             Block(0, 6);
             if (spawnId != null) Spawn(spawnId, 1f);
@@ -473,6 +496,7 @@ namespace RootAccess.EditorTools
         /// </summary>
         public List<NetworkNode> NodeChain(int towers, string spawnId = null)
         {
+            Estimate($"Lanț de {towers} turnuri cu noduri", 12f + towers * 14f);
             int[] heights = { 6, 9, 7, 10 };
             var nodes = new List<NetworkNode>();
             Block(0, 6);
@@ -540,6 +564,7 @@ namespace RootAccess.EditorTools
 
         public LevelLayout Checkpoint(string checkpointId, string spawnId = null)
         {
+            Estimate("Checkpoint", 4f);
             Block(0, 5);
             GameObject checkpoint = Put("Checkpoint", P(2.5f), Props, $"Checkpoint_{checkpointId}");
             EditorAssetUtil.SetFields(checkpoint.GetComponent<Gameplay.Checkpoint>(), so => so.Require("checkpointId").stringValue = checkpointId);
@@ -551,6 +576,7 @@ namespace RootAccess.EditorTools
         /// <summary>Level exit: completes the level, unlocks the next one and closes the right edge.</summary>
         public LevelExit Exit(string exitId, string levelId, LevelDefinition unlocks, string targetScene = SceneNames.Hub)
         {
+            Estimate("Ieșire", 5f);
             Block(0, 8);
             GameObject exit = Put("LevelExit", P(5f), Props, "LevelExit");
             EditorAssetUtil.SetFields(exit.GetComponent<LevelExit>(), so =>

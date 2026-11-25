@@ -61,7 +61,7 @@ Editor entry points (`-executeMethod`):
 |---|---|
 | `RootAccess.EditorTools.ProjectSetup.Run` | URP asset + renderers, player/editor settings, tags, layers, collision matrix |
 | `RootAccess.EditorTools.PlaceholderArtGenerator.GenerateAll` | procedural sprites, normal maps, skybox, audio |
-| `RootAccess.EditorTools.SceneBuilder.BuildAll` | Shader Graphs (`ShaderGraphFactory`), materials, mixer, animators, prefabs, all scenes, Build Settings |
+| `RootAccess.EditorTools.SceneBuilder.BuildAll` | Shader Graphs (`ShaderGraphFactory`), materials, mixer, animators, prefabs, all scenes, Build Settings, `Logs/PlaytimeEstimate.md` |
 | `RootAccess.EditorTools.BuildScript.BuildWindows` | Windows x64 player (`-ra-development` for a dev build) |
 | `RootAccess.EditorTools.RubricValidator.RunBatch` | rubric evidence table -> `RootAccess/Logs/RubricReport.md` |
 
@@ -104,7 +104,7 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 ## Testing
 
-- EditMode (`Tests/EditMode`, 103 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
+- EditMode (`Tests/EditMode`, 109 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
   SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet.
 - PlayMode (`Tests/PlayMode`, 35 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →

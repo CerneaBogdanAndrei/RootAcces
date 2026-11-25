@@ -14,6 +14,7 @@ namespace RootAccess.Systems
 
         private readonly HashSet<string> _unlockedLevels = new();
         private readonly HashSet<string> _hackedTerminals = new();
+        private readonly Dictionary<string, float> _levelTimes = new();
 
         public GameSession(TraceSettings traceSettings, int inventoryCapacity = DefaultInventoryCapacity, int startingCredits = 0)
         {
@@ -37,6 +38,18 @@ namespace RootAccess.Systems
         public float PlayTimeSeconds { get; set; }
 
         public IReadOnlyCollection<string> UnlockedLevels => _unlockedLevels;
+
+        /// <summary>Best completion time per level id, in seconds of play time.</summary>
+        public IReadOnlyDictionary<string, float> LevelTimes => _levelTimes;
+
+        /// <summary>Records a completion; keeps the best (shortest) time. Returns true for a new best.</summary>
+        public bool RecordLevelTime(string levelId, float seconds)
+        {
+            if (string.IsNullOrEmpty(levelId) || seconds <= 0f) return false;
+            if (_levelTimes.TryGetValue(levelId, out float best) && best <= seconds) return false;
+            _levelTimes[levelId] = seconds;
+            return true;
+        }
 
         public void SetCheckpoint(string sceneName, string checkpointId, Vector2 position)
         {
@@ -73,8 +86,16 @@ namespace RootAccess.Systems
                 inventory = Inventory.ToData(),
                 quests = Quests.ToData(),
                 unlockedLevels = new List<string>(_unlockedLevels),
-                hackedTerminals = new List<string>(_hackedTerminals)
+                hackedTerminals = new List<string>(_hackedTerminals),
+                levelTimes = LevelTimesData()
             };
+        }
+
+        private List<LevelTimeData> LevelTimesData()
+        {
+            var list = new List<LevelTimeData>(_levelTimes.Count);
+            foreach (KeyValuePair<string, float> entry in _levelTimes) list.Add(new LevelTimeData { levelId = entry.Key, seconds = entry.Value });
+            return list;
         }
 
         public void LoadFrom(SaveData data, Func<string, ItemDefinition> items, Func<string, QuestDefinition> quests,
@@ -94,6 +115,10 @@ namespace RootAccess.Systems
             if (data.unlockedLevels != null) _unlockedLevels.UnionWith(data.unlockedLevels);
             _hackedTerminals.Clear();
             if (data.hackedTerminals != null) _hackedTerminals.UnionWith(data.hackedTerminals);
+            _levelTimes.Clear();
+            if (data.levelTimes != null)
+                foreach (LevelTimeData entry in data.levelTimes)
+                    RecordLevelTime(entry.levelId, entry.seconds);
             Trace.ResetMeter();
         }
     }

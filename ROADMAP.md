@@ -111,7 +111,26 @@ Realizat: copacii cu oase (`SpriteRigFactory` + `SpriteSkin`, legănați de `Fol
 **Barem închis:** 2 (Shader Graph), 3 (oase), 9 și 10 cu asset-uri reale, bonusul de cinematice. După P5,
 `RubricValidator` nu mai are itemi „planificat”, cu excepția co-op-ului.
 
-## P6: polish și playtest cronometrat (14–18 h)
+## P6: polish și playtest cronometrat (14–18 h) ✅ făcut (PR „P6”)
+
+Realizat: timpul pe nivel (cel mai bun timp se salvează; ecranul „Misiune îndeplinită” arată timpul nivelului, recordul
+și timpul total), XP în HUD, briefing-ul din ascunzătoare, raportul de durată estimată (`Logs/PlaytimeEstimate.md`,
+generat la fiecare `SceneBuilder.BuildAll`, verificat de `RubricValidator`).
+
+| Nivel | Segmente | Estimare primă trecere (min) |
+|---|---|---|
+| 1. Acoperișuri și parc | 15 | 7,7 |
+| 2. Turnul de birouri | 13 | 9,3 |
+| 3. Ferma de servere | 12 | 9,3 |
+| 4. Canalizarea | 13 | 8,9 |
+| 5. Sediul corporației | 14 | 11,0 |
+| Ascunzătoarea (5 vizite) | – | 3,3 |
+| Cutscene-uri și dialoguri | – | 1,8 |
+| **Total** | | **≈ 51** |
+
+Estimarea însumează timpii pe segment (mers, așteptarea patrulelor și a laserelor, câte o încercare pe minijoc) × 1,25
+pentru morți și reîncercări. **De făcut de dezvoltator:** o trecere cronometrată completă; timpii reali apar pe ecranul de
+final al fiecărui nivel și rămân în salvare.
 
 **Livrabile**
 - Playtest complet cronometrat: Hub + 5 niveluri ≥ 30 de minute la prima trecere. Durata pe nivel se notează în

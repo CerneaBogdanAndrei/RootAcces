@@ -19,10 +19,14 @@ namespace RootAccess.Systems
 
         private SaveSystem _saveSystem;
         private GameManager _gameManager;
+        private float _levelStartedAt;
 
         public GameSession Session { get; private set; }
         public GameDatabase Database => database;
         public bool HasSave => _saveSystem != null && _saveSystem.Exists(SaveSlots.Main);
+
+        /// <summary>Play time spent in the current level since it was loaded (pauses, terminals and menus excluded).</summary>
+        public float CurrentLevelSeconds => Session != null ? Mathf.Max(0f, Session.PlayTimeSeconds - _levelStartedAt) : 0f;
 
         private void Awake()
         {
@@ -47,6 +51,7 @@ namespace RootAccess.Systems
             EventBus<CheckpointReached>.Subscribe(OnCheckpointReached);
             EventBus<ObjectiveReported>.Subscribe(OnObjectiveReported);
             EventBus<SceneLoadCompleted>.Subscribe(OnSceneLoaded);
+            EventBus<LevelCompleted>.Subscribe(OnLevelCompleted);
         }
 
         private void OnDisable()
@@ -55,6 +60,7 @@ namespace RootAccess.Systems
             EventBus<CheckpointReached>.Unsubscribe(OnCheckpointReached);
             EventBus<ObjectiveReported>.Unsubscribe(OnObjectiveReported);
             EventBus<SceneLoadCompleted>.Unsubscribe(OnSceneLoaded);
+            EventBus<LevelCompleted>.Unsubscribe(OnLevelCompleted);
         }
 
         private void OnDestroy()
@@ -221,8 +227,16 @@ namespace RootAccess.Systems
             if (Session == null) return;
             if (Session.SceneName != evt.SceneName) Session.ClearCheckpoint();
             Session.SceneName = evt.SceneName;
+            _levelStartedAt = Session.PlayTimeSeconds;
             Session.Trace.ResetMeter();
             PublishAll();
+        }
+
+        private void OnLevelCompleted(LevelCompleted evt)
+        {
+            if (Session == null) return;
+            if (Session.RecordLevelTime(evt.LevelId, CurrentLevelSeconds))
+                Debug.Log($"[SessionService] New best time for {evt.LevelId}: {TimeFormat.Clock(CurrentLevelSeconds)}.");
         }
 
         private void OnInventoryChanged() => EventBus<InventoryChanged>.Publish(new InventoryChanged());
