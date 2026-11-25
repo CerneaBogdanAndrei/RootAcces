@@ -169,8 +169,12 @@ reacționează `MusicDirector` (muzica de alertă), `MixerSnapshots` (snapshot-u
   **UniversalRenderer**, pentru meniu/credite și pentru camera de cer. Renderer2D nu desenează skybox și nu se poate
   combina cu alt renderer, așa că `SkyboxBackdrop` randează materialul Skybox într-un RenderTexture mic, afișat pe un
   quad în spatele tuturor straturilor.
-- Shadere proprii (HLSL, `Art/Shaders`): Sprite Dissolve (Lit), Sprite Grass Wind (Lit), Hologram, Neon Pulse, Water
-  Surface, Particles Additive, Backdrop. Conversia celor trei cerute de barem în Shader Graph e planificată în P5.
+- **Shader Graph** (`Art/Shaders/Graphs`): `SG_Hologram`, `SG_SpriteDissolve`, `SG_NeonPulse`, `SG_GrassWind`. Fișierele
+  `.shadergraph` sunt generate de `Editor/Generation/ShaderGraphFactory.cs` (cu `ShaderGraphWriter`, care scrie formatul
+  multi-JSON al Shader Graph 17 după modelul șabloanelor URP „2D Sprite Lit/Unlit”), apoi importate și verificate cu
+  `ShaderUtil.ShaderHasError`. ID-urile sunt deterministe, deci o regenerare fără schimbări nu produce diff.
+- Shadere HLSL rămase (`Art/Shaders`): Water Surface, Particles Additive, Backdrop, plus `RootAccessCommon.hlsl` (zgomot,
+  vânt), folosit și de nodul Custom Function al ierbii.
 - Post-processing minim, pentru 60 FPS pe Iris Xe: Bloom calitate joasă și Color Adjustments, câte un profil per scenă.
 
 ## 8. Pipeline-ul de conținut

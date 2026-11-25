@@ -127,9 +127,11 @@ namespace RootAccess.EditorTools
             Material[] custom = materials.Where(m => m.shader != null && m.shader.name.StartsWith(ShaderPrefix, StringComparison.Ordinal)).ToArray();
             Add(item, "≥3 materiale cu shadere proprii (hologram, dissolve, neon pulse)", custom.Length >= 3,
                 string.Join(", ", custom.Select(m => $"{m.name}→{m.shader.name}")));
-            int shaderGraphs = AssetDatabase.FindAssets("t:Shader", new[] { EditorPaths.Root })
-                .Select(AssetDatabase.GUIDToAssetPath).Count(p => p.EndsWith(".shadergraph", StringComparison.OrdinalIgnoreCase));
-            Add(item, "≥3 materiale Shader Graph", shaderGraphs >= 3, $"{shaderGraphs} .shadergraph (acum: HLSL scris de mână, conversie în P5)", Severity.Planned);
+            Material[] graphMaterials = materials.Where(IsShaderGraph).ToArray();
+            string[] requiredGraphMaterials = { "M_Hologram", "M_Dissolve", "M_NeonCyan" };
+            Add(item, "≥3 materiale Shader Graph (hologramă, dizolvare/glitch, neon pulse emisiv)",
+                graphMaterials.Length >= 3 && requiredGraphMaterials.All(n => graphMaterials.Any(m => m.name == n)),
+                string.Join(", ", graphMaterials.Select(m => $"{m.name}→{Path.GetFileName(AssetDatabase.GetAssetPath(m.shader))}")));
             int normalMapped = CountNormalMappedSprites();
             Add(item, "Sprite-uri cu normal map pentru lumini 2D", normalMapped >= 10, $"{normalMapped} sprite-uri cu secondary texture {NormalMapName}");
 
@@ -139,9 +141,11 @@ namespace RootAccess.EditorTools
                 index.FindPrefab("Tree") != null && index.FindPrefab("GrassPatch") != null && index.InScene("FoliageWind", SceneNames.Level01) &&
                 index.InScene("WindZone2D", SceneNames.Level01),
                 $"FoliageWind în scene: {index.Scene("FoliageWind")}, WindZone2D: {index.Any("WindZone2D")}");
-            Shader grass = materials.FirstOrDefault(m => m.name == "M_GrassWind")?.shader;
-            Add(item, "Shader iarbă cu vânt care se îndoaie în jurul jucătorului", grass != null && HasShaderProperty(grass, "_BendRadius"),
-                grass != null ? $"M_GrassWind → {grass.name} (_BendRadius; poziția jucătorului vine ca vector global din FoliageWind)" : "material M_GrassWind lipsă");
+            Material grassMaterial = materials.FirstOrDefault(m => m.name == "M_GrassWind");
+            Shader grass = grassMaterial != null ? grassMaterial.shader : null;
+            Add(item, "Shader Graph pentru iarbă: vânt + îndoire în jurul jucătorului",
+                grass != null && IsShaderGraph(grassMaterial) && HasShaderProperty(grass, "_BendRadius"),
+                grass != null ? $"M_GrassWind → {Path.GetFileName(AssetDatabase.GetAssetPath(grass))} (_BendRadius; poziția jucătorului vine ca vector global din FoliageWind)" : "material M_GrassWind lipsă");
             Add(item, "Straturi parallax (fundal/prim-plan)", index.Scene("ParallaxLayer") >= 2, $"{index.Scene("ParallaxLayer")} ParallaxLayer în scene");
             Add(item, "Copaci cu oase 2D Animation (SpriteSkin)", index.Any("SpriteSkin") > 0, $"{index.Any("SpriteSkin")} SpriteSkin (acum: legănare prin transform, P5)", Severity.Planned);
 
@@ -372,6 +376,10 @@ namespace RootAccess.EditorTools
         private static float Float(ScriptableObject asset, string field) => new SerializedObject(asset).FindProperty(field)?.floatValue ?? 0f;
 
         private static bool HasShaderProperty(Shader shader, string property) => shader.FindPropertyIndex(property) >= 0;
+
+        private static bool IsShaderGraph(Material material) =>
+            material != null && material.shader != null &&
+            AssetDatabase.GetAssetPath(material.shader).EndsWith(".shadergraph", StringComparison.OrdinalIgnoreCase);
 
         private static int CountNormalMappedSprites() =>
             AssetDatabase.FindAssets("t:Texture2D", new[] { EditorPaths.Art })

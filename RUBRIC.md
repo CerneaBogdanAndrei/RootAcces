@@ -8,8 +8,8 @@ starea curentă și o demonstrație de cel mult 30 de secunde.
 
 Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Validate Rubric** sau
 `./scripts/unity-batch.ps1 -Step rubric -ExecuteMethod RootAccess.EditorTools.RubricValidator.RunBatch`, cu raportul în
-`RootAccess/Logs/RubricReport.md`. Ultima rulare (25.11.2026) a trecut toate cele 46 de verificări obligatorii; 6 itemi
-de roadmap sunt încă deschiși.
+`RootAccess/Logs/RubricReport.md`. Toate verificările obligatorii trec; itemii de roadmap încă deschiși sunt listați
+în raport.
 
 ## Cum ajungi rapid la fiecare punct
 
@@ -21,7 +21,7 @@ de roadmap sunt încă deschiși.
 | # | Punct | Status | Unde (F1 → Mergi) | Camera din showcase |
 |---|---|---|---|---|
 | 1 | Mișcare / săritură | ✅ (înot: 🟡) | Level01 `l1_movement` | `room_01` |
-| 2 | Materiale / texturi | 🟡 | RubricShowcase `room_02` | `room_02` |
+| 2 | Materiale / texturi | ✅ | RubricShowcase `room_02` | `room_02` |
 | 3 | Mediu: copaci / iarbă | 🟡 | Level01 `l1_park` | `room_03` |
 | 4 | Apă / skybox | 🟡 | RubricShowcase `room_04` | `room_04` |
 | 5 | Lumini / cameră | ✅ | Hub `hub_center` | `room_05` |
@@ -52,17 +52,22 @@ de roadmap sunt încă deschiși.
   platformei (coyote), apasă Space chiar înainte de aterizare (buffer), dublu salt, Shift (dash), sari pe perete și din
   perete, ține Ctrl sub obstacol.
 
-## 2. Materiale / texturi (obligatoriu) 🟡
+## 2. Materiale / texturi (obligatoriu) ✅
 
 - **Scene:** `RubricShowcase` camera 2 (blocuri metal/beton/sticlă, neon, nod hologramă, terminal care se dizolvă în buclă,
   lumină mobilă pe normal maps), plus toate nivelurile.
 - **Asset-uri:** `Art/Materials/M_Metal`, `M_Concrete`, `M_Glass`, `M_NeonCyan`, `M_NeonMagenta`, `M_Hologram`,
-  `M_Dissolve`, `M_GrassWind`, `M_Water`; shadere în `Art/Shaders/*.shader`; 45 de normal maps generate (secondary texture
-  `_NormalMap` pe sprite-uri).
+  `M_Dissolve`, `M_GrassWind`, `M_Water`; 45 de normal maps generate (secondary texture `_NormalMap` pe sprite-uri).
+- **Shader Graph** (`Art/Shaders/Graphs`), construite din noduri obișnuite (Time, Sine, Simple Noise, Step, Lerp, Sample
+  Texture 2D, Vertex Color, Position):
+  - `SG_Hologram` (Sprite Unlit, aditiv): sprite colorat × scanline-uri în spațiul lumii × pâlpâire → `M_Hologram`;
+  - `SG_SpriteDissolve` (Sprite Lit, cu mască și normal map): dizolvare pe zgomot cu margine HDR → `M_Dissolve`
+    (jucător, terminale „glitch”, teleport);
+  - `SG_NeonPulse` (Sprite Unlit, HDR): luminozitate care pulsează, decalată pe axa X → `M_NeonCyan`, `M_NeonMagenta`;
+  - `SG_GrassWind` (Sprite Lit): vânt + îndoire lângă jucător în stadiul de vertex → `M_GrassWind` (punctul 3).
 - **Scripturi:** `VFX/DissolveController.cs`, `VFX/DissolveDemoLoop.cs`, `Editor/PlaceholderArtGenerator.cs` (normal maps),
-  `Editor/Generation/AssetFactory.cs` (materiale).
-- **Ce lipsește:** baremul cere ≥3 materiale **Shader Graph**. Hologram, dissolve/glitch și neon pulse sunt acum shadere HLSL
-  scrise de mână, cu același efect. Conversia în Shader Graph e în **P5** (validatorul o marchează „planificat”).
+  `Editor/Generation/AssetFactory.cs` (materiale), `Editor/Generation/ShaderGraphFactory.cs` + `ShaderGraphWriter.cs`
+  (generează grafurile și verifică la import că shaderul compilează fără erori).
 - **Demonstrație:** Prezentare barem → camera 2. Lumina punctiformă se mișcă peste sprite-uri cu normal map, terminalul
   din dreapta se dizolvă și reapare, nodul hologramă pâlpâie, neonul pulsează (cu Bloom).
 
@@ -71,7 +76,8 @@ de roadmap sunt încă deschiși.
 - **Scene:** `Level01_Rooftops` (parcul de pe acoperiș, spawn `l1_park`), `RubricShowcase` camera 3.
 - **Prefab-uri:** `Environment/Tree.prefab`, `Environment/GrassPatch.prefab`, `Environment/WindZone.prefab`.
 - **Scripturi:** `VFX/FoliageWind.cs` (vânt scriptat, trimite poziția jucătorului ca vector global), `Gameplay/World/WindZone2D.cs`,
-  `VFX/ParallaxLayer.cs`, shaderul `RootAccess_SpriteGrassWind.shader` (iarba se apleacă în jurul jucătorului).
+  `VFX/ParallaxLayer.cs`, Shader Graph-ul `SG_GrassWind` (iarba se apleacă în jurul jucătorului; matematica vântului e un
+  nod Custom Function care apelează `Art/Shaders/RootAccessShaderGraph.hlsl`).
 - **Ce lipsește:** copacii se leagănă prin transform, nu cu oase 2D Animation/SpriteSkin (**P5**).
 - **Demonstrație:** F1 → 3 → Mergi. Copacii se leagănă, iar iarba se îndoaie când alergi prin ea. Intră în WindZone (rafală)
   și urmărește straturile parallax din fundal.

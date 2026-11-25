@@ -19,10 +19,6 @@ namespace RootAccess.EditorTools
     {
         private const string SpriteLitShader = "Universal Render Pipeline/2D/Sprite-Lit-Default";
         private const string SpriteUnlitShader = "Universal Render Pipeline/2D/Sprite-Unlit-Default";
-        private const string DissolveShader = "RootAccess/Sprite Dissolve (Lit)";
-        private const string GrassShader = "RootAccess/Sprite Grass Wind (Lit)";
-        private const string HologramShader = "RootAccess/Sprite Hologram";
-        private const string NeonShader = "RootAccess/Sprite Neon Pulse";
         private const string WaterShader = "RootAccess/Water Surface";
         private const string ParticlesShader = "RootAccess/Particles Additive";
         private const string SkyboxShader = "Skybox/6 Sided";
@@ -30,6 +26,7 @@ namespace RootAccess.EditorTools
 
         public static void BuildAll(BuildContext ctx)
         {
+            ShaderGraphFactory.BuildAll();
             BuildMaterials(ctx);
             BuildData(ctx);
             BuildTiles(ctx);
@@ -49,11 +46,11 @@ namespace RootAccess.EditorTools
             ctx.Metal = Mat("M_Metal", SpriteLitShader, m => m.SetColor("_Color", new Color(0.85f, 0.9f, 1f)));
             ctx.Concrete = Mat("M_Concrete", SpriteLitShader, m => m.SetColor("_Color", new Color(0.95f, 0.93f, 0.9f)));
             ctx.Glass = Mat("M_Glass", SpriteLitShader, m => m.SetColor("_Color", new Color(0.7f, 0.9f, 1f, 0.6f)));
-            ctx.NeonCyan = Mat("M_NeonCyan", NeonShader, m => { m.SetColor(ShaderIds.EmissionColor, new Color(0.3f, 2.6f, 3.2f)); m.SetFloat(ShaderIds.PulseSpeed, 2.2f); });
-            ctx.NeonMagenta = Mat("M_NeonMagenta", NeonShader, m => { m.SetColor(ShaderIds.EmissionColor, new Color(3.2f, 0.4f, 2.4f)); m.SetFloat(ShaderIds.PulseSpeed, 1.6f); });
-            ctx.Hologram = Mat("M_Hologram", HologramShader);
-            ctx.Dissolve = Mat("M_Dissolve", DissolveShader);
-            ctx.GrassWind = Mat("M_GrassWind", GrassShader);
+            ctx.NeonCyan = Mat("M_NeonCyan", ShaderGraphFactory.ShaderName(ShaderGraphFactory.NeonPulse), m => { m.SetColor(ShaderIds.EmissionColor, new Color(0.3f, 2.6f, 3.2f)); m.SetFloat(ShaderIds.PulseSpeed, 2.2f); });
+            ctx.NeonMagenta = Mat("M_NeonMagenta", ShaderGraphFactory.ShaderName(ShaderGraphFactory.NeonPulse), m => { m.SetColor(ShaderIds.EmissionColor, new Color(3.2f, 0.4f, 2.4f)); m.SetFloat(ShaderIds.PulseSpeed, 1.6f); });
+            ctx.Hologram = Mat("M_Hologram", ShaderGraphFactory.ShaderName(ShaderGraphFactory.Hologram));
+            ctx.Dissolve = Mat("M_Dissolve", ShaderGraphFactory.ShaderName(ShaderGraphFactory.Dissolve));
+            ctx.GrassWind = Mat("M_GrassWind", ShaderGraphFactory.ShaderName(ShaderGraphFactory.GrassWind));
             ctx.Water = Mat("M_Water", WaterShader);
             Texture2D soft = GeneratedArt.Sprite("soft_circle").texture;
             ctx.ParticlesAdditive = Mat("M_ParticlesAdditive", ParticlesShader, m => m.SetTexture("_MainTex", soft));
