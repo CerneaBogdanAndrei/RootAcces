@@ -1,38 +1,54 @@
 # Root Access
 
-Joc 2D side-scrolling de tip stealth-platformer, într-un oraș cyberpunk. Ești un hacker care se strecoară în clădiri,
-sparge terminale și fură date. Proiect pentru disciplina „Joc 2D de tip singleplayer/multiplayer în Unity cu C#”.
+Joc 2D side-scrolling de tip **stealth-platformer** într-un oraș cyberpunk. Ești un hacker care se strecoară pe
+acoperișuri, în birouri, ferme de servere și canalizări, sparge terminale și fură date. Poți juca singur sau în
+**co-op asimetric**: un Infiltrator și un Operator care vede harta și îl ajută de la distanță. Proiect pentru
+disciplina „Joc 2D de tip singleplayer/multiplayer în Unity cu C#”.
 
-- **Motor:** Unity 6000.3.29f1 (6.3 LTS), Universal Render Pipeline 2D, Input System, Cinemachine 3.
+![Root Access](Documentatie/screenshots/01-meniu-principal.png)
+
+- **Motor:** Unity 6000.3.29f1 (6.3 LTS), URP 2D, Input System, Cinemachine 3, Timeline, 2D Animation, Netcode for GameObjects.
 - **Platformă:** Windows x64 (tastatură + mouse sau gamepad).
-- **Stare:** vertical slice jucabil (meniu → Hub → secțiunea de test din Nivelul 1 → scena de prezentare a baremului).
-  Conținutul complet (5 niveluri, minimum 30 de minute de joc) urmează etapele din [ROADMAP.md](ROADMAP.md).
+- **Conținut:** meniu, intro cinematic, ascunzătoarea (Hub), 5 niveluri, final cinematic, credite, co-op local + LAN,
+  scena „Prezentare barem”. Estimarea pentru o primă trecere: ≈ 52 de minute.
+- **Stare:** `v1.0`. Toate cele 12 puncte din barem și ambele bonusuri (cinematice, multiplayer) trec în
+  `RubricValidator`; 114 teste EditMode și 38 PlayMode sunt verzi.
+
+**Documentația completă a jocului:** [Documentatie/DOCUMENTATIE.md](Documentatie/DOCUMENTATIE.md).
+
+| ![Nivelul 1](Documentatie/screenshots/09-nivel1-parc.png) | ![Hacking](Documentatie/screenshots/11-hacking-pattern-memory.png) |
+|---|---|
+| ![Nivelul 4: apă cu refracție](Documentatie/screenshots/30-nivel4-apa.png) | ![Co-op pe ecran împărțit](Documentatie/screenshots/38-coop-ecran-impartit.png) |
+| ![Terminalul personal](Documentatie/screenshots/05-terminal-abilitati.png) | ![Intro](Documentatie/screenshots/34-cutscene-intro-titlu.png) |
 
 | Document | Conținut |
 |---|---|
+| [Documentatie/DOCUMENTATIE.md](Documentatie/DOCUMENTATIE.md) | povestea, controalele, nivelurile, mecanicile, co-op-ul, arhitectura, baremul, testele, livrarea |
 | [RUBRIC.md](RUBRIC.md) | fiecare punct din barem: unde e, ce scripturi, cum se demonstrează în 30 s |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | module, asmdef-uri, fluxul de evenimente, formatul de salvare |
-| [ROADMAP.md](ROADMAP.md) | etapele P1–P8 până la livrarea finală |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | module, asmdef-uri, fluxul de evenimente, formatul de salvare, pipeline-ul de conținut |
+| [ROADMAP.md](ROADMAP.md) | etapele P1–P8 și ce s-a făcut în fiecare |
+| [RELEASE_REPORT.md](RELEASE_REPORT.md) | starea la livrare: teste, barem, build, arhive, limitări |
 | [ASSETS.md](ASSETS.md) | pachete de grafică/sunet recomandate și licențele lor |
-| [SETUP_REPORT.md](SETUP_REPORT.md) | ce s-a instalat și configurat, rezultate, limitări |
 | [CLAUDE.md](CLAUDE.md) | reguli pentru sesiunile Claude Code |
 
 ## Cum joci
 
-### Varianta rapidă (build-ul gata făcut)
+### Build-ul gata făcut
 
 1. Dezarhivează `RootAccess_Windows.zip`.
 2. Pornește `RootAccess\RootAccess.exe`.
-3. Din meniu: **Joc nou** pornește din Hub. **Prezentare barem** deschide scena cu câte o cameră pentru fiecare punct din barem.
+3. Din meniu:
+   - **Joc nou**: intro, apoi ascunzătoarea;
+   - **Co-op**: Local / Găzduiește în LAN / Alătură-te pe IP;
+   - **Prezentare barem**: o cameră pentru fiecare punct.
 
 ### Din Unity Editor
 
 1. Instalează Unity Hub și editorul **6000.3.29f1**, cu modulul *Windows Build Support (Mono)*.
 2. În Unity Hub: *Add project from disk* → folderul `RootAccess` (nu rădăcina repo-ului). Dacă pornești din
-   `RootAccess_Project.zip`, dezarhivează-l aproape de rădăcina discului (de exemplu `C:\Proiecte\`). La primul import
-   Unity creează `Library\PackageCache` (circa 2 GB), iar căile mai lungi de 260 de caractere dau erori de import pe Windows.
-3. Deschide `Assets/_Project/Scenes/Bootstrap/Bootstrap.unity` și apasă Play. Orice altă scenă pornește și direct, pentru că
-   sistemele persistente (`SystemsRoot`) se încarcă automat.
+   `RootAccess_Project.zip`, dezarhivează-l aproape de rădăcina discului (de exemplu `C:\Proiecte\`), ca să eviți căile
+   mai lungi de 260 de caractere.
+3. Deschide `Assets/_Project/Scenes/Bootstrap/Bootstrap.unity` și apasă Play (orice scenă pornește și direct).
 
 ## Controale
 
@@ -41,32 +57,33 @@ sparge terminale și fură date. Proiect pentru disciplina „Joc 2D de tip sing
 | Mișcare | A / D (sau săgeți) | stick stâng / D-pad |
 | Săritură (ținută = mai sus), dublu salt, wall-jump | Space | A / Cross |
 | Dash | Shift stânga / click dreapta | RB / R1 |
-| Ghemuire | Ctrl stânga / C / S | B / Circle |
-| Interacțiune (terminal, nod de rețea, platformă de teleport) | E | X / Square |
-| Aruncă grenadă EMP (spre cursor / stick-ul drept) | G / click stânga | RT / R2 |
-| Terminal personal: inventar, abilități, misiuni | Tab / I | Select |
+| Ghemuire (fără zgomot) | Ctrl stânga / C / S | B / Circle |
+| Interacțiune (terminal, nod, lift, consolă) | E | X / Square |
+| Grenadă EMP (spre cursor / stick-ul drept) | G / click stânga | RT / R2 |
+| Terminal personal | Tab / I | Select |
 | Pauză | Esc | Start |
 | Panoul de barem | F1 | — |
 | Hacking (în overlay) | mouse sau săgeți + Enter, Esc = renunță | D-pad + A, B = renunță |
+| Sari peste cutscene | Enter / Esc | A / B |
+| Operator (co-op local) | Numpad 8 / 2 / 5 | D-pad sus / jos, A |
 
-Tastele pentru Săritură și Interacțiune se pot schimba din **Setări → Controale**. Tot din Setări se reglează volumul
-(general, muzică, efecte, interfață), rezoluția, fullscreen-ul și VSync.
+Tastele pentru Săritură și Interacțiune se pot schimba din **Setări → Controale**.
 
 ## Linia de comandă (PowerShell, din rădăcina repo-ului)
 
 Închide proiectul în Unity Editor înainte să rulezi scripturile, pentru că rulează Unity în batchmode.
 
 ```powershell
-./scripts/build.ps1 -RebuildContent    # regenerează asset-urile și scenele, apoi face build-ul .exe
-./scripts/build.ps1                    # doar build-ul .exe (RootAccess/Builds/Windows/RootAccess.exe)
-./scripts/test.ps1                     # teste EditMode + PlayMode, cu sumar (XML în RootAccess/Logs/TestResults)
-./scripts/smoke-player.ps1             # pornește exe-ul pe fiecare scenă, face capturi și verifică Player.log
-./scripts/package-for-drive.ps1 -Build # dist/RootAccess_Project.zip + dist/RootAccess_Windows.zip
+./scripts/build.ps1 -RebuildContent      # regenerează asset-urile și scenele, apoi face build-ul .exe
+./scripts/test.ps1                       # teste EditMode + PlayMode (XML în RootAccess/Logs/TestResults)
+./scripts/smoke-player.ps1               # pornește exe-ul pe scene, face capturi și verifică Player.log
+./scripts/capture.ps1                    # capturile din Documentatie/screenshots
+./scripts/coop-lan-smoke.ps1             # co-op LAN: gazdă + client pe 127.0.0.1, verifică ușa deschisă de Operator
+./scripts/package-for-drive.ps1 -Build   # dist/RootAccess_Project.zip + dist/RootAccess_Windows.zip
 ./scripts/unity-batch.ps1 -Step rubric -ExecuteMethod RootAccess.EditorTools.RubricValidator.RunBatch
 ```
 
 Din Editor, aceleași operații sunt în meniul **Root Access** (Build All Content, Build Windows x64, Validate Rubric).
-Testele rulează și din *Window → General → Test Runner*.
 
 ## Livrare pe Google Drive
 
@@ -78,5 +95,5 @@ Rulează `./scripts/package-for-drive.ps1 -Build` și urcă ambele fișiere din 
 
 ## Autor
 
-Cernea Bogdan-Andrei. Tot codul este scris de noi. Grafica și sunetele actuale sunt placeholdere generate procedural de
-`PlaceholderArtGenerator`; pachetele externe se importă în `Assets/ThirdParty` (vezi [ASSETS.md](ASSETS.md)).
+Cernea Bogdan-Andrei. Tot codul este scris de noi. Grafica și sunetele sunt placeholdere generate procedural
+(`PlaceholderArtGenerator`); pachetele externe se importă în `Assets/ThirdParty` (vezi [ASSETS.md](ASSETS.md)).

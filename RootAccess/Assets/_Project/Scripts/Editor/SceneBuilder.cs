@@ -555,6 +555,7 @@ namespace RootAccess.EditorTools
             layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
             layout.Hint(SeedContent.Labels.L2Turrets, 11f, 7.5f, 16f);
             layout.TurretHall(2);
+            layout.Flat(8);
             layout.Checkpoint("l2_cp2", "l2_vault");
             layout.DataVault(SeedContent.Ids.TerminalLevel02Vault);
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
@@ -663,6 +664,7 @@ namespace RootAccess.EditorTools
             layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
             layout.DroneArena(3, "l5_drones");
             layout.TurretHall(2);
+            layout.Flat(8);
             layout.Checkpoint("l5_cp2");
             layout.Dress("ServerRack", 1, 6, 4);
             layout.NodeChain(2, "l5_nodes");

@@ -120,13 +120,13 @@ generat la fiecare `SceneBuilder.BuildAll`, verificat de `RubricValidator`).
 | Nivel | Segmente | Estimare primă trecere (min) |
 |---|---|---|
 | 1. Acoperișuri și parc | 15 | 7,7 |
-| 2. Turnul de birouri | 13 | 9,3 |
+| 2. Turnul de birouri | 14 | 9,5 |
 | 3. Ferma de servere | 12 | 9,3 |
 | 4. Canalizarea | 13 | 8,9 |
-| 5. Sediul corporației | 14 | 11,0 |
+| 5. Sediul corporației | 15 | 11,2 |
 | Ascunzătoarea (5 vizite) | – | 3,3 |
 | Cutscene-uri și dialoguri | – | 1,8 |
-| **Total** | | **≈ 51** |
+| **Total** | | **≈ 52** |
 
 Estimarea însumează timpii pe segment (mers, așteptarea patrulelor și a laserelor, câte o încercare pe minijoc) × 1,25
 pentru morți și reîncercări. **De făcut de dezvoltator:** o trecere cronometrată completă; timpii reali apar pe ecranul de
@@ -157,7 +157,11 @@ Realizat altfel decât planul inițial: în loc de Relay (cod de join prin servi
 
 **Barem închis:** bonusul multiplayer.
 
-## P8: build final și Google Drive (4–6 h)
+## P8: build final și Google Drive (4–6 h) ✅ făcut (PR „P8”, tag `v1.0`)
+
+Realizat: `Documentatie/DOCUMENTATIE.md` (documentația completă a jocului) cu capturile din `Documentatie/screenshots`,
+README-ul cu galerie, [RELEASE_REPORT.md](RELEASE_REPORT.md), tag-ul `v1.0`, arhivele din `dist/`. Urcarea pe Google
+Drive și testul pe un PC curat rămân la dezvoltator.
 
 **Livrabile**
 - `./scripts/test.ps1`, `RubricValidator`, `./scripts/package-for-drive.ps1 -Build`.
