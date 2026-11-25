@@ -1,7 +1,8 @@
 # CLAUDE.md — Root Access
 
 Guidance for Claude Code sessions in this repository. Read this first, then `RUBRIC.md` (what is graded and where it
-lives) and `ROADMAP.md` (what to build next). `SETUP_REPORT.md` describes the current state.
+lives) and `ROADMAP.md` (what was built, stage by stage). `RELEASE_REPORT.md` describes the delivered state (`v1.0`);
+the player-facing documentation is `Documentatie/DOCUMENTATIE.md`.
 
 ## Project
 
@@ -122,4 +123,5 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 - Architecture, asmdef graph, events, save format: `ARCHITECTURE.md`
 - Rubric mapping and 30-second demos: `RUBRIC.md` (validate with `RubricValidator`)
-- Next work: `ROADMAP.md` · asset packs/licenses: `ASSETS.md` · state of the setup: `SETUP_REPORT.md`
+- Stages: `ROADMAP.md` · asset packs/licenses: `ASSETS.md` · delivered state: `RELEASE_REPORT.md` (setup: `SETUP_REPORT.md`)
+- Game documentation (Romanian, with screenshots): `Documentatie/DOCUMENTATIE.md`

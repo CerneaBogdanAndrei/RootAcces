@@ -420,7 +420,10 @@ namespace RootAccess.EditorTools
             return terminal.GetComponent<Terminal>();
         }
 
-        /// <summary>Turret hall: an EMP pickup at the entrance, one turret on the floor and one on a ledge, crates for cover.</summary>
+        /// <summary>
+        /// Turret hall: an EMP pickup at the entrance, one turret on the floor and one on a ledge, crates for cover. Turrets
+        /// see 9 m: leave a corridor (≥ 8 tiles) before the next checkpoint so nobody respawns under fire.
+        /// </summary>
         public LevelLayout TurretHall(int turrets = 2)
         {
             Estimate($"Sală cu {turrets} turele", 30f + turrets * 6f);

@@ -21,6 +21,8 @@ $ErrorActionPreference = 'Stop'
 $exe = Join-Path (Get-ProjectPath) 'Builds\Windows\RootAccess.exe'
 if (-not (Test-Path $exe)) { Write-Error "Build not found: $exe (run scripts/build.ps1)"; exit 1 }
 if (-not $OutDir) { $OutDir = Join-Path (Get-ProjectPath) 'Logs\coop' }
+# The game resolves relative paths against its own folder: hand it absolute ones.
+if (-not [System.IO.Path]::IsPathRooted($OutDir)) { $OutDir = [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $OutDir)) }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $hostLog = Join-Path $OutDir 'host.log'
 $clientLog = Join-Path $OutDir 'client.log'
