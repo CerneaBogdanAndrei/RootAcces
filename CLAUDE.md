@@ -50,6 +50,7 @@ D:\ProiectSPV\                 git repo (branch main, Git LFS for png/wav/…)
 ./scripts/build.ps1 [-RebuildContent] [-Development]   # (re)generate content, then build RootAccess.exe
 ./scripts/test.ps1 [-Platform EditMode|PlayMode|All] [-Filter Name]   # NUnit XML -> RootAccess/Logs/TestResults
 ./scripts/smoke-player.ps1 [-Scenes Hub,Level01_Rooftops] [-Spawn l1_drone]   # run the exe, screenshots + Player.log scan
+./scripts/capture.ps1 [-Only '0*'] [-OutDir path]     # documentation screenshots (Documentatie/screenshots by default)
 ./scripts/package-for-drive.ps1 [-Build] [-IncludeGit] # dist/RootAccess_Project.zip + dist/RootAccess_Windows.zip
 ./scripts/unity-batch.ps1 -Step <name> -ExecuteMethod <Namespace.Class.Method> [-WithGraphics] [-NoQuit]
 ```
@@ -68,7 +69,9 @@ Clean-machine order: `ProjectSetup.Run` → `-importPackage "<ugui>/Package Reso
 → `PlaceholderArtGenerator.GenerateAll` → `SceneBuilder.BuildAll` → `BuildScript.BuildWindows`.
 
 Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-ra-scene <Scene> -ra-spawn <id>
--ra-newgame -ra-screenshot <png> -ra-screenshot-delay <s> -ra-quit-after <s>`. Spawn ids: `hub_center`, `l1_start`,
+-ra-newgame -ra-screenshot <png> -ra-screenshot-delay <s> -ra-quit-after <s> -ra-interact <ObjectName>
+-ra-command inventory,skills,quests,pause,rubric,settings,gameover -ra-default-settings` (in-memory settings: scripts
+must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses them to photograph every screen. Spawn ids: `hub_center`, `l1_start`,
 `l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `showcase_start`, `room_01`..`room_14`.
 
 ## Unity 6000.3 gotchas learned the hard way

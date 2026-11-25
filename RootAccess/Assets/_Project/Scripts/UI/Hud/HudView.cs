@@ -20,6 +20,8 @@ namespace RootAccess.UI
         [SerializeField] private TMP_Text promptLabel;
         [SerializeField] private TMP_Text hiddenLabel;
         [SerializeField] private TMP_Text toastLabel;
+        [SerializeField] private TMP_Text gadgetLabel;
+        [SerializeField] private ItemDefinition trackedGadget;
         [SerializeField] private Gradient traceGradient;
         [SerializeField] private float toastSeconds = 2.2f;
 
@@ -45,6 +47,7 @@ namespace RootAccess.UI
             EventBus<InteractionPromptChanged>.Subscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Subscribe(OnHidden);
             EventBus<ToastRequested>.Subscribe(OnToast);
+            EventBus<InventoryChanged>.Subscribe(OnInventory);
         }
 
         private void OnDisable()
@@ -57,6 +60,7 @@ namespace RootAccess.UI
             EventBus<InteractionPromptChanged>.Unsubscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Unsubscribe(OnHidden);
             EventBus<ToastRequested>.Unsubscribe(OnToast);
+            EventBus<InventoryChanged>.Unsubscribe(OnInventory);
         }
 
         private void Update()
@@ -85,7 +89,7 @@ namespace RootAccess.UI
         }
 
         private void OnGameState(GameStateChanged evt) =>
-            SetVisible(evt.Current is GameState.Playing or GameState.Hacking or GameState.Dialogue or GameState.Paused);
+            SetVisible(evt.Current is GameState.Playing or GameState.Hacking or GameState.Dialogue or GameState.Paused or GameState.Terminal);
 
         private void OnHealth(PlayerHealthChanged evt)
         {
@@ -131,6 +135,12 @@ namespace RootAccess.UI
         private void OnHidden(PlayerHiddenChanged evt)
         {
             if (hiddenLabel != null) hiddenLabel.text = evt.IsHidden ? Strings.Hud.Hidden : string.Empty;
+        }
+
+        private void OnInventory(InventoryChanged _)
+        {
+            if (gadgetLabel == null || trackedGadget == null || !ServiceLocator.TryGet(out SessionService session)) return;
+            gadgetLabel.text = string.Format(Strings.Hud.EmpCount, session.Session.Inventory.Count(trackedGadget));
         }
 
         private void OnToast(ToastRequested evt)

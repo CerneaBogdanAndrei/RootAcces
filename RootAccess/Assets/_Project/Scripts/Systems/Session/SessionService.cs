@@ -13,6 +13,9 @@ namespace RootAccess.Systems
         [SerializeField] private GameDatabase database;
         [SerializeField] private string newGameScene = SceneNames.Hub;
 
+        /// <summary>"Optical camouflage" skill: detection noise raises the trace meter this much slower.</summary>
+        private const float CamouflageTraceMultiplier = 0.7f;
+
         private SaveSystem _saveSystem;
         private GameManager _gameManager;
 
@@ -72,6 +75,8 @@ namespace RootAccess.Systems
             foreach (LevelDefinition level in database.Levels)
                 if (level != null && level.UnlockedByDefault) Session.UnlockLevel(level.LevelId);
             if (database.StartingQuest != null) Session.Quests.Start(database.StartingQuest);
+            foreach (ItemGrant grant in database.StartingItems)
+                if (grant.Item != null) Session.Inventory.Add(grant.Item, grant.Quantity);
             PublishAll();
         }
 
@@ -120,6 +125,18 @@ namespace RootAccess.Systems
             return true;
         }
 
+        public bool HasSkillEffect(SkillEffect effect) => Session != null && Session.Skills.HasEffect(effect);
+
+        /// <summary>Buys one unit of <paramref name="offer"/>; the result tells the UI why a purchase was refused.</summary>
+        public PurchaseResult Buy(in ShopOffer offer)
+        {
+            if (Session == null) return PurchaseResult.InvalidOffer;
+            PurchaseResult result = Shop.TryBuy(Session.Wallet, Session.Inventory, offer);
+            if (result == PurchaseResult.Success)
+                EventBus<SfxRequested>.Publish(SfxRequested.Ui(SfxId.Pickup));
+            return result;
+        }
+
         public void StartQuest(QuestDefinition quest)
         {
             if (Session != null && Session.Quests.Start(quest)) EventBus<QuestChanged>.Publish(new QuestChanged(Session.Quests.Get(quest.QuestId)));
@@ -142,6 +159,7 @@ namespace RootAccess.Systems
             session.Quests.QuestUpdated += OnQuestUpdated;
             session.Quests.QuestCompleted += OnQuestCompleted;
             session.Skills.SkillUnlocked += OnSkillUnlocked;
+            session.Skills.XpChanged += OnXpChanged;
         }
 
         private void Unbind(GameSession session)
@@ -154,6 +172,7 @@ namespace RootAccess.Systems
             session.Quests.QuestUpdated -= OnQuestUpdated;
             session.Quests.QuestCompleted -= OnQuestCompleted;
             session.Skills.SkillUnlocked -= OnSkillUnlocked;
+            session.Skills.XpChanged -= OnXpChanged;
         }
 
         private void PublishAll()
@@ -162,6 +181,7 @@ namespace RootAccess.Systems
             EventBus<CreditsChanged>.Publish(new CreditsChanged(Session.Wallet.Credits));
             EventBus<TraceChanged>.Publish(new TraceChanged(Session.Trace.Value, Session.Trace.Level));
             EventBus<QuestChanged>.Publish(new QuestChanged(Session.Quests.ActiveMainQuest));
+            EventBus<XpChanged>.Publish(new XpChanged(Session.Skills.Xp));
         }
 
         private void LoadScene(string sceneName)
@@ -175,7 +195,12 @@ namespace RootAccess.Systems
             _gameManager.LoadScene(sceneName);
         }
 
-        private void OnTraceNoise(TraceNoise evt) => Session?.Trace.Add(evt.Amount);
+        private void OnTraceNoise(TraceNoise evt)
+        {
+            if (Session == null) return;
+            float multiplier = Session.Skills.HasEffect(SkillEffect.LongerShadows) ? CamouflageTraceMultiplier : 1f;
+            Session.Trace.Add(evt.Amount * multiplier);
+        }
 
         private void OnCheckpointReached(CheckpointReached evt)
         {
@@ -222,5 +247,7 @@ namespace RootAccess.Systems
         }
 
         private void OnSkillUnlocked(SkillDefinition skill) => EventBus<SkillUnlockedEvent>.Publish(new SkillUnlockedEvent(skill));
+
+        private void OnXpChanged(int xp) => EventBus<XpChanged>.Publish(new XpChanged(xp));
     }
 }

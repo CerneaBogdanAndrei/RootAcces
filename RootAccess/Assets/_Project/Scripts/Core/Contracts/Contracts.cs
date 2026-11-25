@@ -47,6 +47,16 @@ namespace RootAccess.Core
         void ApplyHack(HackAction action);
     }
 
+    /// <summary>Interactables the "remote hack" skill can reach from further away (terminals).</summary>
+    public interface IRemoteInteractable { }
+
+    /// <summary>Electronics an EMP blast can knock out for a while (cameras, drones, turrets, guard gear).</summary>
+    public interface IEmpTarget
+    {
+        bool IsEmpDisabled { get; }
+        void ApplyEmp(float seconds);
+    }
+
     public interface IHideable
     {
         bool IsHidden { get; }

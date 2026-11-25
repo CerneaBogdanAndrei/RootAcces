@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SkillDefinition
   skillId: stealth_silent_steps
   displayName: "Pa\u0219i silen\u021Bio\u0219i"
-  description: "Pa\u0219ii t\u0103i nu mai fac zgomot pe metal."
+  description: "T\u0103lpi amortizate: pa\u0219ii t\u0103i se aud de trei ori mai
+    \xEEncet."
   branch: 0
   xpCost: 100
   effect: 2

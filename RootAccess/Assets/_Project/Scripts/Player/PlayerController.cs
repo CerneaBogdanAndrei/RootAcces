@@ -50,6 +50,8 @@ namespace RootAccess.Player
         private int _waterVolumes;
         private bool _doubleJumpUnlocked = true;
 
+        private const float ServoDashCooldownMultiplier = 0.6f;
+
         public event Action<PlayerStateId> StateChanged;
         public event Action Jumped;
         public event Action Landed;
@@ -81,6 +83,10 @@ namespace RootAccess.Player
         internal bool CrouchRequested => input != null && (input.CrouchHeld || input.Move.y < -0.6f);
         internal bool CanAirJump => _doubleJumpUnlocked && AirJumpsUsed < config.ExtraAirJumps;
         internal bool CanDash => DashCooldownTimer <= 0f && (IsGrounded || !AirDashUsed);
+        internal float DashCooldownMultiplier { get; private set; } = 1f;
+
+        /// <summary>Extra hit points granted by the "armor plating" skill.</summary>
+        public int BonusHealth { get; private set; }
 
         public Transform Transform => transform;
         public GameObject GameObject => gameObject;
@@ -358,8 +364,11 @@ namespace RootAccess.Player
 
         private void OnSkillUnlocked(SkillUnlockedEvent _) => RefreshAbilities();
 
-        private void RefreshAbilities()
+        internal void RefreshAbilities()
         {
+            bool hasSession = ServiceLocator.TryGet(out SessionService skills);
+            DashCooldownMultiplier = hasSession && skills.HasSkillEffect(SkillEffect.DashCooldown) ? ServoDashCooldownMultiplier : 1f;
+            BonusHealth = hasSession && skills.HasSkillEffect(SkillEffect.ArmorPlating) ? 1 : 0;
             if (!config.DoubleJumpRequiresSkill)
             {
                 _doubleJumpUnlocked = true;

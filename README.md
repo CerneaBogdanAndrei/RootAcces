@@ -43,8 +43,8 @@ sparge terminale și fură date. Proiect pentru disciplina „Joc 2D de tip sing
 | Dash | Shift stânga / click dreapta | RB / R1 |
 | Ghemuire | Ctrl stânga / C / S | B / Circle |
 | Interacțiune (terminal, nod de rețea, platformă de teleport) | E | X / Square |
-| Aruncă grenadă EMP *(P2)* | G / click stânga | RT / R2 |
-| Inventar | Tab / I | Select |
+| Aruncă grenadă EMP (spre cursor / stick-ul drept) | G / click stânga | RT / R2 |
+| Terminal personal: inventar, abilități, misiuni | Tab / I | Select |
 | Pauză | Esc | Start |
 | Panoul de barem | F1 | — |
 | Hacking (în overlay) | mouse sau săgeți + Enter, Esc = renunță | D-pad + A, B = renunță |

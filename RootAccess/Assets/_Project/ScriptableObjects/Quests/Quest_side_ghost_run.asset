@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e89e8b47759a794fb90f8cb223e9d72, type: 3}
+  m_Name: Quest_side_ghost_run
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
+  questId: side_ghost_run
+  title: "Fantoma de pe acoperi\u0219"
+  description: "Clientul vrea o opera\u021Biune curat\u0103: ajunge la extrac\u021Bie
+    f\u0103r\u0103 s\u0103 declan\u0219ezi alarma."
+  isMainStory: 0
+  objectives:
+  - objectiveId: ghost_exit
+    description: "Ajunge la punctul de extrac\u021Bie din Sectorul 7"
+    type: 0
+    targetId: exit_l1
+    requiredCount: 1
+    optional: 0
+  - objectiveId: ghost_stealth
+    description: "Bonus: nu declan\u0219a alarma"
+    type: 3
+    targetId: 
+    requiredCount: 1
+    optional: 0
+  rewardCredits: 200
+  rewardXp: 120

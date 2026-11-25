@@ -87,7 +87,8 @@ Bootstrap (build index 0) ──► MainMenu ──► Hub ──► Level01_Roo
 
 - `SystemsRoot` apare înaintea primei scene. De aceea orice scenă poate fi pornită direct în Editor.
 - `GameManager` ține starea de nivel înalt (`Boot`, `MainMenu`, `Loading`, `Playing`, `Paused`, `Hacking`, `Dialogue`,
-  `GameOver`, `LevelComplete`), setează `Time.timeScale` și publică `GameStateChanged`. UI-ul reacționează la acest eveniment.
+  `GameOver`, `LevelComplete`, `Terminal`), setează `Time.timeScale` și publică `GameStateChanged`. UI-ul reacționează la
+  acest eveniment. `Terminal` e starea terminalului personal (inventar, abilități, magazin): timpul e oprit, input-ul e pe UI.
 - `SceneLoader` încarcă asincron cu `allowSceneActivation = false` până trece durata minimă a ecranului de încărcare
   (progresul vine prin `SceneLoadProgress`), apoi publică `SceneLoadCompleted`.
 - `LevelContext` (execution order −200) plasează jucătorul: întâi la spawn-ul cerut (fast travel, panoul F1, `-ra-spawn`),
@@ -103,7 +104,7 @@ Toate evenimentele sunt `readonly struct : IEvent`, definite în `Core/Events/*.
 | Jucător | `PlayerHealthChanged`, `PlayerDied`, `PlayerRespawnRequested`, `PlayerRespawned`, `PlayerHiddenChanged`, `CheckpointReached`, `InteractionPromptChanged` |
 | Stealth | `TraceNoise`, `TraceChanged`, `TraceLevelChanged`, `AlarmRaised` |
 | Hacking | `HackRequested`, `HackSessionStarted`, `HackResolved`, `HackSessionEnded` |
-| Progres | `ObjectiveReported`, `QuestChanged`, `InventoryChanged`, `CreditsChanged`, `SkillUnlockedEvent`, `ToastRequested` |
+| Progres | `ObjectiveReported`, `QuestChanged`, `InventoryChanged`, `CreditsChanged`, `XpChanged`, `SkillUnlockedEvent`, `ToastRequested`, `TerminalScreenRequested` |
 | Dialog | `DialogueRequested`, `DialogueLineShown`, `DialogueEnded` |
 | Prezentare | `SfxRequested`, `FootstepRequested`, `VfxRequested`, `ScreenShakeRequested`, `MusicMoodRequested`, `UnderwaterChanged`, `CameraZoneEntered`, `TeleportStarted`, `TeleportCompleted` |
 
@@ -124,6 +125,14 @@ zonele de alarmă publică `TraceNoise` (camerele și `AlarmZone` publică și `
 zgomotul în `TraceMeter`, care trece pragurile 25 / 60 / 100 și publică `TraceLevelChanged`. La acest eveniment
 reacționează `MusicDirector` (muzica de alertă), `MixerSnapshots` (snapshot-ul `Alarm`) și HUD-ul (la 100 afișează
 „BLOCARE TOTALĂ”). `AlarmRaised` nu are încă abonați: e punctul de legătură pentru gardienii care converg spre alarmă (P3).
+
+Exemplu, magazinul din Hub: `ShopTerminal.Interact` ─► `TerminalScreenRequested(Shop, oferte)` ─► `TerminalScreenView.Open`
+─► `GameManager.EnterTerminal` (timp oprit) ─► „Cumpără” ─► `SessionService.Buy` ─► `Shop.TryBuy(Wallet, Inventory, ofertă)`
+─► `CreditsChanged` + `InventoryChanged` ─► HUD și lista se reîmprospătează.
+
+Efectele skill-urilor nu sunt centralizate: fiecare consumator întreabă `SessionService.HasSkillEffect(...)` acolo unde
+contează (dash, viață maximă, rază de interacțiune, dificultatea terminalelor, volumul pașilor, creșterea urmăririi,
+raza EMP). Hacking-ul nu depinde de Systems, așa că efectele de spargere sunt aplicate de `Terminal` (Gameplay).
 
 ## 5. Jucătorul și AI-ul
 

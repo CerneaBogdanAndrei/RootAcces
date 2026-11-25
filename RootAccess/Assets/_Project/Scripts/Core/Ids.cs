@@ -11,7 +11,8 @@ namespace RootAccess.Core
         Dialogue,
         Cutscene,
         GameOver,
-        LevelComplete
+        LevelComplete,
+        Terminal
     }
 
     public enum AudioChannel

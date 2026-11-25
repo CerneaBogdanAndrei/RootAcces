@@ -237,8 +237,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd69044094df95b4b89f9ea44ea4722a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RootAccess.Gameplay::RootAccess.Gameplay.JobBoard
-  contract: {fileID: 11400000, guid: b346d65402767e94491a80ffc0a50a3b, type: 2}
-  briefing: {fileID: 11400000, guid: 6d7c8f13412cae24db05648649b13eab, type: 2}
+  contracts:
+  - {fileID: 11400000, guid: b346d65402767e94491a80ffc0a50a3b, type: 2}
+  - {fileID: 11400000, guid: 839100f42cdbb0a4a8ab915121f41e12, type: 2}
 --- !u!1 &4258684105439268350
 GameObject:
   m_ObjectHideFlags: 0

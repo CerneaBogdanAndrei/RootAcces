@@ -30,7 +30,8 @@ namespace RootAccess.Core
             }
 
             ServiceLocator.Register(this);
-            Settings = new SettingsService(new PlayerPrefsSettingsStore());
+            ISettingsStore store = CommandLineAutomation.UsesDefaultSettings ? new MemorySettingsStore() : new PlayerPrefsSettingsStore();
+            Settings = new SettingsService(store);
             Settings.Load();
             Settings.ApplyDisplay(!CommandLineAutomation.OverridesScreenMode);
             ServiceLocator.Register(Settings);
@@ -51,6 +52,7 @@ namespace RootAccess.Core
             EventBus<HackSessionStarted>.Subscribe(OnHackStarted);
             EventBus<HackSessionEnded>.Subscribe(OnHackEnded);
             EventBus<LevelCompleted>.Subscribe(OnLevelCompleted);
+            CommandLineAutomation.CommandRequested += OnAutomationCommand;
         }
 
         private void OnDisable()
@@ -62,6 +64,7 @@ namespace RootAccess.Core
             EventBus<HackSessionStarted>.Unsubscribe(OnHackStarted);
             EventBus<HackSessionEnded>.Unsubscribe(OnHackEnded);
             EventBus<LevelCompleted>.Unsubscribe(OnLevelCompleted);
+            CommandLineAutomation.CommandRequested -= OnAutomationCommand;
         }
 
         private void OnDestroy()
@@ -84,7 +87,7 @@ namespace RootAccess.Core
             if (next == State) return;
             GameState previous = State;
             State = next;
-            Time.timeScale = next is GameState.Paused or GameState.GameOver or GameState.LevelComplete ? 0f : 1f;
+            Time.timeScale = next is GameState.Paused or GameState.GameOver or GameState.LevelComplete or GameState.Terminal ? 0f : 1f;
             EventBus<GameStateChanged>.Publish(new GameStateChanged(previous, next));
         }
 
@@ -112,6 +115,20 @@ namespace RootAccess.Core
         public void Resume()
         {
             if (State == GameState.Paused) SetState(GameState.Playing);
+        }
+
+        /// <summary>Opens a full-screen terminal (inventory, skills, shop...): only from gameplay; time stops while it is open.</summary>
+        public bool EnterTerminal()
+        {
+            if (State == GameState.Terminal) return true;
+            if (State != GameState.Playing) return false;
+            SetState(GameState.Terminal);
+            return true;
+        }
+
+        public void ExitTerminal()
+        {
+            if (State == GameState.Terminal) SetState(GameState.Playing);
         }
 
         public void ReturnToMainMenu() => LoadScene(SceneNames.MainMenu);
@@ -154,5 +171,11 @@ namespace RootAccess.Core
         }
 
         private void OnLevelCompleted(LevelCompleted _) => SetState(GameState.LevelComplete);
+
+        private void OnAutomationCommand(string command)
+        {
+            if (command == AutomationCommands.Pause) TogglePause();
+            else if (command == AutomationCommands.GameOver && State == GameState.Playing) SetState(GameState.GameOver);
+        }
     }
 }

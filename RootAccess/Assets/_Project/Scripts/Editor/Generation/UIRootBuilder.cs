@@ -15,8 +15,8 @@ namespace RootAccess.EditorTools
         public static GameObject BuildUIRoot(BuildContext ctx)
         {
             GameObject root = UIFactory.Canvas("UIRoot", 100);
-            BuildHud(root.transform);
-            BuildInventory(root.transform, ctx);
+            BuildHud(root.transform, ctx);
+            BuildTerminal(root.transform, ctx);
             BuildDialogue(root.transform, ctx);
             BuildHacking(root.transform, ctx);
             BuildPause(root.transform, ctx);
@@ -32,7 +32,7 @@ namespace RootAccess.EditorTools
             return prefab;
         }
 
-        private static void BuildHud(Transform parent)
+        private static void BuildHud(Transform parent, BuildContext ctx)
         {
             RectTransform hud = UIFactory.Stretch(UIFactory.Rect("HUD", parent));
             CanvasGroup group = UIFactory.Group(hud.gameObject);
@@ -50,6 +50,8 @@ namespace RootAccess.EditorTools
 
             TextMeshProUGUI hidden = UIFactory.Text("HiddenLabel", hud, string.Empty, 26f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
             UIFactory.Place(hidden.rectTransform, new Vector2(0f, 1f), new Vector2(28f, -184f), new Vector2(400f, 36f));
+            TextMeshProUGUI gadget = UIFactory.Text("GadgetLabel", hud, string.Empty, 24f, TextAlignmentOptions.Left, UIFactory.Yellow, FontStyles.Bold);
+            UIFactory.Place(gadget.rectTransform, new Vector2(0f, 1f), new Vector2(28f, -222f), new Vector2(300f, 32f));
 
             TextMeshProUGUI credits = UIFactory.Text("Credits", hud, "0", 30f, TextAlignmentOptions.Right, UIFactory.Yellow, FontStyles.Bold);
             UIFactory.Place(credits.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(500f, 40f));
@@ -80,42 +82,73 @@ namespace RootAccess.EditorTools
                 so.Require("promptLabel").objectReferenceValue = prompt;
                 so.Require("hiddenLabel").objectReferenceValue = hidden;
                 so.Require("toastLabel").objectReferenceValue = toast;
+                so.Require("gadgetLabel").objectReferenceValue = gadget;
+                so.Require("trackedGadget").objectReferenceValue = ctx.EmpGrenade;
                 so.Require("traceGradient").gradientValue = gradient;
             });
         }
 
-        private static void BuildInventory(Transform parent, BuildContext ctx)
+        /// <summary>Personal terminal: tab row, entry list (left), details + action (right). Entries are cloned from a template.</summary>
+        private static void BuildTerminal(Transform parent, BuildContext ctx)
         {
-            Image panel = UIFactory.Image("InventoryPanel", parent, UIFactory.Panel);
-            UIFactory.Place(panel.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1500f, 640f));
-            UIFactory.Group(panel.gameObject);
-            var view = panel.gameObject.AddComponent<InventoryView>();
+            var size = new Vector2(1560f, 860f);
+            Image panel = CenterPanel("TerminalScreen", parent, size, out TextMeshProUGUI title, Strings.Panels.Title);
+            UIFactory.Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(40f, -30f), new Vector2(760f, 60f));
+            title.alignment = TextAlignmentOptions.Left;
+            TextMeshProUGUI header = UIFactory.Text("Header", panel.transform, string.Empty, 28f, TextAlignmentOptions.Right, UIFactory.Yellow, FontStyles.Bold);
+            UIFactory.Place(header.rectTransform, new Vector2(1f, 1f), new Vector2(-40f, -38f), new Vector2(700f, 44f));
 
-            TMP_Text Column(string title, float x)
-            {
-                TextMeshProUGUI header = UIFactory.Text(title, panel.transform, title, 32f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
-                UIFactory.Place(header.rectTransform, new Vector2(0f, 1f), new Vector2(x, -24f), new Vector2(460f, 44f));
-                TextMeshProUGUI body = UIFactory.Text(title + "Body", panel.transform, "-", 22f);
-                UIFactory.Place(body.rectTransform, new Vector2(0f, 1f), new Vector2(x, -80f), new Vector2(460f, 520f));
-                return body;
-            }
+            RectTransform tabs = UIFactory.Rect("Tabs", panel.transform);
+            UIFactory.Place(tabs, new Vector2(0f, 1f), new Vector2(40f, -100f), new Vector2(size.x - 80f, 58f));
+            UIFactory.Horizontal(tabs.gameObject, 14f);
+            string[] tabTitles = { Strings.Panels.Inventory, Strings.Panels.Skills, Strings.Panels.Quests, Strings.Panels.Shop, Strings.Panels.Contracts };
+            var tabButtons = new Button[tabTitles.Length];
+            for (int i = 0; i < tabTitles.Length; i++) tabButtons[i] = UIFactory.Button($"Tab_{i}", tabs, tabTitles[i], 280f, 54f);
 
-            TMP_Text inventoryText = Column(Strings.Panels.Inventory, 30f);
-            TMP_Text questText = Column(Strings.Panels.Quests, 520f);
-            TMP_Text skillText = Column(Strings.Panels.Skills, 1010f);
-            TextMeshProUGUI hint = UIFactory.Text("Hint", panel.transform, Strings.Panels.InventoryHint, 20f, TextAlignmentOptions.Right, UIFactory.Muted);
-            UIFactory.Place(hint.rectTransform, new Vector2(1f, 0f), new Vector2(-24f, 16f), new Vector2(400f, 30f));
+            RectTransform list = UIFactory.Rect("List", panel.transform);
+            UIFactory.Place(list, new Vector2(0f, 1f), new Vector2(40f, -180f), new Vector2(900f, 580f));
+            var grid = list.gameObject.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(440f, 58f);
+            grid.spacing = new Vector2(16f, 10f);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 2;
+            Button template = UIFactory.Button("EntryTemplate", list, string.Empty, 440f, 58f);
+            TMP_Text templateLabel = template.GetComponentInChildren<TMP_Text>(true);
+            templateLabel.fontSize = 22f;
+            templateLabel.alignment = TextAlignmentOptions.Left;
 
-            var questLog = questText.gameObject.AddComponent<QuestLogView>();
-            EditorAssetUtil.SetField(questLog, "body", questText);
-            var skillTree = skillText.gameObject.AddComponent<SkillTreeView>();
-            EditorAssetUtil.SetField(skillTree, "body", skillText);
+            Image details = UIFactory.Image("Details", panel.transform, new Color(0.02f, 0.02f, 0.06f, 0.9f));
+            UIFactory.Place(details.rectTransform, new Vector2(1f, 1f), new Vector2(-40f, -180f), new Vector2(540f, 550f), new Vector2(1f, 1f));
+            TextMeshProUGUI detailTitle = UIFactory.Text("DetailTitle", details.transform, string.Empty, 30f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(detailTitle.rectTransform, new Vector2(0f, 1f), new Vector2(20f, -16f), new Vector2(500f, 44f));
+            TextMeshProUGUI detailBody = UIFactory.Text("DetailBody", details.transform, string.Empty, 22f, TextAlignmentOptions.TopLeft);
+            UIFactory.Place(detailBody.rectTransform, new Vector2(0f, 1f), new Vector2(20f, -70f), new Vector2(500f, 330f));
+            Button action = UIFactory.Button("Action", details.transform, Strings.Panels.Buy, 300f, 58f);
+            UIFactory.Place((RectTransform)action.transform, new Vector2(0.5f, 0f), new Vector2(0f, 64f), new Vector2(300f, 58f));
+            TextMeshProUGUI status = UIFactory.Text("Status", details.transform, string.Empty, 20f, TextAlignmentOptions.Center, UIFactory.Yellow);
+            UIFactory.Place(status.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 18f), new Vector2(500f, 36f));
+
+            Button close = UIFactory.Button("Close", panel.transform, Strings.Panels.Close, 220f, 50f);
+            UIFactory.Place((RectTransform)close.transform, new Vector2(1f, 0f), new Vector2(-150f, 40f), new Vector2(220f, 50f));
+            TextMeshProUGUI hint = UIFactory.Text("Hint", panel.transform, Strings.Panels.CloseHint, 20f, TextAlignmentOptions.Left, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(0f, 0f), new Vector2(40f, 30f), new Vector2(600f, 30f));
+
+            GameObject host = panel.transform.parent.gameObject;
+            var view = host.AddComponent<TerminalScreenView>();
+            UIFactory.SetPanel(view, tabButtons[0]);
             EditorAssetUtil.SetFields(view, so =>
             {
                 so.Require("input").objectReferenceValue = ctx.Input;
-                so.Require("inventoryText").objectReferenceValue = inventoryText;
-                so.Require("questLog").objectReferenceValue = questLog;
-                so.Require("skillTree").objectReferenceValue = skillTree;
+                so.SetArray("tabButtons", tabButtons);
+                so.Require("headerLabel").objectReferenceValue = header;
+                so.Require("listRoot").objectReferenceValue = list;
+                so.Require("entryTemplate").objectReferenceValue = template;
+                so.Require("detailTitle").objectReferenceValue = detailTitle;
+                so.Require("detailBody").objectReferenceValue = detailBody;
+                so.Require("actionButton").objectReferenceValue = action;
+                so.Require("actionLabel").objectReferenceValue = action.GetComponentInChildren<TMP_Text>(true);
+                so.Require("statusLabel").objectReferenceValue = status;
+                so.Require("closeButton").objectReferenceValue = close;
             });
         }
 

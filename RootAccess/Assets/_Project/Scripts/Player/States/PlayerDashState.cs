@@ -16,7 +16,7 @@ namespace RootAccess.Player
         public override void Enter()
         {
             Owner.DashBufferTimer = 0f;
-            Owner.DashCooldownTimer = Config.DashCooldown;
+            Owner.DashCooldownTimer = Config.DashCooldown * Owner.DashCooldownMultiplier;
             if (!Owner.IsGrounded) Owner.AirDashUsed = true;
 
             float x = Owner.MoveInput.x;

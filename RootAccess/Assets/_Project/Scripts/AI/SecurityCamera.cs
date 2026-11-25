@@ -8,7 +8,7 @@ namespace RootAccess.AI
     /// Sweeping security camera. Seeing the player fills a detection meter; when full it raises the alarm and keeps
     /// adding trace while the player stays visible. Hacking it (Terminal_Camera) disables or loops it for a while.
     /// </summary>
-    public sealed class SecurityCamera : MonoBehaviour, IHackable
+    public sealed class SecurityCamera : MonoBehaviour, IHackable, IEmpTarget
     {
         [SerializeField] private VisionCone vision;
         [SerializeField] private Transform pivot;
@@ -31,6 +31,9 @@ namespace RootAccess.AI
 
         public string HackLabel => Strings.HackTargets.Camera;
         public bool IsHacked => Time.time < _disabledUntil;
+        public bool IsEmpDisabled => IsHacked;
+
+        public void ApplyEmp(float seconds) => _disabledUntil = Mathf.Max(_disabledUntil, Time.time + seconds);
         public float Detection => _detection;
 
         private void Awake()

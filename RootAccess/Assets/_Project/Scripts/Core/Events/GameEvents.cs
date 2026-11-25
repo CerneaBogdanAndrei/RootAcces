@@ -179,11 +179,13 @@ namespace RootAccess.Core
     {
         public readonly SurfaceType Surface;
         public readonly Vector3 Position;
+        public readonly float Volume;
 
-        public FootstepRequested(SurfaceType surface, Vector3 position)
+        public FootstepRequested(SurfaceType surface, Vector3 position, float volume = 1f)
         {
             Surface = surface;
             Position = position;
+            Volume = volume;
         }
     }
 

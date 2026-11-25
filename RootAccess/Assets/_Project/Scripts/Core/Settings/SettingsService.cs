@@ -52,6 +52,17 @@ namespace RootAccess.Core
         void Flush();
     }
 
+    /// <summary>Volatile store: automation runs use it so screenshots show defaults and never overwrite the player's prefs.</summary>
+    public sealed class MemorySettingsStore : ISettingsStore
+    {
+        private readonly System.Collections.Generic.Dictionary<string, string> _values = new();
+
+        public bool HasKey(string key) => _values.ContainsKey(key);
+        public string GetString(string key) => _values.TryGetValue(key, out string value) ? value : string.Empty;
+        public void SetString(string key, string value) => _values[key] = value;
+        public void Flush() { }
+    }
+
     public sealed class PlayerPrefsSettingsStore : ISettingsStore
     {
         public bool HasKey(string key) => PlayerPrefs.HasKey(key);

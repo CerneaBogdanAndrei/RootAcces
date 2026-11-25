@@ -28,7 +28,7 @@ foreach ($scene in $Scenes) {
     $shot = Join-Path $OutDir "$scene.png"
     Remove-Item $log, $shot -ErrorAction SilentlyContinue
     $playerArgs = @('-screen-fullscreen', '0', '-screen-width', '1280', '-screen-height', '720', '-logFile', "`"$log`"",
-        '-ra-screenshot', "`"$shot`"", '-ra-quit-after', "$Seconds", '-ra-newgame')
+        '-ra-screenshot', "`"$shot`"", '-ra-quit-after', "$Seconds", '-ra-newgame', '-ra-default-settings')
     if ($scene -ne 'MainMenu') { $playerArgs += @('-ra-scene', $scene) }
     if ($Spawn) { $playerArgs += @('-ra-spawn', $Spawn) }
 
