@@ -24,6 +24,7 @@ namespace RootAccess.AI
     {
         private const float EmpStunFraction = 0.5f;
         private const float EarHeight = 1.2f;
+        private const float ProbeHeight = 0.5f;
 
         [SerializeField] private GuardConfig config;
         [SerializeField] private VisionCone vision;
@@ -285,10 +286,11 @@ namespace RootAccess.AI
 
         private bool IsBlocked(int direction)
         {
-            Vector2 position = _body.position;
+            // Probes start half a unit above the feet: a ray that starts exactly on the floor's surface does not report it.
+            Vector2 position = _body.position + Vector2.up * ProbeHeight;
             Vector2 ahead = position + new Vector2(direction * 0.6f, 0f);
             bool wall = Physics2D.Raycast(position, Vector2.right * direction, 0.7f, Layers.ObstacleMask).collider != null;
-            bool ground = Physics2D.Raycast(ahead, Vector2.down, 1.6f, Layers.SolidMask).collider != null;
+            bool ground = Physics2D.Raycast(ahead, Vector2.down, 1.6f + ProbeHeight, Layers.SolidMask).collider != null;
             return wall || !ground;
         }
 

@@ -15,5 +15,7 @@ MonoBehaviour:
   levelId: level04
   sceneName: Level04_Sewers
   displayName: Canalizarea
+  description: "Canalizarea de sub ora\u0219: ap\u0103, curen\u021Bi \u0219i o ecluz\u0103
+    de deschis."
   unlockedByDefault: 0
   order: 4

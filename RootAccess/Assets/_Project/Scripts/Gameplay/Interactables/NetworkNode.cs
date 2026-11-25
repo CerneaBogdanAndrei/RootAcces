@@ -19,6 +19,7 @@ namespace RootAccess.Gameplay
         public string HackLabel => Strings.HackTargets.NetworkNode;
         public bool IsHacked => _unlocked;
         public bool IsUnlocked => _unlocked || !requiresHack;
+        public NetworkNode LinkedNode => linkedNode;
         public override string Prompt => IsUnlocked ? Strings.Prompts.Teleport : Strings.Prompts.NodeLocked;
         protected override Teleporter Destination => linkedNode;
 

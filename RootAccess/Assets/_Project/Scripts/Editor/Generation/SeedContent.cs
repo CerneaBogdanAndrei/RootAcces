@@ -29,6 +29,18 @@ namespace RootAccess.EditorTools
             public const string TerminalLevel01Camera = "terminal_l1_camera";
             public const string TerminalLevel01Data = "terminal_l1_data";
             public const string ExitLevel01 = "exit_l1";
+            public const string TerminalLevel01Lasers = "terminal_l1_lasers";
+            public const string Level02 = "level02";
+            public const string Level03 = "level03";
+            public const string Level04 = "level04";
+            public const string Level05 = "level05";
+            public const string MainQuestLevel02 = "main_office_tower";
+            public const string TerminalLevel02Camera = "l2_gate_camera";
+            public const string TerminalLevel02Door = "l2_gate_door";
+            public const string TerminalLevel02Lasers = "l2_lasers";
+            public const string TerminalLevel02Elevator = "l2_elevator";
+            public const string TerminalLevel02Vault = "l2_vault";
+            public const string ExitLevel02 = "exit_l2";
         }
 
         public static class Items
@@ -79,6 +91,12 @@ namespace RootAccess.EditorTools
             public const string GhostTitle = "Fantoma de pe acoperiș";
             public const string GhostDesc = "Clientul vrea o operațiune curată: ajunge la extracție fără să declanșezi alarma.";
             public const string GhostExit = "Ajunge la punctul de extracție din Sectorul 7";
+            public const string OfficeTitle = "Turnul de birouri";
+            public const string OfficeDesc = "Fragmentul de pe acoperiș conține o adresă: seiful de date al firmei Halden Systems, la etajul 2 al turnului de birouri.";
+            public const string OfficeReach = "Intră în turnul de birouri";
+            public const string OfficeElevator = "Repornește liftul de serviciu";
+            public const string OfficeVault = "Sparge seiful de date de la etajul 2";
+            public const string OfficeExit = "Ieși prin acoperișul turnului";
         }
 
         public static class Dialogue
@@ -90,6 +108,10 @@ namespace RootAccess.EditorTools
             public const string Briefing3 = "Primit. Pornesc spre acoperișuri.";
             public const string Intro1 = "Te văd pe cameră. Mișcă-te cu A/D, sari cu Space, dash cu Shift.";
             public const string Intro2 = "Gardienii văd doar ce e în conul lor de lumină. Stai ghemuit în umbră.";
+            public const string Intro3 = "Și ai grijă la zgomot: pașii pe metal se aud. Ghemuit nu faci niciun zgomot.";
+            public const string Office1 = "Turnul Halden. Camere pe fiecare hol, gardieni care ascultă și un lunetist la etajul doi.";
+            public const string Office2 = "Liftul de serviciu e blocat. Sparge-i terminalul și urcă la seif.";
+            public const string Office3 = "Am înțeles. Intru pe ușa din spate.";
         }
 
         public static class Rubric
@@ -115,6 +137,27 @@ namespace RootAccess.EditorTools
             public const string ShowcaseHint = "[E] pe platforma de teleport → camera următoare   ·   F1 = panou barem";
             public const string MenuRoomHint = "Apasă Esc pentru meniul de pauză (setări, volum, taste).";
             public const string HubWelcome = "ASCUNZĂTOAREA";
+            public const string L1Move = "A/D mers · Space salt · Space în aer = dublu salt · Shift = dash";
+            public const string L1Gaps = "Între acoperișuri e gol: o cădere te costă o viață";
+            public const string L1WallJump = "Intră sub perete și sari dintr-un zid în altul";
+            public const string L1Stealth = "Ctrl = ghemuit (fără zgomot) · umbra te ascunde · pasarela ocolește gardianul";
+            public const string L1Gate = "Oprește camera de la terminal, apoi sparge ușa";
+            public const string L1Lasers = "Laserele pornesc și se opresc: treci în pauză sau sparge terminalul";
+            public const string L1Nodes = "Clădirea e prea înaltă: folosește nodul de rețea";
+            public const string L1Drones = "Dronele te urmăresc pe un traseu A*: rupe-le linia de vedere sau aruncă un EMP (G)";
+            public const string L2Lobby = "Holurile sunt pline de camere. Gardienii aud pașii și aterizările";
+            public const string L2Elevator = "Liftul e blocat: sparge terminalul, urcă pe platformă și apasă E";
+            public const string L2Sniper = "Lunetistul trage de departe: stai la adăpost";
+            public const string L2Turrets = "Turelele: adăpostește-te după lăzi sau oprește-le cu EMP";
+        }
+
+        public static class LevelInfo
+        {
+            public const string Level01 = "Acoperișurile Sectorului 7: sărituri între clădiri, primul gardian, o poartă de securitate și arena dronelor.";
+            public const string Level02 = "Turnul Halden Systems: holuri supravegheate, lasere, lift de serviciu, lunetist și seiful de date.";
+            public const string Level03 = "Ferma de servere a corporației: roiuri de drone și lanțuri de noduri de rețea.";
+            public const string Level04 = "Canalizarea de sub oraș: apă, curenți și o ecluză de deschis.";
+            public const string Level05 = "Sediul corporației: finalul. Toate sistemele de securitate, deodată.";
         }
     }
 }

@@ -105,6 +105,9 @@ namespace RootAccess.EditorTools
             ctx.GuardBase = Guard("GuardConfig_Base", 1.8f, 5f, 7f, 70f, 1.4f, 1, 18f);
             ctx.GuardHeavy = Guard("GuardConfig_Heavy", 1.4f, 3.8f, 6f, 80f, 1.1f, 2, 22f);
             ctx.GuardSniper = Guard("GuardConfig_Sniper", 1.2f, 3.5f, 12f, 28f, 2.2f, 1, 30f);
+            ctx.GuardBase.ConfigureSenses(1f, 22f);
+            ctx.GuardHeavy.ConfigureSenses(1.2f, 26f, false, 1.25f, 1.3f);
+            ctx.GuardSniper.ConfigureSenses(0.6f, 30f, true, 10f, 1.8f);
 
             ctx.UsbKey = Item(SeedContent.Ids.UsbKey, SeedContent.Items.UsbKey, SeedContent.Items.UsbKeyDesc, ItemCategory.UsbKey, 3, 40, "pickup_usb");
             ctx.DataShard = Item(SeedContent.Ids.DataShard, SeedContent.Items.DataShard, SeedContent.Items.DataShardDesc, ItemCategory.DataShard, 10, 75, "pickup_shard");
@@ -133,18 +136,26 @@ namespace RootAccess.EditorTools
             ctx.SideQuest = Quest(SeedContent.Ids.SideQuest, SeedContent.Quests.SideTitle, SeedContent.Quests.SideDesc, false, 120, 60,
                 new ObjectiveDefinition("collect_usb", SeedContent.Quests.CollectUsb, ObjectiveType.Collect, SeedContent.Ids.UsbKey),
                 new ObjectiveDefinition("hack_camera", SeedContent.Quests.HackCamera, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel01Camera));
+            ctx.OfficeQuest = Quest(SeedContent.Ids.MainQuestLevel02, SeedContent.Quests.OfficeTitle, SeedContent.Quests.OfficeDesc, true, 400, 220,
+                new ObjectiveDefinition("reach_l2", SeedContent.Quests.OfficeReach, ObjectiveType.Reach, SeedContent.Ids.Level02),
+                new ObjectiveDefinition("hack_elevator", SeedContent.Quests.OfficeElevator, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel02Elevator),
+                new ObjectiveDefinition("hack_vault", SeedContent.Quests.OfficeVault, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel02Vault),
+                new ObjectiveDefinition("reach_exit_l2", SeedContent.Quests.OfficeExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel02),
+                new ObjectiveDefinition("stealth_l2", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
+            ctx.MainQuest.SetFollowUp(ctx.OfficeQuest);
+            EditorUtility.SetDirty(ctx.MainQuest);
             ctx.GhostQuest = Quest(SeedContent.Ids.GhostQuest, SeedContent.Quests.GhostTitle, SeedContent.Quests.GhostDesc, false, 200, 120,
                 new ObjectiveDefinition("ghost_exit", SeedContent.Quests.GhostExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel01),
                 new ObjectiveDefinition("ghost_stealth", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty));
 
             ctx.HubLevel = Level(SeedContent.Ids.Hub, SceneNames.Hub, Strings.Levels.Hub, true, 0);
-            ctx.Level01 = Level(SeedContent.Ids.Level01, SceneNames.Level01, Strings.Levels.Level01, true, 1);
-            LevelDefinition level02 = Level("level02", SceneNames.Level02, Strings.Levels.Level02, false, 2);
-            LevelDefinition level03 = Level("level03", SceneNames.Level03, Strings.Levels.Level03, false, 3);
-            LevelDefinition level04 = Level("level04", SceneNames.Level04, Strings.Levels.Level04, false, 4);
-            LevelDefinition level05 = Level("level05", SceneNames.Level05, Strings.Levels.Level05, false, 5);
+            ctx.Level01 = Level(SeedContent.Ids.Level01, SceneNames.Level01, Strings.Levels.Level01, true, 1, SeedContent.LevelInfo.Level01);
+            ctx.Level02 = Level(SeedContent.Ids.Level02, SceneNames.Level02, Strings.Levels.Level02, false, 2, SeedContent.LevelInfo.Level02);
+            ctx.Level03 = Level(SeedContent.Ids.Level03, SceneNames.Level03, Strings.Levels.Level03, false, 3, SeedContent.LevelInfo.Level03);
+            ctx.Level04 = Level(SeedContent.Ids.Level04, SceneNames.Level04, Strings.Levels.Level04, false, 4, SeedContent.LevelInfo.Level04);
+            ctx.Level05 = Level(SeedContent.Ids.Level05, SceneNames.Level05, Strings.Levels.Level05, false, 5, SeedContent.LevelInfo.Level05);
             ctx.RubricLevel = Level("rubric", SceneNames.RubricShowcase, Strings.Levels.RubricShowcase, true, 99);
-            ctx.Levels = new[] { ctx.HubLevel, ctx.Level01, level02, level03, level04, level05, ctx.RubricLevel };
+            ctx.Levels = new[] { ctx.HubLevel, ctx.Level01, ctx.Level02, ctx.Level03, ctx.Level04, ctx.Level05, ctx.RubricLevel };
 
             ctx.Briefing = Dialogue("dlg_briefing",
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Briefing1),
@@ -152,13 +163,18 @@ namespace RootAccess.EditorTools
                 new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Briefing3));
             ctx.Level01Intro = Dialogue("dlg_level01_intro",
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro2));
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro2),
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro3));
+            ctx.Level02Intro = Dialogue("dlg_level02_intro",
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office1),
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office2),
+                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Office3));
 
             ctx.Database = EditorAssetUtil.LoadOrCreateAsset<GameDatabase>(EditorPaths.ScriptableObjects + "/GameDatabase.asset");
             EditorAssetUtil.SetFields(ctx.Database, so =>
             {
                 so.Require("items").objectReferenceValue = itemDb;
-                so.SetArray("quests", new[] { ctx.MainQuest, ctx.SideQuest, ctx.GhostQuest });
+                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.SideQuest, ctx.GhostQuest });
                 so.SetArray("skills", ctx.Skills);
                 so.SetArray("levels", ctx.Levels);
                 so.Require("startingQuest").objectReferenceValue = ctx.MainQuest;
@@ -204,10 +220,11 @@ namespace RootAccess.EditorTools
             return quest;
         }
 
-        private static LevelDefinition Level(string id, string scene, string display, bool unlocked, int order)
+        private static LevelDefinition Level(string id, string scene, string display, bool unlocked, int order, string description = "")
         {
             var level = EditorAssetUtil.LoadOrCreateAsset<LevelDefinition>($"{EditorPaths.SoLevels}/Level_{id}.asset");
             level.Configure(id, scene, display, unlocked, order);
+            level.SetDescription(description);
             EditorUtility.SetDirty(level);
             return level;
         }
@@ -245,6 +262,7 @@ namespace RootAccess.EditorTools
             ctx.MenuProfile = Profile("VP_MainMenu", new Color(0.95f, 0.85f, 1f), 1.1f);
             ctx.HubProfile = Profile("VP_Hub", new Color(1f, 0.88f, 0.95f), 0.9f);
             ctx.Level01Profile = Profile("VP_Level01_Rooftops", new Color(0.82f, 0.92f, 1f), 0.8f);
+            ctx.Level02Profile = Profile("VP_Level02_Office", new Color(0.9f, 0.95f, 1f), 0.75f);
             ctx.ShowcaseProfile = Profile("VP_RubricShowcase", Color.white, 0.8f);
         }
 

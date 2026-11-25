@@ -15,5 +15,7 @@ MonoBehaviour:
   levelId: level03
   sceneName: Level03_ServerFarm
   displayName: Ferma de servere
+  description: "Ferma de servere a corpora\u021Biei: roiuri de drone \u0219i lan\u021Buri
+    de noduri de re\u021Bea."
   unlockedByDefault: 0
   order: 3

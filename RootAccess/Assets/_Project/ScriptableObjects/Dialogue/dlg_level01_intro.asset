@@ -20,3 +20,6 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "Gardienii v\u0103d doar ce e \xEEn conul lor de lumin\u0103. Stai ghemuit
       \xEEn umbr\u0103."
+  - speaker: OPERATOR
+    text: "\u0218i ai grij\u0103 la zgomot: pa\u0219ii pe metal se aud. Ghemuit nu
+      faci niciun zgomot."

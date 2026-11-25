@@ -15,5 +15,6 @@ MonoBehaviour:
   levelId: hub
   sceneName: Hub
   displayName: "Ascunz\u0103toarea"
+  description: 
   unlockedByDefault: 1
   order: 0

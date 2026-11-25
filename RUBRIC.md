@@ -183,8 +183,9 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
   terminal, ușă), `RubricShowcase` camera 11.
 - **Configurare:** matricea de coliziuni 2D din `ProjectSetup` (layerele Player, Enemy, Ground, Wall, Interactable, Trigger,
   Water, Projectile, Hidden). Validatorul a găsit 36 de perechi de layere care nu se ciocnesc.
-- **Scripturi:** `OnTriggerEnter2D/Exit2D` în Checkpoint, Pickup, HideZone, AlarmZone, LevelExit, WaterBody2D (intrarea în
-  apă), DialogueZone, CameraZone, CameraRoom, Hazard, Projectile; `OnTriggerStay2D` în WindZone2D; `OnCollisionEnter2D` în
+- **Scripturi:** `OnTriggerEnter2D/Exit2D` în Checkpoint, Pickup, HideZone, AlarmZone, LevelExit, FallZone (gropile dintre
+  acoperișuri), Elevator (pasagerii liftului), WaterBody2D (intrarea în apă), DialogueZone, CameraZone, CameraRoom, Hazard,
+  Projectile; `OnTriggerStay2D` în WindZone2D; `OnCollisionEnter2D` în
   PlayerController (impact la aterizare), Drone și Hazard (daune); raycast-uri în `AI/Perception/VisionCone.cs`,
   `Player/PlayerSensors.cs` și `AI/Pathfinding/PathfindingGrid.cs`. Platformele de teleport și terminalele se folosesc cu E
   (`PlayerInteractor` caută cel mai apropiat `IInteractable`).
@@ -195,11 +196,16 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 
 - **Cod:** 13 asmdef-uri runtime/editor + 2 de test, fără cicluri (graful e în [ARCHITECTURE.md](ARCHITECTURE.md)).
   Tot codul e scris de noi: EventBus, ServiceLocator, FSM, A*, sisteme, generatoare.
-- **Teste:** `Tests/EditMode` (92: A*, inventar, trace meter, save/load + migrări, skill tree, quest-uri, hacking, EventBus…)
-  și `Tests/PlayMode` (10: fiecare scenă pornește fără erori, fluxul complet de acceptare, cele trei minijocuri de hacking
-  rezolvate prin overlay-ul real). Rulare: `./scripts/test.ps1`.
+- **AI:** gardienii aud zgomotul (`PlayerNoise` → starea Investigate, `AI/Perception/Hearing.cs`), converg spre alarme
+  (`AlarmRaised` → Search), lunetistul trage de la distanță; dronele folosesc A* pe grila `PathfindingGrid` care acoperă
+  tot nivelul (Level01 și Level02).
+- **Teste:** `Tests/EditMode` (103: A*, inventar, trace meter, save/load + migrări, skill tree, quest-uri + lanțul de
+  misiuni, auz, hacking, EventBus…) și `Tests/PlayMode` (23: fiecare scenă pornește fără erori, fluxul complet de
+  acceptare, minijocurile de hacking, terminalul personal, ieșirile nivelurilor 1–2 cu deblocare, tab-ul Călătorie,
+  gardianul care aude zgomotul). Rulare: `./scripts/test.ps1`.
 - **Demonstrație:** F1 → 12 → Mergi (`l1_drone`). Drona te vede și te urmărește pe un drum A* în jurul stâlpilor (în Editor,
-  selectează drona ca să vezi drumul ca gizmo). Apoi deschide *Window → General → Test Runner* și rulează testele: 102 verzi.
+  selectează drona ca să vezi drumul ca gizmo). În `l1_security`, mergi spre gardian: la ~4,5 m te aude și vine să
+  verifice (semnul galben); ghemuit (Ctrl) nu faci zgomot. Apoi *Window → General → Test Runner*: 126 de teste verzi.
 
 ## Bonus: cinematice 🧩
 

@@ -46,6 +46,7 @@ namespace RootAccess.Gameplay
 
         public string TerminalId => terminalId;
         public TerminalKind Kind => kind;
+        public System.Collections.Generic.IReadOnlyList<MonoBehaviour> Targets => targets;
         public bool IsHacked { get; private set; }
         public string Prompt => IsHacked ? Strings.Prompts.AlreadyHacked : Strings.Prompts.Hack;
         public Vector3 InteractionPosition => transform.position;

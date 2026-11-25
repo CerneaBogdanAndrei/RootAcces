@@ -31,3 +31,4 @@ MonoBehaviour:
     optional: 0
   rewardCredits: 120
   rewardXp: 60
+  followUpQuest: {fileID: 0}

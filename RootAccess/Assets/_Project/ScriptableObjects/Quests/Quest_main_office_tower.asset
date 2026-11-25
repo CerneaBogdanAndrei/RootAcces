@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e89e8b47759a794fb90f8cb223e9d72, type: 3}
+  m_Name: Quest_main_office_tower
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
+  questId: main_office_tower
+  title: Turnul de birouri
+  description: "Fragmentul de pe acoperi\u0219 con\u021Bine o adres\u0103: seiful
+    de date al firmei Halden Systems, la etajul 2 al turnului de birouri."
+  isMainStory: 1
+  objectives:
+  - objectiveId: reach_l2
+    description: "Intr\u0103 \xEEn turnul de birouri"
+    type: 0
+    targetId: level02
+    requiredCount: 1
+    optional: 0
+  - objectiveId: hack_elevator
+    description: "Reporne\u0219te liftul de serviciu"
+    type: 1
+    targetId: l2_elevator
+    requiredCount: 1
+    optional: 0
+  - objectiveId: hack_vault
+    description: Sparge seiful de date de la etajul 2
+    type: 1
+    targetId: l2_vault
+    requiredCount: 1
+    optional: 0
+  - objectiveId: reach_exit_l2
+    description: "Ie\u0219i prin acoperi\u0219ul turnului"
+    type: 0
+    targetId: exit_l2
+    requiredCount: 1
+    optional: 0
+  - objectiveId: stealth_l2
+    description: "Bonus: nu declan\u0219a alarma"
+    type: 3
+    targetId: 
+    requiredCount: 1
+    optional: 1
+  rewardCredits: 400
+  rewardXp: 220
+  followUpQuest: {fileID: 0}

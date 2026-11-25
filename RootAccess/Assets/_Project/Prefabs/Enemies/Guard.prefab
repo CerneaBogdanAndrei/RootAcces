@@ -121,6 +121,8 @@ MonoBehaviour:
   alertIcon: {fileID: 64955796794123739}
   suspiciousColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   alertColor: {r: 1, g: 0.2, b: 0.25, a: 1}
+  projectilePrefab: {fileID: 0}
+  muzzle: {fileID: 0}
 --- !u!1 &4124120862541644125
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,6 +444,7 @@ MonoBehaviour:
   fallbackSurface: 0
   silent: 0
   silencedBySkill: 0
+  noiseRadius: 0
 --- !u!1 &7899154231339814094
 GameObject:
   m_ObjectHideFlags: 0

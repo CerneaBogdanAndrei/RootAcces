@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/Level01_Rooftops/Level01_Rooftops.unity
     guid: faeb5ffc8493e454f8bcddc1d2ec9e3a
   - enabled: 1
+    path: Assets/_Project/Scenes/Level02_Office/Level02_Office.unity
+    guid: ce41845024837974eaffc689f80f4fe6
+  - enabled: 1
     path: Assets/_Project/Scenes/RubricShowcase/RubricShowcase.unity
     guid: fca872c4b30bb2345a75dcb836f12e6b
   - enabled: 1

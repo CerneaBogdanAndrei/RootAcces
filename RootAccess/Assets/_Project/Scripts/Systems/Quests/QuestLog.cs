@@ -106,7 +106,7 @@ namespace RootAccess.Systems
         public bool Report(ObjectiveType type, string targetId, int amount = 1)
         {
             if (type == ObjectiveType.AvoidDetection || amount <= 0) return false;
-            bool advanced = false;
+            var changed = new List<QuestProgress>();
             foreach (QuestProgress quest in _quests.Values)
             {
                 if (quest.Status != QuestStatus.Active) continue;
@@ -119,30 +119,33 @@ namespace RootAccess.Systems
                     questChanged = true;
                 }
 
-                if (!questChanged) continue;
-                advanced = true;
-                QuestUpdated?.Invoke(quest);
+                if (questChanged) changed.Add(quest);
             }
 
-            return advanced;
+            // Listeners may complete a quest and start its follow-up, so notify after the iteration.
+            foreach (QuestProgress quest in changed) QuestUpdated?.Invoke(quest);
+            return changed.Count > 0;
         }
 
         /// <summary>Marks "avoid detection" objectives of active quests as failed.</summary>
         public void ReportDetected()
         {
+            var changed = new List<QuestProgress>();
             foreach (QuestProgress quest in _quests.Values)
             {
                 if (quest.Status != QuestStatus.Active) continue;
-                bool changed = false;
+                bool failed = false;
                 foreach (ObjectiveProgress objective in quest.Objectives)
                 {
                     if (objective.Definition.Type != ObjectiveType.AvoidDetection || objective.Failed) continue;
                     objective.Failed = true;
-                    changed = true;
+                    failed = true;
                 }
 
-                if (changed) QuestUpdated?.Invoke(quest);
+                if (failed) changed.Add(quest);
             }
+
+            foreach (QuestProgress quest in changed) QuestUpdated?.Invoke(quest);
         }
 
         /// <summary>

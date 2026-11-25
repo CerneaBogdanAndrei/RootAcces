@@ -15,5 +15,7 @@ MonoBehaviour:
   levelId: level02
   sceneName: Level02_Office
   displayName: Turnul de birouri
+  description: "Turnul Halden Systems: holuri supravegheate, lasere, lift de serviciu,
+    lunetist \u0219i seiful de date."
   unlockedByDefault: 0
   order: 2

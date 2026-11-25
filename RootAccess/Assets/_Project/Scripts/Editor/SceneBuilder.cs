@@ -25,11 +25,13 @@ namespace RootAccess.EditorTools
     {
         public static readonly string[] BuildOrder =
         {
-            SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.RubricShowcase, SceneNames.Credits
+            SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.RubricShowcase,
+            SceneNames.Credits
         };
 
-        private sealed class GameplayScene
+        internal sealed class GameplayScene
         {
+            public PolygonCollider2D CameraBounds;
             public GameObject Player;
             public GameObject Rig;
             public Transform Root;
@@ -57,6 +59,7 @@ namespace RootAccess.EditorTools
                 BuildMainMenu(ctx);
                 BuildHub(ctx);
                 BuildLevel01(ctx);
+                BuildLevel02(ctx);
                 BuildRubricShowcase(ctx);
                 BuildCredits(ctx);
                 ConfigureBuildSettings();
@@ -72,9 +75,9 @@ namespace RootAccess.EditorTools
 
         // ---------------------------------------------------------------- shared helpers
 
-        private static Scene NewScene() => EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        internal static Scene NewScene() => EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-        private static void Save(Scene scene, string name)
+        internal static void Save(Scene scene, string name)
         {
             BakeTilemapColliders(scene, name);
             EditorAssetUtil.EnsureFolder(EditorPaths.SceneFolder(name));
@@ -108,7 +111,7 @@ namespace RootAccess.EditorTools
             }
         }
 
-        private static GameObject Place(GameObject prefab, Vector3 position, Transform parent = null, string name = null)
+        internal static GameObject Place(GameObject prefab, Vector3 position, Transform parent = null, string name = null)
         {
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
             instance.transform.position = position;
@@ -116,18 +119,18 @@ namespace RootAccess.EditorTools
             return instance;
         }
 
-        private static GameObject Place(BuildContext ctx, string prefab, Vector3 position, Transform parent = null, string name = null) =>
+        internal static GameObject Place(BuildContext ctx, string prefab, Vector3 position, Transform parent = null, string name = null) =>
             Place(ctx.Prefab(prefab), position, parent, name);
 
-        private static Transform Group(string name, Transform parent = null) => PrefabFactory.Go(name, parent).transform;
+        internal static Transform Group(string name, Transform parent = null) => PrefabFactory.Go(name, parent).transform;
 
-        private static Light2D GlobalLight(Transform parent, Color color, float intensity)
+        internal static Light2D GlobalLight(Transform parent, Color color, float intensity)
         {
             Light2D light = PrefabFactory.Light(parent, "Global Light 2D", Light2D.LightType.Global, color, intensity, 1f);
             return light;
         }
 
-        private static void PostVolume(Transform parent, VolumeProfile profile)
+        internal static void PostVolume(Transform parent, VolumeProfile profile)
         {
             GameObject go = PrefabFactory.Go("Global Volume", parent);
             var volume = go.AddComponent<Volume>();
@@ -135,7 +138,7 @@ namespace RootAccess.EditorTools
             volume.sharedProfile = profile;
         }
 
-        private static TextMeshPro Label(Transform parent, string text, Vector3 position, float size, Color color, float width = 18f)
+        internal static TextMeshPro Label(Transform parent, string text, Vector3 position, float size, Color color, float width = 18f)
         {
             GameObject go = PrefabFactory.Go("Label", parent, Layers.Default, position);
             var label = go.AddComponent<TextMeshPro>();
@@ -150,7 +153,7 @@ namespace RootAccess.EditorTools
             return label;
         }
 
-        private static PolygonCollider2D Bounds(Transform parent, string name, Rect rect)
+        internal static PolygonCollider2D Bounds(Transform parent, string name, Rect rect)
         {
             GameObject go = PrefabFactory.Go(name, parent, Layers.IgnoreRaycast);
             var polygon = go.AddComponent<PolygonCollider2D>();
@@ -163,7 +166,7 @@ namespace RootAccess.EditorTools
             return polygon;
         }
 
-        private static GameplayScene Gameplay(BuildContext ctx, string levelId, VolumeProfile profile, Color ambient, float ambientIntensity,
+        internal static GameplayScene Gameplay(BuildContext ctx, string levelId, VolumeProfile profile, Color ambient, float ambientIntensity,
             Rect cameraBounds, Vector3 spawn, string spawnId, bool skybox)
         {
             var scene = new GameplayScene { Root = Group("--- Level ---") };
@@ -178,6 +181,7 @@ namespace RootAccess.EditorTools
             scene.Rig = Place(ctx, "CameraRig", spawn, null, "CameraRig");
             scene.Rig.transform.position = Vector3.zero;
             PolygonCollider2D bounds = Bounds(setup, "CameraBounds", cameraBounds);
+            scene.CameraBounds = bounds;
             var confiner = scene.Rig.GetComponentInChildren<CinemachineConfiner2D>();
             confiner.BoundingShape2D = bounds;
             var vcam = scene.Rig.GetComponentInChildren<CinemachineCamera>();
@@ -204,7 +208,7 @@ namespace RootAccess.EditorTools
         }
 
         /// <summary>The 2D renderer cannot draw skyboxes: a Universal-renderer sky camera renders it into the backdrop quad.</summary>
-        private static void SkyRig(BuildContext ctx, Transform parent, Camera gameplayCamera)
+        internal static void SkyRig(BuildContext ctx, Transform parent, Camera gameplayCamera)
         {
             RenderSettings.skybox = ctx.Skybox;
             GameObject skyCameraGo = PrefabFactory.Go("SkyCamera", parent);
@@ -232,7 +236,7 @@ namespace RootAccess.EditorTools
             });
         }
 
-        private static Tilemap Tilemap(Transform grid, string name, int layer, Material material, string sortingLayer, int order, bool collider,
+        internal static Tilemap Tilemap(Transform grid, string name, int layer, Material material, string sortingLayer, int order, bool collider,
             SurfaceType surface, Color tint)
         {
             GameObject go = PrefabFactory.Go(name, grid, layer);
@@ -258,7 +262,7 @@ namespace RootAccess.EditorTools
         /// Fills a rectangle (inclusive). Uses the batched SetTiles API: on Unity 6000.3 the single-cell
         /// SetTile(Vector3Int, TileBase) overload silently does nothing when called from batchmode editor scripts.
         /// </summary>
-        private static void Fill(Tilemap tilemap, int x0, int x1, int y0, int y1, TileBase tile, TileBase top = null)
+        internal static void Fill(Tilemap tilemap, int x0, int x1, int y0, int y1, TileBase tile, TileBase top = null)
         {
             int count = (x1 - x0 + 1) * (y1 - y0 + 1);
             if (count <= 0) return;
@@ -276,16 +280,16 @@ namespace RootAccess.EditorTools
             tilemap.SetTiles(positions, tiles);
         }
 
-        private static void Ground(BuildContext ctx, GameplayScene scene, int x0, int x1, int topY, int depth = 4) =>
+        internal static void Ground(BuildContext ctx, GameplayScene scene, int x0, int x1, int topY, int depth = 4) =>
             Fill(scene.Ground, x0, x1, topY - depth, topY - 1, ctx.TileMetal, ctx.TileMetalTop);
 
-        private static void Spawn(BuildContext ctx, Transform parent, string id, Vector3 position)
+        internal static void Spawn(BuildContext ctx, Transform parent, string id, Vector3 position)
         {
             GameObject spawn = Place(ctx, "SpawnPoint", position, parent, $"Spawn_{id}");
             EditorAssetUtil.SetFields(spawn.GetComponent<SpawnPoint>(), so => so.Require("spawnId").stringValue = id);
         }
 
-        private static void Parallax(BuildContext ctx, Transform parent, float fromX, float toX, float baseY)
+        internal static void Parallax(BuildContext ctx, Transform parent, float fromX, float toX, float baseY)
         {
             Transform root = Group("Parallax", parent);
             (string sprite, Vector2 factor, float y, string layer, float scale, Color tint)[] layers =
@@ -312,7 +316,7 @@ namespace RootAccess.EditorTools
             }
         }
 
-        private static FoliageWind Foliage(Transform parent, IEnumerable<Transform> bones)
+        internal static FoliageWind Foliage(Transform parent, IEnumerable<Transform> bones)
         {
             GameObject go = PrefabFactory.Go("Wind", parent);
             var wind = go.AddComponent<FoliageWind>();
@@ -320,7 +324,7 @@ namespace RootAccess.EditorTools
             return wind;
         }
 
-        private static Transform Canopy(GameObject tree) => tree.transform.Find("Canopy");
+        internal static Transform Canopy(GameObject tree) => tree.transform.Find("Canopy");
 
         // ---------------------------------------------------------------- Bootstrap / menu / credits
 
@@ -397,9 +401,14 @@ namespace RootAccess.EditorTools
             Place(ctx, "JobBoard", new Vector3(-10f, 0f), props);
             Place(ctx, "ShopTerminal", new Vector3(-6f, 0f), props);
             Place(ctx, "SkillTerminal", new Vector3(2f, 0f), props);
-            Place(ctx, "FastTravelTerminal", new Vector3(7f, 0f), props, "FastTravel_Level01");
+            GameObject travel = Place(ctx, "FastTravelTerminal", new Vector3(7f, 0f), props, "FastTravel_Levels");
+            EditorAssetUtil.SetFields(travel.GetComponent<FastTravelTerminal>(), so =>
+            {
+                so.Require("destination").objectReferenceValue = null;
+                so.SetArray("destinations", BuildContext.Fresh(ctx.StoryLevels));
+            });
             GameObject showcase = Place(ctx, "FastTravelTerminal", new Vector3(11f, 0f), props, "FastTravel_Showcase");
-            EditorAssetUtil.SetField(showcase.GetComponent<FastTravelTerminal>(), "destination", ctx.RubricLevel);
+            EditorAssetUtil.SetField(showcase.GetComponent<FastTravelTerminal>(), "destination", BuildContext.Fresh(ctx.RubricLevel));
             Place(ctx, "Crate", new Vector3(-13f, 0.5f), props);
             Place(ctx, "Crate", new Vector3(-12.6f, 1.5f), props);
             Place(ctx, "RooftopAC", new Vector3(-2f, 0f), props);
@@ -420,120 +429,115 @@ namespace RootAccess.EditorTools
 
         // ---------------------------------------------------------------- Level 01
 
+        /// <summary>
+        /// Rooftops & park (6–8 min): tutorial start, park with wind, rooftop gaps, wall-jump chimney, first guard,
+        /// camera gate (story door), laser tunnel, node hop to the data shard, drone arena, last gaps, exit.
+        /// </summary>
         private static void BuildLevel01(BuildContext ctx)
         {
             Scene scene = NewScene();
             GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level01, ctx.Level01Profile, new Color(0.55f, 0.62f, 0.95f), 0.4f,
-                new Rect(-8f, -5f, 142f, 27f), new Vector3(0f, 0f), "l1_start", true);
-            Transform world = level.Root;
-            Transform props = Group("Props", world);
-            Transform enemies = Group("Enemies", world);
-            Transform spawns = Group("SpawnPoints", world);
-            Parallax(ctx, world, -40f, 190f, -2f);
+                new Rect(-8f, -6f, 40f, 20f), new Vector3(0f, 0f), "l1_start", true);
+            var layout = new LevelLayout(ctx, level, "l1", -6);
 
-            Ground(ctx, level, -8, 19, 0);
-            Fill(level.Walls, -9, -8, 0, 14, ctx.TileBrick);
-            Ground(ctx, level, 23, 45, 0);
-            Fill(level.Ground, 25, 27, 2, 2, ctx.TileMetalTop);
-            Fill(level.Ground, 29, 31, 4, 4, ctx.TileMetalTop);
-            Fill(level.Walls, 33, 33, 2, 9, ctx.TileBrick);
-            Fill(level.Walls, 36, 36, 0, 9, ctx.TileBrick);
-            Fill(level.Ground, 36, 42, 10, 10, ctx.TileMetalTop);
-            Ground(ctx, level, 53, 84, 0);
-            Fill(level.Walls, 82, 82, 3, 9, ctx.TileBrick);
-            Fill(level.Walls, 83, 85, 3, 9, ctx.TileConcrete);
-            Ground(ctx, level, 85, 133, 0);
-            Fill(level.Ground, 93, 100, 11, 11, ctx.TileMetalTop);
-            Fill(level.Walls, 106, 106, 2, 6, ctx.TileConcrete);
-            Fill(level.Walls, 112, 112, 0, 4, ctx.TileConcrete);
-            Fill(level.Walls, 118, 118, 3, 8, ctx.TileConcrete);
-            Fill(level.Walls, 133, 134, 0, 14, ctx.TileBrick);
-            Fill(level.Backdrop, 60, 80, 0, 9, ctx.TileBrick);
-            Fill(level.Backdrop, 64, 68, 4, 7, ctx.TileGlass);
-
-            Spawn(ctx, spawns, "l1_park", new Vector3(8f, 0f));
-            Spawn(ctx, spawns, "l1_movement", new Vector3(24f, 0f));
-            Spawn(ctx, spawns, "l1_security", new Vector3(56f, 0f));
-            Spawn(ctx, spawns, "l1_nodes", new Vector3(87f, 0f));
-            Spawn(ctx, spawns, "l1_drone", new Vector3(105f, 0f));
+            GameObject dialogue = PrefabFactory.Go("DialogueZone_Intro", layout.Props, Layers.Trigger, layout.P(9f, 1f));
+            dialogue.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
+            EditorAssetUtil.SetField(dialogue.AddComponent<DialogueZone>(), "dialogue", BuildContext.Fresh(ctx.Level01Intro));
+            Place(ctx, "NeonSign", layout.P(7f, 5f), layout.Props);
+            layout.Flat(8, SeedContent.Labels.L1Move);
 
             // Park on the rooftop: trees, grass, wind.
+            layout.Spawn("l1_park", 2f);
             var canopies = new List<Transform>();
-            foreach (float x in new[] { 6f, 11.5f, 16f })
-                canopies.Add(Canopy(Place(ctx, "Tree", new Vector3(x, 0f), props)));
-            for (float x = 3f; x < 19f; x += 3f) Place(ctx, "GrassPatch", new Vector3(x, 0f), props);
-            FoliageWind wind = Foliage(props, canopies);
-            GameObject windZone = Place(ctx, "WindZone", new Vector3(14f, 0f), props);
+            foreach (float x in new[] { 4f, 9.5f, 15f })
+                canopies.Add(Canopy(Place(ctx, "Tree", layout.P(x), layout.Props)));
+            for (float x = 2f; x < 19f; x += 3f) Place(ctx, "GrassPatch", layout.P(x), layout.Props);
+            FoliageWind wind = Foliage(layout.Props, canopies);
+            GameObject windZone = Place(ctx, "WindZone", layout.P(12f), layout.Props);
             EditorAssetUtil.SetField(windZone.GetComponent<WindZone2D>(), "foliage", wind);
-            GameObject dialogue = PrefabFactory.Go("DialogueZone_Intro", props, Layers.Trigger, new Vector3(3f, 1f));
-            dialogue.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
-            EditorAssetUtil.SetField(dialogue.AddComponent<DialogueZone>(), "dialogue", ctx.Level01Intro);
-            Place(ctx, "NeonSign", new Vector3(1f, 5f), props);
-            Place(ctx, "StreetLamp", new Vector3(-4f, 0f), props);
-            Place(ctx, "RooftopAC", new Vector3(21.5f - 2f, 0f), props);
-            Place(ctx, "Pickup_Credits", new Vector3(30f, 5f), props);
-            Place(ctx, "Pickup_Credits", new Vector3(39f, 11f), props);
-            Place(ctx, "StreetLamp", new Vector3(44f, 0f), props);
-            GameObject rain = Place(ctx.VfxPrefabs[VfxId.Rain], new Vector3(30f, 20f), props, "Rain");
-            rain.transform.localScale = Vector3.one;
+            Place(ctx, "Pickup_Credits", layout.P(9.5f, 4.5f), layout.Props);
+            layout.Flat(20);
 
-            // Security block: guard, hide zone, hazards, camera, terminals, door.
-            Place(ctx, "Checkpoint", new Vector3(55f, 0f), props, "Checkpoint_1");
-            Transform patrolA = PrefabFactory.Go("Patrol_A", enemies, Layers.Default, new Vector3(60f, 0f)).transform;
-            Transform patrolB = PrefabFactory.Go("Patrol_B", enemies, Layers.Default, new Vector3(70f, 0f)).transform;
-            GameObject guard = Place(ctx, "Guard", new Vector3(65f, 0f), enemies);
-            EditorAssetUtil.SetFields(guard.GetComponent<Guard>(), so => so.SetArray("patrolPoints", new[] { patrolA, patrolB }));
-            Place(ctx, "HideZone", new Vector3(63f, 0f), props);
-            Place(ctx, "Hazard_ElectricFloor", new Vector3(73f, 0.1f), props);
-            Place(ctx, "Hazard_Laser", new Vector3(76.5f, 0f), props);
-            GameObject camera = Place(ctx, "SecurityCamera", new Vector3(81.4f, 8f), enemies);
-            EditorAssetUtil.SetFields(camera.GetComponent<SecurityCamera>(), so => so.Require("centerAngle").floatValue = -125f);
-            GameObject door = Place(ctx, "Door", new Vector3(82.5f, 0f), props);
-            GameObject doorTerminal = Place(ctx, "Terminal_Door", new Vector3(79f, 0f), props);
-            ConfigureTerminal(doorTerminal, SeedContent.Ids.TerminalLevel01Door, door.GetComponent<Door>());
-            GameObject cameraTerminal = Place(ctx, "Terminal_Camera", new Vector3(58f, 0f), props);
-            ConfigureTerminal(cameraTerminal, SeedContent.Ids.TerminalLevel01Camera, camera.GetComponent<SecurityCamera>());
-            Place(ctx, "NeonSign", new Vector3(70f, 8f), props);
-            Place(ctx, "StreetLamp", new Vector3(67f, 0f), props);
-            Light2D windowGlow = PrefabFactory.Light(props, "WindowGlow_Freeform", Light2D.LightType.Freeform, new Color(1f, 0.7f, 0.4f), 0.9f, 1f, new Vector3(64f, 4f));
-            windowGlow.SetShapePath(new[] { new Vector3(0f, 0f), new Vector3(5f, 0f), new Vector3(6f, -4f), new Vector3(-1f, -4f) });
+            layout.Spawn("l1_movement", 1f);
+            layout.Rooftops(4, SeedContent.Labels.L1Gaps);
+            layout.WallJumpChimney(10, SeedContent.Labels.L1WallJump);
+            layout.Flat(4);
+            layout.Checkpoint("l1_cp1");
 
-            // Network nodes: ground node teleports to an otherwise unreachable rooftop with the data shard.
-            GameObject nodeA = Place(ctx, "NetworkNode", new Vector3(88f, 0f), props, "NetworkNode_A");
-            GameObject nodeB = Place(ctx, "NetworkNode", new Vector3(96f, 11f), props, "NetworkNode_B");
-            LinkNodes(nodeA, nodeB, requiresHack: false);
-            Place(ctx, "Pickup_DataShard", new Vector3(98.5f, 11f), props);
-            GameObject dataTerminal = Place(ctx, "Terminal_Data", new Vector3(92f, 0f), props);
+            // Security block: guard, catwalk, camera gate with the story door, laser tunnel.
+            layout.Spawn("l1_security", 1f);
+            layout.Hint(SeedContent.Labels.L1Stealth, 9f, 7f, 18f);
+            layout.GuardPatrol("Guard", 18, catwalk: true);
+            layout.Hint(SeedContent.Labels.L1Gate, 6f, 4.2f, 12f);
+            layout.CameraGate(SeedContent.Ids.TerminalLevel01Camera, SeedContent.Ids.TerminalLevel01Door, "Terminal_Camera", "Terminal_Door");
+            layout.Hint(SeedContent.Labels.L1Lasers, 6f, 9f, 14f);
+            layout.LaserCorridor(2, SeedContent.Ids.TerminalLevel01Lasers);
+
+            // Network nodes: the street is blocked by a tower; the node carries you onto its roof (data shard).
+            GameObject dataTerminal = Place(ctx, "Terminal_Data", layout.P(3f), layout.Props, "Terminal_Data");
             ConfigureTerminal(dataTerminal, SeedContent.Ids.TerminalLevel01Data);
-            Place(ctx, "NeonSign", new Vector3(96f, 15f), props);
+            layout.Hint(SeedContent.Labels.L1Nodes, 9f, 5f, 12f);
+            layout.Flat(6);
+            layout.NodeHop("l1_nodes", 10, "Pickup_DataShard");
+            layout.Checkpoint("l1_cp2");
 
             // Drone arena with A* pathfinding around pillars.
-            Place(ctx, "Checkpoint", new Vector3(103f, 0f), props, "Checkpoint_2");
-            Place(ctx, "Drone", new Vector3(115f, 7f), enemies);
-            Place(ctx, "Pickup_UsbKey", new Vector3(121f, 0f), props);
-            Place(ctx, "Crate", new Vector3(109f, 0.5f), props);
-            Place(ctx, "StreetLamp", new Vector3(124f, 0f), props);
-            GameObject pathfinding = PrefabFactory.Go("Pathfinding", world, Layers.Default, new Vector3(63f, 8f));
-            EditorAssetUtil.SetFields(pathfinding.AddComponent<PathfindingGrid>(), so =>
-            {
-                so.Require("size").vector2Value = new Vector2(144f, 28f);
-                so.Require("cellSize").floatValue = 0.5f;
-            });
-            pathfinding.AddComponent<PathRequestQueue>();
+            layout.Hint(SeedContent.Labels.L1Drones, 12f, 9.5f, 20f);
+            layout.DroneArena(2, "l1_drone", "Pickup_UsbKey");
+            layout.Rooftops(2);
+            layout.Exit(SeedContent.Ids.ExitLevel01, SeedContent.Ids.Level01, ctx.Level02);
+            Rect rect = layout.Finish();
 
-            GameObject exit = Place(ctx, "LevelExit", new Vector3(129f, 0f), props);
-            EditorAssetUtil.SetFields(exit.GetComponent<LevelExit>(), so =>
-            {
-                so.Require("exitId").stringValue = SeedContent.Ids.ExitLevel01;
-                so.Require("levelId").stringValue = SeedContent.Ids.Level01;
-                so.Require("targetScene").stringValue = SceneNames.Hub;
-                so.Require("completesLevel").boolValue = true;
-            });
-
+            Parallax(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -2f);
+            for (float x = rect.xMin + 20f; x < rect.xMax; x += 45f)
+                Place(ctx.VfxPrefabs[VfxId.Rain], new Vector3(x, 20f), layout.Props, "Rain");
             Save(scene, SceneNames.Level01);
         }
 
-        private static void ConfigureTerminal(GameObject terminal, string id, params MonoBehaviour[] targets)
+        // ---------------------------------------------------------------- Level 02
+
+        /// <summary>
+        /// Office tower interior (6–8 min): lobby, patrolled hall, camera gate, laser corridor, elevator to the second
+        /// storey, sniper on a balcony, turret hall, data vault (story objective), heavy guard, roof exit.
+        /// </summary>
+        private static void BuildLevel02(BuildContext ctx)
+        {
+            Scene scene = NewScene();
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level02, ctx.Level02Profile, new Color(0.5f, 0.55f, 0.8f), 0.35f,
+                new Rect(-8f, -4f, 40f, 16f), new Vector3(0f, 0f), "l2_start", false);
+            var layout = new LevelLayout(ctx, level, "l2", -6, ceiling: 9);
+
+            GameObject dialogue = PrefabFactory.Go("DialogueZone_Office", layout.Props, Layers.Trigger, layout.P(8f, 1f));
+            dialogue.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
+            EditorAssetUtil.SetField(dialogue.AddComponent<DialogueZone>(), "dialogue", BuildContext.Fresh(ctx.Level02Intro));
+            Light2D window = PrefabFactory.Light(layout.Lights, "LobbyWindow_Freeform", Light2D.LightType.Freeform, new Color(0.4f, 0.5f, 1f), 0.7f, 1f, layout.P(3f, 6f));
+            window.SetShapePath(new[] { new Vector3(0f, 0f), new Vector3(5f, 0f), new Vector3(6.5f, -5f), new Vector3(-1f, -5f) });
+            layout.Flat(12, SeedContent.Labels.L2Lobby);
+
+            layout.Spawn("l2_security", 1f);
+            layout.GuardPatrol("Guard", 18, catwalk: true);
+            layout.CameraGate(SeedContent.Ids.TerminalLevel02Camera, SeedContent.Ids.TerminalLevel02Door, doorDifficulty: 2);
+            layout.LaserCorridor(3, SeedContent.Ids.TerminalLevel02Lasers);
+            layout.Checkpoint("l2_cp1");
+
+            layout.Hint(SeedContent.Labels.L2Elevator, 4f, 4.5f, 12f);
+            layout.ElevatorUp(SeedContent.Ids.TerminalLevel02Elevator, 9, "l2_elevator");
+
+            layout.Spawn("l2_upper", 1f);
+            layout.Hint(SeedContent.Labels.L2Sniper, 10f, 7.5f, 16f);
+            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
+            layout.Hint(SeedContent.Labels.L2Turrets, 11f, 7.5f, 16f);
+            layout.TurretHall(2);
+            layout.Checkpoint("l2_cp2", "l2_vault");
+            layout.DataVault(SeedContent.Ids.TerminalLevel02Vault);
+            layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
+            layout.DroneArena(1);
+            layout.Exit(SeedContent.Ids.ExitLevel02, SeedContent.Ids.Level02, ctx.Level03);
+            layout.Finish();
+            Save(scene, SceneNames.Level02);
+        }
+
+        internal static void ConfigureTerminal(GameObject terminal, string id, params MonoBehaviour[] targets)
         {
             EditorAssetUtil.SetFields(terminal.GetComponent<Terminal>(), so =>
             {
@@ -542,7 +546,7 @@ namespace RootAccess.EditorTools
             });
         }
 
-        private static void LinkNodes(GameObject a, GameObject b, bool requiresHack)
+        internal static void LinkNodes(GameObject a, GameObject b, bool requiresHack)
         {
             EditorAssetUtil.SetFields(a.GetComponent<NetworkNode>(), so =>
             {

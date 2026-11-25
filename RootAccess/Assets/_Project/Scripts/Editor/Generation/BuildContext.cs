@@ -7,6 +7,7 @@ using RootAccess.Player;
 using RootAccess.Systems;
 using RootAccess.UI;
 using RootAccess.VFX;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
@@ -27,10 +28,10 @@ namespace RootAccess.EditorTools
         public SkillDefinition[] Skills;
         public QuestDefinition GhostQuest;
         public SkillDefinition SilentSteps, Overclock, ServoLegs;
-        public QuestDefinition MainQuest, SideQuest;
-        public LevelDefinition HubLevel, Level01, RubricLevel;
+        public QuestDefinition MainQuest, SideQuest, OfficeQuest;
+        public LevelDefinition HubLevel, Level01, Level02, Level03, Level04, Level05, RubricLevel;
         public LevelDefinition[] Levels;
-        public DialogueDefinition Briefing, Level01Intro;
+        public DialogueDefinition Briefing, Level01Intro, Level02Intro;
         public GameDatabase Database;
         public SfxLibrary Sfx;
         public VfxLibrary Vfx;
@@ -41,10 +42,35 @@ namespace RootAccess.EditorTools
         public RuntimeAnimatorController PulseAnimator, ElevatorAnimator;
 
         public TileBase TileMetal, TileMetalTop, TileConcrete, TileBrick, TileGlass;
-        public VolumeProfile MenuProfile, HubProfile, Level01Profile, ShowcaseProfile;
+        public VolumeProfile MenuProfile, HubProfile, Level01Profile, Level02Profile, ShowcaseProfile;
+
+        /// <summary>Levels 1–5 in order: what the hideout's fast-travel console lists.</summary>
+        public LevelDefinition[] StoryLevels => new[] { Level01, Level02, Level03, Level04, Level05 };
 
         public readonly Dictionary<VfxId, GameObject> VfxPrefabs = new();
         public readonly Dictionary<string, GameObject> Prefabs = new();
+
+        /// <summary>
+        /// Scene generation opens a new scene per level, and Unity may unload ScriptableObjects that nothing loaded
+        /// references in between: the C# wrapper kept here then compares equal to null and a SerializedProperty assigned
+        /// from it silently stores "None". Reload such an asset from disk (by its instance id) before wiring it into a scene.
+        /// </summary>
+        public static T Fresh<T>(T asset) where T : Object
+        {
+            if (ReferenceEquals(asset, null) || asset != null) return asset;
+            string path = AssetDatabase.GetAssetPath(asset.GetInstanceID());
+            T reloaded = string.IsNullOrEmpty(path) ? EditorUtility.InstanceIDToObject(asset.GetInstanceID()) as T : AssetDatabase.LoadAssetAtPath<T>(path);
+            if (reloaded == null) throw new System.InvalidOperationException($"Asset of type {typeof(T).Name} was unloaded and could not be reloaded.");
+            EditorAssetUtil.Log($"Reloaded unloaded asset {path} ({typeof(T).Name}).");
+            return reloaded;
+        }
+
+        public static T[] Fresh<T>(T[] assets) where T : Object
+        {
+            var result = new T[assets.Length];
+            for (int i = 0; i < assets.Length; i++) result[i] = Fresh(assets[i]);
+            return result;
+        }
 
         public GameObject Prefab(string name)
         {

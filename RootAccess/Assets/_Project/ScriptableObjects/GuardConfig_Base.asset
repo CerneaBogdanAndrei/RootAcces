@@ -25,3 +25,7 @@ MonoBehaviour:
   attackCooldown: 1.1
   attackDamage: 1
   tracePerSecondWhileSeen: 18
+  hearingSensitivity: 1
+  investigateSeconds: 3
+  alarmResponseRadius: 22
+  ranged: 0

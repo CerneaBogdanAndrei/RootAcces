@@ -412,8 +412,9 @@ namespace RootAccess.UI
             if (ServiceLocator.TryGet(out GameManager gameManager)) gameManager.LoadScene(level.SceneName);
         }
 
+        /// <summary>Unlocked by progress and actually shipped: levels whose scene is not in the build stay locked.</summary>
         private static bool IsUnlocked(GameSession game, LevelDefinition level) =>
-            level.UnlockedByDefault || game.IsLevelUnlocked(level.LevelId);
+            (level.UnlockedByDefault || game.IsLevelUnlocked(level.LevelId)) && Application.CanStreamedLevelBeLoaded(level.SceneName);
 
         private static bool IsCurrentScene(LevelDefinition level) =>
             level.SceneName == UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
