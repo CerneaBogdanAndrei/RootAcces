@@ -33,7 +33,7 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 | 11 | Coliziuni / triggere | ✅ | Level01 `l1_security` | `room_11` |
 | 12 | Scripturi | ✅ | Level01 `l1_drone` | `room_12` |
 | B1 | Cinematice (Timeline) | ✅ | Intro (cutscene) | `room_13` |
-| B2 | Multiplayer co-op | 🧩 | RubricShowcase `room_14` | `room_14` |
+| B2 | Multiplayer co-op | ✅ | Meniu → Co-op | `room_14` |
 
 ---
 
@@ -231,12 +231,26 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 - **Demonstrație:** Meniu → Joc nou (sau F1 → Cinematice → Mergi). Intro-ul rulează ~17 s; Enter îl sare direct în
   ascunzătoare.
 
-## Bonus: multiplayer co-op 🧩
+## Bonus: multiplayer co-op ✅
 
-- **Ce există:** pachetele Netcode for GameObjects 2.14, Unity Transport, Multiplayer Services; `Net/IInfiltratorRole.cs`,
-  `IOperatorRole.cs`, `NetworkBootstrap.cs`, `RelayServiceStub.cs`; `NetworkBootstrap` e plasat în camera 14.
-  Modelele de gameplay sunt clase C# simple, ușor de oglindit în `NetworkVariable`.
-- **Ce lipsește:** co-op-ul asimetric funcțional (Infiltrator + Operator, cod de join Relay), în **P7**.
+- **Roluri asimetrice:** Infiltratorul joacă nivelul; Operatorul vede o hartă schematică (zidurile nivelului, jucătorul,
+  ușile, camerele, gardienii) și, cu un buget de energie care se reface, comută uși (35), buclează camere 8 s (25) și
+  distrage gardieni cu un apel radio fals (20).
+- **Două moduri, același cod de Operator** (`Core/Coop`: `IOperatorTarget`, `OperatorSnapshot`, `OperatorModel`,
+  `OperatorWire`, `IOperatorLink`; `UI/Coop/OperatorConsoleView.cs`):
+  - **Local, ecran împărțit** (`LocalOperatorLink`): camera de joc și HUD-ul pe jumătatea stângă (`SplitViewport`), consola
+    pe dreapta; jucătorul 1 rămâne pe tastatură + mouse (`InputReader.RestrictToKeyboardMouse`), Operatorul pe gamepad
+    (D-pad sus/jos, A) sau Numpad 8/2/5.
+  - **LAN** (`NetworkOperatorLink`, Netcode for GameObjects + Unity Transport, port 7777, fără Relay): gazda joacă și e
+    autoritară; clientul se conectează pe IP și rulează doar consola (scena `OperatorConsole`). Snapshot-urile (~10/s),
+    harta nivelului (biți, o dată per nivel) și comenzile circulă ca mesaje numite.
+- **Scripturi:** `Net/CoopSession.cs` (moduri, snapshot-uri, aplicarea comenzilor), `UI/Menus/CoopMenuView.cs` (Local /
+  Găzduiește / Alătură-te pe IP).
+- **Teste:** EditMode `OperatorTests` (energie, codec, link local); PlayMode `CoopTests` (în split-screen Operatorul
+  deschide ușa, buclează camera, distrage gardianul; gazda LAN pornește, rulează un nivel și se oprește curat);
+  `scripts/coop-lan-smoke.ps1` pornește două exe-uri (gazdă + client pe 127.0.0.1) și verifică ușa deschisă de la distanță.
+- **Demonstrație:** Meniu → Co-op → Local; în `l1_security` Operatorul (gamepad) buclează camera și deschide ușa porții.
+  Pe două PC-uri: unul „Găzduiește în LAN”, celălalt scrie IP-ul gazdei și „Alătură-te”.
 
 ## Alte cerințe ale disciplinei
 

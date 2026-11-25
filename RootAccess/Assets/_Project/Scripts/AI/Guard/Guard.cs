@@ -20,8 +20,11 @@ namespace RootAccess.AI
     /// ranged guards (sniper) fire pooled projectiles instead.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public sealed class Guard : MonoBehaviour, IEmpTarget
+    public sealed class Guard : MonoBehaviour, IEmpTarget, IOperatorTarget
     {
+        /// <summary>The Operator's distraction: a fake radio call sends the guard to check this far behind it.</summary>
+        private const float DistractionDistance = 5f;
+
         private const float EmpStunFraction = 0.5f;
         private const float EarHeight = 1.2f;
         private const float ProbeHeight = 0.5f;
@@ -97,14 +100,28 @@ namespace RootAccess.AI
             _fsm.ChangeState(_patrol);
         }
 
+        public string OperatorId => GetInstanceID().ToString();
+        public OperatorTargetKind OperatorKind => OperatorTargetKind.Guard;
+        public Vector2 OperatorPosition => transform.position;
+        public bool OperatorActive => StateId != GuardStateId.Patrol;
+        public bool CanOperate => isActiveAndEnabled && _body != null && !IsEmpDisabled && StateId != GuardStateId.Chase;
+
+        /// <summary>
+        /// Operator distraction: a fake radio call ("check behind you") pulls the guard away from the route ahead. It is
+        /// not a sound, so walls do not muffle it.
+        /// </summary>
+        public void Operate() => Investigate(_body.position + new Vector2(-Facing * DistractionDistance, 0f));
+
         private void OnEnable()
         {
+            OperatorRegistry.Register(this);
             EventBus<PlayerNoise>.Subscribe(OnPlayerNoise);
             EventBus<AlarmRaised>.Subscribe(OnAlarmRaised);
         }
 
         private void OnDisable()
         {
+            OperatorRegistry.Unregister(this);
             EventBus<PlayerNoise>.Unsubscribe(OnPlayerNoise);
             EventBus<AlarmRaised>.Unsubscribe(OnAlarmRaised);
         }
@@ -120,10 +137,16 @@ namespace RootAccess.AI
             bool occluded = Physics2D.Linecast(ears, noise.Position + Vector2.up * 0.2f, Layers.ObstacleMask).collider != null;
             if (!Hearing.CanHear(ears, noise.Position, noise.Radius, occluded, config.HearingSensitivity)) return;
 
-            NoisePosition = noise.Position;
+            Investigate(noise.Position);
+        }
+
+        /// <summary>Walks to <paramref name="position"/> and looks around (searching guards just retarget their search).</summary>
+        internal void Investigate(Vector2 position)
+        {
+            NoisePosition = position;
             if (StateId == GuardStateId.Search)
             {
-                LastKnownPlayerPosition = noise.Position;
+                LastKnownPlayerPosition = position;
                 return;
             }
 

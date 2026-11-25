@@ -79,6 +79,7 @@ MonoBehaviour:
     sceneName: Intro
     spawnId: 
   - title: 'Bonus: Multiplayer co-op'
-    summary: "Co-op asimetric Netcode + Relay: interfe\u021Be \u0219i bootstrap (P7)."
-    sceneName: RubricShowcase
-    spawnId: room_14
+    summary: "Co-op asimetric: Infiltrator + Operator (hart\u0103, u\u0219i, camere,
+      gardieni), split-screen sau LAN."
+    sceneName: MainMenu
+    spawnId: 

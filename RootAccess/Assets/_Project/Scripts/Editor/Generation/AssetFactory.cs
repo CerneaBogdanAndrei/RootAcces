@@ -412,7 +412,7 @@ namespace RootAccess.EditorTools
                 new RubricEntry(Strings.Rubric.Collisions, SeedContent.Rubric.Collisions, SceneNames.Level01, "l1_security"),
                 new RubricEntry(Strings.Rubric.Scripts, SeedContent.Rubric.Scripts, SceneNames.Level01, "l1_drone"),
                 new RubricEntry(Strings.Rubric.Cinematics, SeedContent.Rubric.Cinematics, SceneNames.Intro, string.Empty),
-                new RubricEntry(Strings.Rubric.Multiplayer, SeedContent.Rubric.Multiplayer, SceneNames.RubricShowcase, "room_14")
+                new RubricEntry(Strings.Rubric.Multiplayer, SeedContent.Rubric.Multiplayer, SceneNames.MainMenu, string.Empty)
             });
             EditorUtility.SetDirty(ctx.Rubric);
         }

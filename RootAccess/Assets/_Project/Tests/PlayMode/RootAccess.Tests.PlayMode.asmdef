@@ -16,7 +16,9 @@
         "RootAccess.VFX",
         "Unity.Timeline",
         "Unity.Cinemachine",
-        "Unity.2D.Animation.Runtime"
+        "Unity.2D.Animation.Runtime",
+        "RootAccess.Net",
+        "Unity.Netcode.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

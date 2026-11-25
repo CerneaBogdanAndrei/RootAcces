@@ -716,6 +716,7 @@ namespace RootAccess.EditorTools
             camera.nearClipPlane = 0.1f;
             camera.farClipPlane = 100f;
             cameraGo.AddComponent<AudioListener>();
+            cameraGo.AddComponent<SplitViewport>();
             var brain = cameraGo.AddComponent<CinemachineBrain>();
             brain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 0.8f);
             UniversalAdditionalCameraData cameraData = camera.GetUniversalAdditionalCameraData();
@@ -754,6 +755,9 @@ namespace RootAccess.EditorTools
 
             GameObject input = Go("Input", root.transform);
             EditorAssetUtil.SetField(input.AddComponent<InputModeController>(), "inputReader", ctx.Input);
+
+            GameObject coop = Go("Coop", root.transform);
+            EditorAssetUtil.SetField(coop.AddComponent<RootAccess.Net.CoopSession>(), "input", ctx.Input);
 
             GameObject session = Go("Session", root.transform);
             EditorAssetUtil.SetField(session.AddComponent<SessionService>(), "database", ctx.Database);

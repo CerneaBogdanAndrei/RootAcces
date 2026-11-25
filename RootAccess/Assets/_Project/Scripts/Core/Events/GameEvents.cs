@@ -257,6 +257,13 @@ namespace RootAccess.Core
         }
     }
 
+    /// <summary>Local co-op split-screen on/off: the gameplay camera and the HUD shrink to the left half.</summary>
+    public readonly struct CoopViewChanged : IEvent
+    {
+        public readonly bool Split;
+        public CoopViewChanged(bool split) => Split = split;
+    }
+
     public readonly struct CameraZoneEntered : IEvent
     {
         public readonly Collider2D Bounds;

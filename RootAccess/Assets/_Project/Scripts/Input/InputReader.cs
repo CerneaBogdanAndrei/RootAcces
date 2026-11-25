@@ -73,6 +73,25 @@ namespace RootAccess.Input
 
         public InputAction FindAction(string actionName) => Asset.FindAction(actionName, false);
 
+        /// <summary>
+        /// Local co-op: player 1 keeps keyboard + mouse and the gamepad is left to the Operator. False restores every
+        /// device.
+        /// </summary>
+        public void RestrictToKeyboardMouse(bool restrict)
+        {
+            RootAccessInputActions actions = EnsureActions();
+            if (!restrict)
+            {
+                actions.devices = null;
+                return;
+            }
+
+            var devices = new System.Collections.Generic.List<InputDevice>(2);
+            if (Keyboard.current != null) devices.Add(Keyboard.current);
+            if (Mouse.current != null) devices.Add(Mouse.current);
+            actions.devices = devices.ToArray();
+        }
+
         public string SaveBindingOverrides() => Asset.SaveBindingOverridesAsJson();
 
         public void LoadBindingOverrides(string json)

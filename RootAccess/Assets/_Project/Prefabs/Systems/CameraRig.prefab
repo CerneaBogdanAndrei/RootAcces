@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7559279785320658999}
   - component: {fileID: 635475556923615827}
   - component: {fileID: 2771904249221241155}
+  - component: {fileID: 3236036035377683542}
   - component: {fileID: 8909056552839765038}
   - component: {fileID: 1391440145774006299}
   m_Layer: 0
@@ -94,6 +95,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4820666146365207093}
   m_Enabled: 1
+--- !u!114 &3236036035377683542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4820666146365207093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437d177b3293a9442816fb62f4264183, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RootAccess.VFX::RootAccess.VFX.SplitViewport
 --- !u!114 &8909056552839765038
 MonoBehaviour:
   m_ObjectHideFlags: 0
