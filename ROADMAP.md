@@ -141,7 +141,11 @@ final al fiecărui nivel și rămân în salvare.
 
 **Barem închis:** verificarea finală a tuturor celor 12 puncte în build.
 
-## P7: co-op asimetric online, bonus (20–28 h)
+## P7: co-op asimetric online, bonus (20–28 h) ✅ făcut (PR „P7”)
+
+Realizat altfel decât planul inițial: în loc de Relay (cod de join prin servicii online), co-op-ul merge **local pe ecran
+împărțit** și **în LAN pe IP direct**, cu același cod de Operator (`IOperatorLink`: `LocalOperatorLink` /
+`NetworkOperatorLink`). Infiltrator + Operator (hartă, uși, camere, distragerea gardienilor, energie). Detalii în RUBRIC.md.
 
 **Livrabile**
 - Netcode for GameObjects + Unity Relay: host/join cu cod.

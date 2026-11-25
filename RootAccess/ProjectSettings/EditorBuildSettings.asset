@@ -41,5 +41,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Finale/Finale.unity
     guid: 216bff704f5dfdb49a592e291eb4fdab
+  - enabled: 1
+    path: Assets/_Project/Scenes/OperatorConsole/OperatorConsole.unity
+    guid: 7dbafdedf93cf6449ba951e52845dbe4
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

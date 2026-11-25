@@ -3,7 +3,11 @@
     "rootNamespace": "RootAccess.Net",
     "references": [
         "RootAccess.Core",
-        "Unity.Netcode.Runtime"
+        "Unity.Netcode.Runtime",
+        "RootAccess.Input",
+        "RootAccess.Systems",
+        "Unity.Collections",
+        "Unity.Networking.Transport"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

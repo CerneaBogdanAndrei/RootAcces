@@ -301,10 +301,14 @@ namespace RootAccess.EditorTools
                 $"{timelines} timeline-uri (Animation, Cinemachine, Activation, Signal); scenele Intro și Finale");
             item = Strings.Rubric.Multiplayer;
             string manifest = File.ReadAllText("Packages/manifest.json");
-            Add(item, "Pachete Netcode + Transport + Multiplayer Services, interfețe IInfiltratorRole/IOperatorRole",
-                manifest.Contains("com.unity.netcode.gameobjects") && manifest.Contains("com.unity.transport") && FindType("IOperatorRole") != null,
-                "Packages/manifest.json, Scripts/Net");
-            Add(item, "Co-op asimetric funcțional (Relay)", false, "P7 în ROADMAP.md (acum doar stub-uri)", Severity.Planned);
+            Add(item, "Pachete Netcode + Transport; link de Operator comun (IOperatorLink: local + rețea)",
+                manifest.Contains("com.unity.netcode.gameobjects") && manifest.Contains("com.unity.transport") &&
+                FindType("LocalOperatorLink") != null && FindType("NetworkOperatorLink") != null,
+                "Packages/manifest.json, Core/Coop, Net/NetworkOperatorLink.cs");
+            Add(item, "Co-op asimetric funcțional: CoopSession (split-screen + LAN host/join), consola Operatorului, meniul Co-op",
+                systems != null && HasAll(systems, "CoopSession") && uiRoot != null && HasAll(uiRoot, "OperatorConsoleView") &&
+                index.InScene("MainMenuView", SceneNames.MainMenu) && SceneInBuild(SceneNames.OperatorConsole),
+                "SystemsRoot/Coop, UIRoot/OperatorConsole, MainMenuCanvas/CoopMenu, scena OperatorConsole");
 
             item = "Durată de joc (≥ 30 min)";
             (bool longEnough, string durationEvidence) = ReadPlaytimeEstimate();

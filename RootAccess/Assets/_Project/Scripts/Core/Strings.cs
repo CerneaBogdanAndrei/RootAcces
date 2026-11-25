@@ -214,6 +214,51 @@ namespace RootAccess.Core
             public const string RubricShowcase = "Prezentare barem";
         }
 
+        public static class Coop
+        {
+            public const string MenuButton = "Co-op";
+            public const string Title = "CO-OP ASIMETRIC";
+            public const string Explain = "Infiltratorul joacă nivelul. Operatorul vede harta, deschide uși, buclează camere și distrage gardieni.";
+            public const string Local = "Local (ecran împărțit)";
+            public const string LocalHint = "Jucătorul 1: tastatură + mouse · Operatorul: gamepad (D-pad sus/jos, A = execută) sau Numpad 8/2/5";
+            public const string Host = "Găzduiește în LAN (Infiltrator)";
+            public const string Join = "Alătură-te (Operator)";
+            public const string AddressPlaceholder = "IP-ul gazdei, ex. 192.168.1.20";
+            public const string Back = "Înapoi";
+            public const string LocalStatus = "Co-op local: Operatorul e pe jumătatea dreaptă a ecranului";
+            public const string HostWaiting = "Găzduiești pe portul {0}. Așteptăm Operatorul...";
+            public const string HostFailed = "Nu am putut porni gazda (portul e ocupat?)";
+            public const string JoinFailed = "Nu am putut porni conexiunea";
+            public const string Connecting = "Conectare la {0}:{1}...";
+            public const string WaitingForMap = "Conectat. Așteptăm harta nivelului de la Infiltrator...";
+            public const string Connected = "Conectat · {0}";
+            public const string OperatorJoined = "Operatorul s-a conectat";
+            public const string Disconnected = "Conexiune pierdută";
+            public const string NoEnergy = "Operator: energie insuficientă";
+            public const string OperatorActed = "Operator: {0}";
+            public const string Door = "ușă comutată";
+            public const string Camera = "cameră buclată 8 s";
+            public const string Guard = "gardian distras";
+            public const string ConsoleTitle = "OPERATOR";
+            public const string Energy = "Energie {0}/{1}";
+            public const string NoTargets = "Nicio țintă în nivel.";
+            public const string NoSignal = "Fără semnal de la Infiltrator.";
+            public const string TargetDoor = "Ușă";
+            public const string TargetCamera = "Cameră";
+            public const string TargetGuard = "Gardian";
+            public const string ActionDoor = "comută ({0})";
+            public const string ActionCamera = "buclează ({0})";
+            public const string ActionGuard = "distrage ({0})";
+            public const string StateOpen = "deschisă";
+            public const string StateClosed = "închisă";
+            public const string StateLooped = "oarbă";
+            public const string StateWatching = "activă";
+            public const string StateAlert = "alertă";
+            public const string StateCalm = "patrulează";
+            public const string Distance = "{0:0} m";
+            public const string LeaveConsole = "Deconectare";
+        }
+
         public static class Cutscenes
         {
             public const string Skip = "[Enter / Esc] Sari peste";

@@ -24,6 +24,7 @@ namespace RootAccess.EditorTools
             BuildGameOver(root.transform);
             BuildLevelComplete(root.transform);
             BuildRubricPanel(root.transform, ctx);
+            BuildOperatorConsole(root.transform);
             BuildLoading(root.transform);
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, $"{EditorPaths.PrefabsUI}/UIRoot.prefab");
@@ -413,6 +414,74 @@ namespace RootAccess.EditorTools
             });
         }
 
+        /// <summary>
+        /// Operator console (co-op). The frame's anchors are switched at runtime: right half in split-screen, full screen on
+        /// a LAN client. Content is laid out for a 960-wide column so it fits both.
+        /// </summary>
+        private static void BuildOperatorConsole(Transform parent)
+        {
+            RectTransform host = UIFactory.Stretch(UIFactory.Rect("OperatorConsole", parent));
+            Image frame = UIFactory.Image("Frame", host, new Color(0.02f, 0.03f, 0.07f, 0.96f), raycast: true);
+            UIFactory.Stretch(frame.rectTransform);
+            Image edge = UIFactory.Image("Edge", frame.transform, UIFactory.Cyan);
+            UIFactory.Place(edge.rectTransform, new Vector2(0f, 0.5f), Vector2.zero, new Vector2(4f, 2400f), new Vector2(0f, 0.5f));
+
+            RectTransform column = UIFactory.Rect("Column", frame.transform);
+            UIFactory.Place(column, new Vector2(0.5f, 1f), Vector2.zero, new Vector2(920f, 1080f), new Vector2(0.5f, 1f));
+            TextMeshProUGUI title = UIFactory.Text("Title", column, Strings.Coop.ConsoleTitle, 44f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(10f, -24f), new Vector2(600f, 54f));
+            TextMeshProUGUI status = UIFactory.Text("Status", column, string.Empty, 22f, TextAlignmentOptions.Left, UIFactory.Muted);
+            UIFactory.Place(status.rectTransform, new Vector2(0f, 1f), new Vector2(10f, -82f), new Vector2(900f, 30f));
+            Image energy = UIFactory.FillBar("EnergyBar", column, new Vector2(0f, 1f), new Vector2(10f, -124f), new Vector2(520f, 22f), UIFactory.Yellow);
+            TextMeshProUGUI energyLabel = UIFactory.Text("EnergyLabel", column, string.Empty, 22f, TextAlignmentOptions.Left, UIFactory.Yellow);
+            UIFactory.Place(energyLabel.rectTransform, new Vector2(0f, 1f), new Vector2(548f, -118f), new Vector2(360f, 30f));
+
+            Image mapFrame = UIFactory.Image("Map", column, new Color(0.01f, 0.01f, 0.03f, 1f));
+            UIFactory.Place(mapFrame.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -166f), new Vector2(900f, 320f), new Vector2(0.5f, 1f));
+            RectTransform terrainRect = UIFactory.Rect("Terrain", mapFrame.transform);
+            UIFactory.Place(terrainRect, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(880f, 300f));
+            var terrain = terrainRect.gameObject.AddComponent<RawImage>();
+            terrain.raycastTarget = false;
+            RectTransform icons = UIFactory.Rect("Icons", mapFrame.transform);
+            UIFactory.Place(icons, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(880f, 300f));
+            Image iconTemplate = UIFactory.Image("IconTemplate", icons, Color.white);
+            iconTemplate.rectTransform.sizeDelta = new Vector2(12f, 12f);
+            TextMeshProUGUI empty = UIFactory.Text("Empty", mapFrame.transform, Strings.Coop.NoSignal, 26f, TextAlignmentOptions.Center, UIFactory.Muted);
+            UIFactory.Place(empty.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(860f, 60f));
+
+            RectTransform list = UIFactory.Rect("Targets", column);
+            UIFactory.Place(list, new Vector2(0.5f, 1f), new Vector2(0f, -506f), new Vector2(900f, 440f), new Vector2(0.5f, 1f));
+            UIFactory.Vertical(list.gameObject, 6f);
+            Button entryTemplate = UIFactory.Button("EntryTemplate", list, string.Empty, 900f, 48f);
+            TMP_Text entryLabel = entryTemplate.GetComponentInChildren<TMP_Text>(true);
+            entryLabel.fontSize = 22f;
+            entryLabel.alignment = TextAlignmentOptions.Left;
+
+            TextMeshProUGUI hint = UIFactory.Text("Hint", column, string.Empty, 20f, TextAlignmentOptions.Left, UIFactory.Muted);
+            UIFactory.Place(hint.rectTransform, new Vector2(0f, 0f), new Vector2(10f, 30f), new Vector2(900f, 56f));
+            Button leave = UIFactory.Button("Leave", column, Strings.Coop.LeaveConsole, 280f, 50f);
+            UIFactory.Place((RectTransform)leave.transform, new Vector2(1f, 0f), new Vector2(-150f, 40f), new Vector2(280f, 50f));
+
+            var view = host.gameObject.AddComponent<OperatorConsoleView>();
+            UIFactory.SetPanel(view, null);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("frame").objectReferenceValue = frame.rectTransform;
+                so.Require("statusLabel").objectReferenceValue = status;
+                so.Require("energyFill").objectReferenceValue = energy;
+                so.Require("energyLabel").objectReferenceValue = energyLabel;
+                so.Require("terrain").objectReferenceValue = terrain;
+                so.Require("iconLayer").objectReferenceValue = icons;
+                so.Require("iconTemplate").objectReferenceValue = iconTemplate;
+                so.Require("listRoot").objectReferenceValue = list;
+                so.Require("entryTemplate").objectReferenceValue = entryTemplate;
+                so.Require("emptyLabel").objectReferenceValue = empty;
+                so.Require("hintLabel").objectReferenceValue = hint;
+                so.Require("leaveButton").objectReferenceValue = leave;
+                so.Require("mapArea").vector2Value = new Vector2(880f, 300f);
+            });
+        }
+
         // ---------------------------------------------------------------- scene canvases
 
         public static void BuildMainMenuCanvas(BuildContext ctx)
@@ -426,13 +495,16 @@ namespace RootAccess.EditorTools
             UIFactory.Place(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -130f), new Vector2(600f, 100f));
             TextMeshProUGUI subtitle = UIFactory.Text("Subtitle", side.transform, Strings.GameSubtitle, 26f, TextAlignmentOptions.Center, UIFactory.Magenta);
             UIFactory.Place(subtitle.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -250f), new Vector2(600f, 40f));
-            RectTransform column = MenuColumn(side.transform, -340f);
-            Button cont = UIFactory.Button("Continue", column, Strings.Menu.Continue);
-            Button newGame = UIFactory.Button("NewGame", column, Strings.Menu.NewGame);
-            Button settings = UIFactory.Button("Settings", column, Strings.Menu.Settings);
-            Button rubric = UIFactory.Button("Rubric", column, Strings.Menu.RubricShowcase);
-            Button credits = UIFactory.Button("Credits", column, Strings.Menu.Credits);
-            Button quit = UIFactory.Button("Quit", column, Strings.Menu.Quit);
+            RectTransform column = MenuColumn(side.transform, -320f);
+            column.sizeDelta = new Vector2(520f, 580f);
+            Button cont = UIFactory.Button("Continue", column, Strings.Menu.Continue, 460f, 58f);
+            Button newGame = UIFactory.Button("NewGame", column, Strings.Menu.NewGame, 460f, 58f);
+            Button coop = UIFactory.Button("Coop", column, Strings.Coop.MenuButton, 460f, 58f);
+            Button settings = UIFactory.Button("Settings", column, Strings.Menu.Settings, 460f, 58f);
+            Button rubric = UIFactory.Button("Rubric", column, Strings.Menu.RubricShowcase, 460f, 58f);
+            Button credits = UIFactory.Button("Credits", column, Strings.Menu.Credits, 460f, 58f);
+            Button quit = UIFactory.Button("Quit", column, Strings.Menu.Quit, 460f, 58f);
+            CoopMenuView coopMenu = BuildCoopMenu(canvas.transform);
             TextMeshProUGUI version = UIFactory.Text("Version", side.transform, Strings.Menu.Version, 20f, TextAlignmentOptions.Center, UIFactory.Muted);
             UIFactory.Place(version.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(600f, 30f));
 
@@ -442,6 +514,8 @@ namespace RootAccess.EditorTools
             {
                 so.Require("continueButton").objectReferenceValue = cont;
                 so.Require("newGameButton").objectReferenceValue = newGame;
+                so.Require("coopButton").objectReferenceValue = coop;
+                so.Require("coopMenu").objectReferenceValue = coopMenu;
                 so.Require("settingsButton").objectReferenceValue = settings;
                 so.Require("rubricButton").objectReferenceValue = rubric;
                 so.Require("creditsButton").objectReferenceValue = credits;
@@ -451,6 +525,56 @@ namespace RootAccess.EditorTools
 
             ctx.Prefabs["MainMenuCanvas"] = PrefabUtility.SaveAsPrefabAsset(canvas, $"{EditorPaths.PrefabsUI}/MainMenuCanvas.prefab");
             Object.DestroyImmediate(canvas);
+        }
+
+        /// <summary>Co-op panel of the main menu: local split-screen, LAN host, join by IP.</summary>
+        private static CoopMenuView BuildCoopMenu(Transform canvas)
+        {
+            RectTransform host = UIFactory.Stretch(UIFactory.Rect("CoopMenu", canvas));
+            Image panel = UIFactory.Image("Panel", host, UIFactory.Panel);
+            UIFactory.Place(panel.rectTransform, new Vector2(0f, 0.5f), new Vector2(120f, 0f), new Vector2(760f, 1080f), new Vector2(0f, 0.5f));
+            TextMeshProUGUI title = UIFactory.Text("Title", panel.transform, Strings.Coop.Title, 52f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(title.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -120f), new Vector2(720f, 70f));
+            TextMeshProUGUI explain = UIFactory.Text("Explain", panel.transform, Strings.Coop.Explain, 24f, TextAlignmentOptions.Center, UIFactory.Muted);
+            UIFactory.Place(explain.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -200f), new Vector2(680f, 80f));
+
+            RectTransform column = MenuColumn(panel.transform, -310f);
+            column.sizeDelta = new Vector2(620f, 560f);
+            Button local = UIFactory.Button("Local", column, Strings.Coop.Local, 600f, 60f);
+            TextMeshProUGUI localHint = UIFactory.Text("LocalHint", column, Strings.Coop.LocalHint, 18f, TextAlignmentOptions.Center, UIFactory.Muted);
+            localHint.rectTransform.sizeDelta = new Vector2(600f, 50f);
+            Button hostButton = UIFactory.Button("Host", column, Strings.Coop.Host, 600f, 60f);
+
+            Image addressBox = UIFactory.Image("Address", column, new Color(0.01f, 0.01f, 0.04f, 1f), raycast: true);
+            addressBox.rectTransform.sizeDelta = new Vector2(600f, 58f);
+            var field = addressBox.gameObject.AddComponent<TMP_InputField>();
+            RectTransform area = UIFactory.Stretch(UIFactory.Rect("TextArea", addressBox.transform), 12f);
+            area.gameObject.AddComponent<RectMask2D>();
+            TextMeshProUGUI placeholder = UIFactory.Text("Placeholder", area, Strings.Coop.AddressPlaceholder, 24f, TextAlignmentOptions.Left, UIFactory.Muted);
+            UIFactory.Stretch(placeholder.rectTransform);
+            TextMeshProUGUI text = UIFactory.Text("Text", area, string.Empty, 24f, TextAlignmentOptions.Left, Color.white);
+            UIFactory.Stretch(text.rectTransform);
+            field.textViewport = area;
+            field.textComponent = text;
+            field.placeholder = placeholder;
+            field.characterLimit = 64;
+            Button join = UIFactory.Button("Join", column, Strings.Coop.Join, 600f, 60f);
+            TextMeshProUGUI status = UIFactory.Text("Status", column, string.Empty, 22f, TextAlignmentOptions.Center, UIFactory.Yellow);
+            status.rectTransform.sizeDelta = new Vector2(600f, 40f);
+            Button back = UIFactory.Button("Back", column, Strings.Coop.Back, 600f, 60f);
+
+            var view = host.gameObject.AddComponent<CoopMenuView>();
+            UIFactory.SetPanel(view, local);
+            EditorAssetUtil.SetFields(view, so =>
+            {
+                so.Require("localButton").objectReferenceValue = local;
+                so.Require("hostButton").objectReferenceValue = hostButton;
+                so.Require("joinButton").objectReferenceValue = join;
+                so.Require("backButton").objectReferenceValue = back;
+                so.Require("addressField").objectReferenceValue = field;
+                so.Require("statusLabel").objectReferenceValue = status;
+            });
+            return view;
         }
 
         public static void BuildCreditsCanvas(BuildContext ctx)

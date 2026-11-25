@@ -67,6 +67,8 @@ $shots = @(
     @{ Name = '34-cutscene-intro-titlu';   Scene = 'Intro';            Spawn = '';             Interact = '';              Command = '';          Delay = 3 }
     @{ Name = '35-cutscene-intro';         Scene = 'Intro';            Spawn = '';             Interact = '';              Command = '';          Delay = 9 }
     @{ Name = '36-cutscene-final';         Scene = 'Finale';           Spawn = '';             Interact = '';              Command = '';          Delay = 11 }
+    @{ Name = '37-meniu-coop';             Scene = '';                 Spawn = '';             Interact = '';              Command = 'coop';      Delay = 3 }
+    @{ Name = '38-coop-ecran-impartit';    Scene = 'Level01_Rooftops'; Spawn = 'l1_security';  Interact = '';              Command = '';          Delay = 4; Coop = 'local' }
 )
 for ($i = 1; $i -le 14; $i++) {
     $room = 'room_{0:D2}' -f $i
@@ -85,6 +87,7 @@ foreach ($shot in $selected) {
     if ($shot.Scene) { $playerArgs += @('-ra-scene', $shot.Scene) }
     if ($shot.Spawn) { $playerArgs += @('-ra-spawn', $shot.Spawn) }
     if ($shot.Interact) { $playerArgs += @('-ra-interact', $shot.Interact) }
+    if ($shot.ContainsKey('Coop')) { $playerArgs += @('-ra-coop', $shot.Coop) }
     if ($shot.Command) { $playerArgs += @('-ra-command', $shot.Command) }
 
     $process = Start-Process -FilePath $exe -ArgumentList ($playerArgs -join ' ') -PassThru

@@ -47,6 +47,7 @@ namespace RootAccess.UI
             EventBus<TraceChanged>.Subscribe(OnTrace);
             EventBus<CreditsChanged>.Subscribe(OnCredits);
             EventBus<XpChanged>.Subscribe(OnXp);
+            EventBus<CoopViewChanged>.Subscribe(OnCoopView);
             EventBus<QuestChanged>.Subscribe(OnQuest);
             EventBus<InteractionPromptChanged>.Subscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Subscribe(OnHidden);
@@ -61,6 +62,7 @@ namespace RootAccess.UI
             EventBus<TraceChanged>.Unsubscribe(OnTrace);
             EventBus<CreditsChanged>.Unsubscribe(OnCredits);
             EventBus<XpChanged>.Unsubscribe(OnXp);
+            EventBus<CoopViewChanged>.Unsubscribe(OnCoopView);
             EventBus<QuestChanged>.Unsubscribe(OnQuest);
             EventBus<InteractionPromptChanged>.Unsubscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Unsubscribe(OnHidden);
@@ -115,6 +117,13 @@ namespace RootAccess.UI
         {
             _credits = evt.Credits;
             RenderWallet();
+        }
+
+        /// <summary>Split-screen co-op: the HUD follows the gameplay camera onto the left half of the screen.</summary>
+        private void OnCoopView(CoopViewChanged evt)
+        {
+            var rect = (RectTransform)transform;
+            rect.anchorMax = new Vector2(evt.Split ? 0.5f : 1f, 1f);
         }
 
         private void OnXp(XpChanged evt)

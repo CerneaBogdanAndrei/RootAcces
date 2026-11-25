@@ -67,7 +67,7 @@ graph TD
 | `Hacking` | modelele PatternMemory / WireConnect / PortScan, view-urile lor, `HackingOverlay` | UGUI, TMP |
 | `UI` | meniuri, setări, pauză, HUD, game over, nivel complet, loading, inventar, skill tree, jurnal de misiuni, dialog, panoul de barem F1 | UGUI, TMP |
 | `Cinematics` | CutsceneController, SkipCutscene, receptori de semnale Timeline | Timeline, Cinemachine |
-| `Net` | `IInfiltratorRole`, `IOperatorRole`, `NetworkBootstrap`, `RelayServiceStub` (doar stub-uri, P7) | Netcode for GameObjects |
+| `Net` | `CoopSession` (co-op local + LAN), `NetworkOperatorLink` | Core, Input, Systems, Netcode for GameObjects, Unity Transport |
 | `Editor` | ProjectSetup, PlaceholderArtGenerator, SceneBuilder + fabrici, BuildScript, RubricValidator | pachete de Editor |
 
 Regulă: `Core` nu depinde de nimic. Un modul de gameplay nu referă alt modul de gameplay (`Player` nu vede `AI`, `AI` nu
@@ -157,6 +157,10 @@ raza EMP). Hacking-ul nu depinde de Systems, așa că efectele de spargere sunt 
 - **Guard**: FSM Patrol → Suspicious → Chase → Search → Return, plus Investigate (zgomot auzit) și Search declanșat de
   `AlarmRaised`. Variantele Heavy/Sniper diferă prin `GuardConfig` (auz, rază de răspuns la alarmă, atac la distanță)
   și prefab variant: lunetistul trage proiectile din pool prin `Muzzle`.
+- **Co-op**: `Net/CoopSession` (în SystemsRoot) e partea Infiltratorului (snapshot-uri ~10/s din `OperatorRegistry`,
+  aplică `OperatorCommand` în bugetul `OperatorModel`) și a Operatorului (păstrează ultimul snapshot și harta pentru
+  `OperatorConsoleView`). Transportul e un `IOperatorLink`: `LocalOperatorLink` (același proces, ecran împărțit) sau
+  `NetworkOperatorLink` (Netcode, mesaje numite cu payload `OperatorWire`). UI-ul vede doar interfața Core `IOperatorConsole`.
 - **Apă**: `WaterBody2D` (arcuri pe suprafață, `SetDepth` cu fundul fix) + `BuoyancyEffector2D`; înotătorii
   (`IWaterAffectable`) află noul nivel prin `UpdateWaterSurface`. `FloodControl` (IHackable) ridică apa în puțul cu stavilă.
 - **Gropi**: `FallZone` (trigger) apelează `IFallRecoverable.RecoverFromFall` pe jucător: −1 viață și revenire pe

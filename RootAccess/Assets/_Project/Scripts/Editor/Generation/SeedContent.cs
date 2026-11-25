@@ -162,7 +162,7 @@ namespace RootAccess.EditorTools
             public const string Collisions = "Matrice de coliziuni, OnCollisionEnter2D (daune, aterizare), triggere, raycast-uri.";
             public const string Scripts = "Arhitectură pe asmdef-uri, EventBus, A* propriu pentru drone, teste EditMode/PlayMode.";
             public const string Cinematics = "Cutscene-uri Timeline + Cinemachine (intro după Joc nou, final după nivelul 5), sărite cu Enter/Esc.";
-            public const string Multiplayer = "Co-op asimetric Netcode + Relay: interfețe și bootstrap (P7).";
+            public const string Multiplayer = "Co-op asimetric: Infiltrator + Operator (hartă, uși, camere, gardieni), split-screen sau LAN.";
         }
 
         public static class Labels
@@ -170,6 +170,7 @@ namespace RootAccess.EditorTools
             public const string ShowcaseHint = "[E] pe platforma de teleport → camera următoare   ·   F1 = panou barem";
             public const string MenuRoomHint = "Apasă Esc pentru meniul de pauză (setări, volum, taste).";
             public const string HubWelcome = "ASCUNZĂTOAREA";
+            public const string CoopRoomHint = "Meniu → Co-op → Local: Operatorul (gamepad) deschide ușa și buclează camera de aici.";
             public const string L1Move = "A/D mers · Space salt · Space în aer = dublu salt · Shift = dash";
             public const string L1Gaps = "Între acoperișuri e gol: o cădere te costă o viață";
             public const string L1WallJump = "Intră sub perete și sari dintr-un zid în altul";

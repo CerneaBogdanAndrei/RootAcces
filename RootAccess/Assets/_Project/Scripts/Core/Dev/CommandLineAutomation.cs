@@ -23,6 +23,8 @@ namespace RootAccess.Core
         private const string CommandArg = "-ra-command";
         private const string CommandDelayArg = "-ra-command-delay";
         private const string DefaultSettingsArg = "-ra-default-settings";
+        private const string CoopArg = "-ra-coop";
+        private const string CoopAddressArg = "-ra-coop-address";
 
         private string _targetScene;
         private string _spawnId;
@@ -36,6 +38,8 @@ namespace RootAccess.Core
         private string[] _commands = new string[0];
         private float _commandDelay = 1.5f;
         private float _commandAt = -1f;
+        private string _coop;
+        private string _coopAddress;
 
         /// <summary>Raised for each <c>-ra-command</c> entry once the target scene is ready (see <see cref="AutomationCommands"/>).</summary>
         public static event Action<string> CommandRequested;
@@ -71,7 +75,10 @@ namespace RootAccess.Core
             if (!string.IsNullOrEmpty(commands)) _commands = commands.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (float.TryParse(Value(args, CommandDelayArg), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float commandDelay))
                 _commandDelay = commandDelay;
-            IsActive = _targetScene != null || _screenshotPath != null || _quitAt > 0f || _interactTarget != null || _commands.Length > 0;
+            _coop = Value(args, CoopArg);
+            _coopAddress = Value(args, CoopAddressArg);
+            if (_coop == "join" && string.IsNullOrEmpty(_targetScene)) _targetScene = SceneNames.OperatorConsole;
+            IsActive = _targetScene != null || _screenshotPath != null || _quitAt > 0f || _interactTarget != null || _commands.Length > 0 || _coop != null;
             if (IsActive) Debug.Log($"[Automation] scene={_targetScene} spawn={_spawnId} newGame={_newGame} screenshot={_screenshotPath} quitAt={_quitAt}");
         }
 
@@ -112,6 +119,7 @@ namespace RootAccess.Core
             {
                 _redirected = true;
                 if (_newGame && ServiceLocator.TryGet(out ISessionService session)) session.ResetSession();
+                StartCoop();
                 if (ServiceLocator.TryGet(out GameManager gameManager)) gameManager.LoadScene(_targetScene, _spawnId);
                 return;
             }
@@ -122,6 +130,29 @@ namespace RootAccess.Core
                 _commandAt = Time.realtimeSinceStartup + _commandDelay;
             if (arrived && !string.IsNullOrEmpty(_screenshotPath) && _screenshotAt < 0f)
                 _screenshotAt = Time.realtimeSinceStartup + _screenshotDelay;
+        }
+
+        /// <summary><c>-ra-coop local|host|join</c> (+ <c>-ra-coop-address ip</c>): start co-op before the target scene loads.</summary>
+        private void StartCoop()
+        {
+            if (string.IsNullOrEmpty(_coop) || !ServiceLocator.TryGet(out IOperatorConsole console)) return;
+            switch (_coop)
+            {
+                case "local":
+                    console.StartLocal();
+                    break;
+                case "host":
+                    console.Host();
+                    break;
+                case "join":
+                    console.Join(_coopAddress);
+                    break;
+                default:
+                    Debug.LogWarning($"[Automation] Unknown -ra-coop mode '{_coop}' (local, host, join).");
+                    return;
+            }
+
+            Debug.Log($"[Automation] co-op '{_coop}': {console.Mode} · {console.Status}");
         }
 
         private void RunCommands()

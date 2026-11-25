@@ -8,8 +8,11 @@ namespace RootAccess.AI
     /// Sweeping security camera. Seeing the player fills a detection meter; when full it raises the alarm and keeps
     /// adding trace while the player stays visible. Hacking it (Terminal_Camera) disables or loops it for a while.
     /// </summary>
-    public sealed class SecurityCamera : MonoBehaviour, IHackable, IEmpTarget
+    public sealed class SecurityCamera : MonoBehaviour, IHackable, IEmpTarget, IOperatorTarget
     {
+        /// <summary>How long the Operator's looped feed keeps the camera blind.</summary>
+        public const float OperatorLoopSeconds = 8f;
+
         [SerializeField] private VisionCone vision;
         [SerializeField] private Transform pivot;
         [SerializeField] private float centerAngle = -60f;
@@ -35,6 +38,24 @@ namespace RootAccess.AI
 
         public void ApplyEmp(float seconds) => _disabledUntil = Mathf.Max(_disabledUntil, Time.time + seconds);
         public float Detection => _detection;
+
+        public string OperatorId => GetInstanceID().ToString();
+        public OperatorTargetKind OperatorKind => OperatorTargetKind.Camera;
+        public Vector2 OperatorPosition => transform.position;
+        public bool OperatorActive => IsHacked;
+        public bool CanOperate => isActiveAndEnabled && !IsHacked;
+
+        private void OnEnable() => OperatorRegistry.Register(this);
+
+        private void OnDisable() => OperatorRegistry.Unregister(this);
+
+        /// <summary>Operator loops the feed: the camera shows an old recording for a few seconds.</summary>
+        public void Operate()
+        {
+            _disabledUntil = Mathf.Max(_disabledUntil, Time.time + OperatorLoopSeconds);
+            _detection = 0f;
+            _alarmRaised = false;
+        }
 
         private void Awake()
         {

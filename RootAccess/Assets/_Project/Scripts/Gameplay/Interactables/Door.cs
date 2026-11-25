@@ -3,8 +3,11 @@ using UnityEngine;
 
 namespace RootAccess.Gameplay
 {
-    /// <summary>Security door opened/closed by hacking. The Animator plays the slide; the blocking collider toggles.</summary>
-    public sealed class Door : MonoBehaviour, IHackable
+    /// <summary>
+    /// Security door opened/closed by hacking. The Animator plays the slide; the blocking collider toggles. In co-op the
+    /// Operator can toggle it remotely (<see cref="IOperatorTarget"/>).
+    /// </summary>
+    public sealed class Door : MonoBehaviour, IHackable, IOperatorTarget
     {
         [SerializeField] private Collider2D blocker;
         [SerializeField] private Animator animator;
@@ -14,7 +17,19 @@ namespace RootAccess.Gameplay
         public bool IsHacked { get; private set; }
         public bool IsOpen { get; private set; }
 
+        public string OperatorId => GetInstanceID().ToString();
+        public OperatorTargetKind OperatorKind => OperatorTargetKind.Door;
+        public Vector2 OperatorPosition => transform.position;
+        public bool OperatorActive => IsOpen;
+        public bool CanOperate => isActiveAndEnabled;
+
         private void Start() => SetOpen(startOpen, silent: true);
+
+        private void OnEnable() => OperatorRegistry.Register(this);
+
+        private void OnDisable() => OperatorRegistry.Unregister(this);
+
+        public void Operate() => SetOpen(!IsOpen);
 
         public void ApplyHack(HackAction action)
         {

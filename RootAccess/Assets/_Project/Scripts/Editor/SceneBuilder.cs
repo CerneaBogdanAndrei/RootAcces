@@ -3,7 +3,6 @@ using System.Linq;
 using RootAccess.AI;
 using RootAccess.Core;
 using RootAccess.Gameplay;
-using RootAccess.Net;
 using RootAccess.Systems;
 using RootAccess.VFX;
 using TMPro;
@@ -27,7 +26,8 @@ namespace RootAccess.EditorTools
         public static readonly string[] BuildOrder =
         {
             SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.Level03,
-            SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale
+            SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale,
+            SceneNames.OperatorConsole
         };
 
         internal sealed class GameplayScene
@@ -69,6 +69,7 @@ namespace RootAccess.EditorTools
                 PlaytimeReport.Write();
                 BuildRubricShowcase(ctx);
                 BuildCredits(ctx);
+                BuildOperatorConsole(ctx);
                 ConfigureBuildSettings();
                 EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             });
@@ -204,6 +205,7 @@ namespace RootAccess.EditorTools
                 so.Require("levelId").stringValue = levelId;
                 so.Require("player").objectReferenceValue = scene.Player.transform;
                 so.Require("defaultSpawn").objectReferenceValue = spawnPoint.GetComponent<SpawnPoint>();
+                so.Require("levelBounds").objectReferenceValue = bounds;
             });
 
             scene.Grid = Group("Grid", scene.Root);
@@ -386,6 +388,21 @@ namespace RootAccess.EditorTools
             PostVolume(null, ctx.MenuProfile);
             Place(ctx, "CreditsCanvas", Vector3.zero);
             Save(scene, SceneNames.Credits);
+        }
+
+        /// <summary>LAN Operator's scene: just a camera; the console lives in UIRoot and draws what the host sends.</summary>
+        private static void BuildOperatorConsole(BuildContext ctx)
+        {
+            Scene scene = NewScene();
+            GameObject cameraGo = PrefabFactory.Go("Main Camera");
+            cameraGo.tag = Tags.MainCamera;
+            var camera = cameraGo.AddComponent<Camera>();
+            camera.orthographic = true;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.01f, 0.01f, 0.03f);
+            cameraGo.AddComponent<AudioListener>();
+            GlobalLight(null, Color.white, 1f);
+            Save(scene, SceneNames.OperatorConsole);
         }
 
         // ---------------------------------------------------------------- Hub
@@ -869,7 +886,9 @@ namespace RootAccess.EditorTools
                     Place(ctx, "Turret", P(17f, 0f), room);
                     break;
                 case 13:
-                    PrefabFactory.Go("NetworkBootstrap", room).AddComponent<NetworkBootstrap>();
+                    Place(ctx, "Door", P(14.5f, 0f), room, "CoopDemoDoor");
+                    Place(ctx, "SecurityCamera", P(10f, 7f), room, "CoopDemoCamera");
+                    Label(room, SeedContent.Labels.CoopRoomHint, P(10.5f, 3.6f), 2.6f, new Color(1f, 0.85f, 0.4f), 17f);
                     break;
             }
         }

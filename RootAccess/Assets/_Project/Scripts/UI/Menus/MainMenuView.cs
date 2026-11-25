@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 namespace RootAccess.UI
 {
-    /// <summary>Main menu: Continue, New Game, Settings, Rubric Showcase, Credits, Quit.</summary>
+    /// <summary>Main menu: Continue, New Game, Co-op, Settings, Rubric Showcase, Credits, Quit.</summary>
     public sealed class MainMenuView : UIPanel
     {
         [SerializeField] private Button continueButton;
         [SerializeField] private Button newGameButton;
+        [SerializeField] private Button coopButton;
+        [SerializeField] private CoopMenuView coopMenu;
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button rubricButton;
         [SerializeField] private Button creditsButton;
@@ -24,10 +26,20 @@ namespace RootAccess.UI
             continueButton.onClick.AddListener(OnContinue);
             newGameButton.onClick.AddListener(OnNewGame);
             settingsButton.onClick.AddListener(OnSettings);
+            if (coopButton != null) coopButton.onClick.AddListener(OnCoop);
             rubricButton.onClick.AddListener(() => Load(SceneNames.RubricShowcase));
             creditsButton.onClick.AddListener(() => Load(SceneNames.Credits));
             quitButton.onClick.AddListener(() => { if (ServiceLocator.TryGet(out GameManager gm)) gm.QuitGame(); });
             if (versionLabel != null) versionLabel.text = $"{Strings.Menu.Version} · {Application.version}";
+        }
+
+        private void OnEnable() => CommandLineAutomation.CommandRequested += OnAutomationCommand;
+
+        private void OnDisable() => CommandLineAutomation.CommandRequested -= OnAutomationCommand;
+
+        private void OnAutomationCommand(string command)
+        {
+            if (command == AutomationCommands.Coop) OnCoop();
         }
 
         private void Start()
@@ -47,6 +59,13 @@ namespace RootAccess.UI
         {
             if (ServiceLocator.TryGet(out ISessionService session)) session.NewGame();
             else Load(SceneNames.Hub);
+        }
+
+        private void OnCoop()
+        {
+            if (coopMenu == null) return;
+            Hide();
+            coopMenu.Open(Show);
         }
 
         private void OnSettings()

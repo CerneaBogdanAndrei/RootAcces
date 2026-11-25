@@ -52,6 +52,7 @@ D:\ProiectSPV\                 git repo (branch main, Git LFS for png/wav/…)
 ./scripts/smoke-player.ps1 [-Scenes Hub,Level01_Rooftops] [-Spawn l1_drone]   # run the exe, screenshots + Player.log scan
 ./scripts/capture.ps1 [-Only '0*'] [-OutDir path]     # documentation screenshots (Documentatie/screenshots by default)
 ./scripts/package-for-drive.ps1 [-Build] [-IncludeGit] # dist/RootAccess_Project.zip + dist/RootAccess_Windows.zip
+./scripts/coop-lan-smoke.ps1                          # two exes (LAN host + Operator client on 127.0.0.1), checks the remote door
 ./scripts/unity-batch.ps1 -Step <name> -ExecuteMethod <Namespace.Class.Method> [-WithGraphics] [-NoQuit]
 ```
 
@@ -70,7 +71,8 @@ Clean-machine order: `ProjectSetup.Run` → `-importPackage "<ugui>/Package Reso
 
 Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-ra-scene <Scene> -ra-spawn <id>
 -ra-newgame -ra-screenshot <png> -ra-screenshot-delay <s> -ra-quit-after <s> -ra-interact <ObjectName>
--ra-command inventory,skills,quests,pause,rubric,settings,gameover -ra-default-settings` (in-memory settings: scripts
+-ra-command inventory,skills,quests,pause,rubric,settings,gameover,coop,operator-act -ra-coop local|host|join
+-ra-coop-address <ip> -ra-default-settings` (in-memory settings: scripts
 must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses them to photograph every screen. Spawn ids: `hub_center`, `l1_start`,
 `l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
 `l2_vault`, `l3_start`, `l3_drones`, `l3_nodes`, `l3_core`, `l4_start`, `l4_water`, `l4_sluice`, `l4_gate`, `l5_start`,
@@ -96,6 +98,9 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 - Raycasts that start exactly on a collider's surface do not report it: start ground/wall probes ~0.5 above the feet.
 - Sprite rigs: bones/weights go through `ISpriteBoneDataProvider` + `ISpriteMeshDataProvider` (root bone in pixels from the
   rect origin, children in parent-local pixels, vertices in rect pixels); the 2D Animation post-processor bakes bind poses.
+- Netcode: create the NetworkManager on a root object (`DontDestroyOnLoad`), `EnableSceneManagement = false` when peers do
+  not share scenes (the LAN Operator only runs the console); the Net asmdef needs `Unity.Networking.Transport` for
+  `UnityTransport.SetConnectionData`.
 - `_CameraSortingLayerTexture` needs both `m_UseCameraSortingLayersTexture` and `m_CameraSortingLayersTextureBound`
   (a sorting layer *unique id*) on the Renderer2DData; the Shader Graph property must be non-exposed.
 - Shader Graphs are generated (`Editor/Generation/ShaderGraphFactory.cs` + `ShaderGraphWriter.cs`): nodes are written without
@@ -104,9 +109,9 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 ## Testing
 
-- EditMode (`Tests/EditMode`, 109 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
+- EditMode (`Tests/EditMode`, 114 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
   SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet.
-- PlayMode (`Tests/PlayMode`, 35 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
+- PlayMode (`Tests/PlayMode`, 38 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
   teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
   Wire Connect through the real overlay (camera disabled, data shard + credits awarded).

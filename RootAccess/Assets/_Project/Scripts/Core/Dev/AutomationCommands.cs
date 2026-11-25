@@ -10,5 +10,11 @@ namespace RootAccess.Core
         public const string RubricPanel = "rubric";
         public const string Settings = "settings";
         public const string GameOver = "gameover";
+
+        /// <summary>Operator console: act on the first available door (LAN smoke test).</summary>
+        public const string OperatorAct = "operator-act";
+
+        /// <summary>Main menu: open the co-op panel.</summary>
+        public const string Coop = "coop";
     }
 }

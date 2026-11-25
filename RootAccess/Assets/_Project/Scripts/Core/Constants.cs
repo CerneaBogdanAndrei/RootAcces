@@ -98,6 +98,9 @@ namespace RootAccess.Core
         public const string Intro = "Intro";
         public const string Finale = "Finale";
 
+        /// <summary>LAN Operator's screen: no level, only the console fed by the host.</summary>
+        public const string OperatorConsole = "OperatorConsole";
+
         /// <summary>Timeline-only scenes: no player, no HUD; they load the next scene when the cutscene ends or is skipped.</summary>
         public static bool IsCutsceneScene(string sceneName) => sceneName == Intro || sceneName == Finale;
 
