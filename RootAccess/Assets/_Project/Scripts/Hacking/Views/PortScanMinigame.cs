@@ -21,6 +21,9 @@ namespace RootAccess.Hacking
         public override HackingMinigameType Type => HackingMinigameType.PortScan;
         public override string Hint => Strings.Hacking.PortScanHint;
 
+        /// <summary>Test hook: the running puzzle (null before the first Begin).</summary>
+        internal PortScanModel Model => _model;
+
         protected override void OnBegin(int difficulty, int seed)
         {
             _model = new PortScanModel(2 + difficulty, 2, 0.55f + difficulty * 0.12f, 0.22f - difficulty * 0.025f, seed);

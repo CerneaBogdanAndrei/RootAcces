@@ -6,10 +6,11 @@ se termină cu teste verzi (`scripts/test.ps1`), build OK, `RubricValidator` fă
 
 ## Punctul de plecare (v0.1-setup)
 
-- Toate sistemele de bază există și sunt testate: mișcare completă, A*, hacking (3 modele, PatternMemory legat în nivel),
-  inventar, trace, credite, skill tree, quest-uri, save/load versionat, meniuri, mixer, animatori, pool-uri.
+- Toate sistemele de bază există și sunt testate: mișcare completă, A*, hacking (3 minijocuri legate de terminale: ușă →
+  PatternMemory, cameră → PortScan, date → WireConnect), inventar, trace, credite, skill tree, quest-uri, save/load
+  versionat, meniuri, mixer, animatori, pool-uri.
 - Scene: Bootstrap, MainMenu, Hub, secțiunea de test din Level01, RubricShowcase (14 camere), Credits.
-- 100 de teste (92 EditMode + 8 PlayMode), inclusiv fluxul complet de acceptare.
+- 102 teste (92 EditMode + 10 PlayMode), inclusiv fluxul complet de acceptare și toate cele trei minijocuri.
 - Artă și sunete placeholder procedurale.
 
 | Etapă | Tema | Barem închis | Efort |
@@ -43,8 +44,8 @@ Total estimat: aproximativ 140–185 de ore.
 ## P2: hacking, terminale, inventar (16–20 h)
 
 **Livrabile**
-- Minijocurile WireConnect și PortScan legate de tipurile de terminal (Camera → WireConnect, Data → PortScan). Modelele
-  și view-urile există deja.
+- Finisarea minijocurilor: WireConnect (terminale de date) și PortScan (terminale de cameră) funcționează deja și au teste
+  PlayMode. Lipsesc firele desenate între socket-uri, animațiile de rezultat și dificultatea crescătoare pe nivel.
 - Dificultate pe terminal, skill-urile de hacking aplicate (`FasterHacking`, `ExtraHackAttempt`).
 - Inventar UI complet (grilă, descriere, folosirea itemelor), cheile USB deschid uși, exploit-urile sar peste un minijoc.
 - Grenada EMP: aruncare (acțiunea `Throw` e deja în input), traiectorie, explozie (`VFX_EmpExplosion`), dezactivează
@@ -52,7 +53,7 @@ Total estimat: aproximativ 140–185 de ore.
 - Shop-ul din Hub funcțional (cumpărare cu credite).
 
 **Barem închis:** mecanicile avansate „interacțiune cu obiecte” și „inventar”; 7 (particula EMP folosită în gameplay).
-**Teste noi:** EditMode pentru shop (credite insuficiente, stack), PlayMode pentru WireConnect/PortScan prin terminal.
+**Teste noi:** EditMode pentru shop (credite insuficiente, stack), PlayMode pentru grenada EMP (dezactivează camera și drona).
 
 ## P3: AI, pathfinding, Nivelurile 1–2 (24–30 h)
 

@@ -20,6 +20,14 @@ namespace RootAccess.Hacking
         public override HackingMinigameType Type => HackingMinigameType.WireConnect;
         public override string Hint => Strings.Hacking.WireConnectHint;
 
+        /// <summary>Test hook: the running puzzle (null before the first Begin).</summary>
+        internal WireConnectModel Model => _model;
+
+        /// <summary>Test hooks: same path as clicking a left or right socket.</summary>
+        internal void PressLeft(int index) => OnLeft(index);
+
+        internal void PressRight(int index) => OnRight(index);
+
         protected override void OnBegin(int difficulty, int seed)
         {
             int wires = Mathf.Clamp(2 + difficulty, 3, Palette.Length);

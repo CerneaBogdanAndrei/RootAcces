@@ -395,7 +395,7 @@ MonoBehaviour:
   scroller: {fileID: 4178906412988031076}
   body: {fileID: 1229517120739288348}
   hint: {fileID: 9217903759826167172}
-  speed: 45
+  speed: 60
   endY: 2000
 --- !u!1 &6019116490530658998
 GameObject:
@@ -556,6 +556,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -900}
+  m_AnchoredPosition: {x: 0, y: 80}
   m_SizeDelta: {x: 1200, y: 900}
   m_Pivot: {x: 0.5, y: 1}

@@ -427,7 +427,7 @@ namespace RootAccess.EditorTools
             RectTransform viewport = UIFactory.Stretch(UIFactory.Rect("Viewport", canvas.transform));
             viewport.gameObject.AddComponent<RectMask2D>();
             RectTransform scroller = UIFactory.Rect("Scroller", viewport);
-            UIFactory.Place(scroller, new Vector2(0.5f, 0f), new Vector2(0f, -900f), new Vector2(1200f, 900f), new Vector2(0.5f, 1f));
+            UIFactory.Place(scroller, new Vector2(0.5f, 0f), new Vector2(0f, 80f), new Vector2(1200f, 900f), new Vector2(0.5f, 1f));
             TextMeshProUGUI body = UIFactory.Text("Body", scroller, string.Empty, 34f, TextAlignmentOptions.Top);
             UIFactory.Stretch(body.rectTransform);
             TextMeshProUGUI hint = UIFactory.Text("Hint", canvas.transform, string.Empty, 22f, TextAlignmentOptions.Right, UIFactory.Muted);
@@ -439,6 +439,7 @@ namespace RootAccess.EditorTools
                 so.Require("scroller").objectReferenceValue = scroller;
                 so.Require("body").objectReferenceValue = body;
                 so.Require("hint").objectReferenceValue = hint;
+                so.Require("speed").floatValue = 60f;
                 so.Require("endY").floatValue = 2000f;
             });
 

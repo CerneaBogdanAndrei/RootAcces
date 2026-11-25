@@ -28,7 +28,9 @@ sparge terminale și fură date. Proiect pentru disciplina „Joc 2D de tip sing
 ### Din Unity Editor
 
 1. Instalează Unity Hub și editorul **6000.3.29f1**, cu modulul *Windows Build Support (Mono)*.
-2. În Unity Hub: *Add project from disk* → folderul `RootAccess` (nu rădăcina repo-ului).
+2. În Unity Hub: *Add project from disk* → folderul `RootAccess` (nu rădăcina repo-ului). Dacă pornești din
+   `RootAccess_Project.zip`, dezarhivează-l aproape de rădăcina discului (de exemplu `C:\Proiecte\`). La primul import
+   Unity creează `Library\PackageCache` (circa 2 GB), iar căile mai lungi de 260 de caractere dau erori de import pe Windows.
 3. Deschide `Assets/_Project/Scenes/Bootstrap/Bootstrap.unity` și apasă Play. Orice altă scenă pornește și direct, pentru că
    sistemele persistente (`SystemsRoot`) se încarcă automat.
 

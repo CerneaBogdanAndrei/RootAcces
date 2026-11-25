@@ -90,9 +90,10 @@ Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-r
 
 - EditMode (`Tests/EditMode`, 92 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
   SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet.
-- PlayMode (`Tests/PlayMode`, 8 tests): every project scene in Build Settings boots with no logged errors and the player
+- PlayMode (`Tests/PlayMode`, 10 tests): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
-  teleport → drone chase → pause → volume → menu → Rubric Showcase).
+  teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
+  Wire Connect through the real overlay (camera disabled, data shard + credits awarded).
 - The Test Framework fails a test on any unexpected `Debug.LogError`/exception — keep logs clean, use `LogAssert.Expect`.
 - Add a test with every new system; test hooks are `internal` + `InternalsVisibleTo` (see `Scripts/Hacking/AssemblyInfo.cs`).
 

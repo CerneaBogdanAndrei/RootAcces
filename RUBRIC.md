@@ -175,9 +175,10 @@ de roadmap sunt încă deschiși.
 - **Cod:** 13 asmdef-uri runtime/editor + 2 de test, fără cicluri (graful e în [ARCHITECTURE.md](ARCHITECTURE.md)).
   Tot codul e scris de noi: EventBus, ServiceLocator, FSM, A*, sisteme, generatoare.
 - **Teste:** `Tests/EditMode` (92: A*, inventar, trace meter, save/load + migrări, skill tree, quest-uri, hacking, EventBus…)
-  și `Tests/PlayMode` (8: fiecare scenă pornește fără erori, plus fluxul complet de acceptare). Rulare: `./scripts/test.ps1`.
+  și `Tests/PlayMode` (10: fiecare scenă pornește fără erori, fluxul complet de acceptare, cele trei minijocuri de hacking
+  rezolvate prin overlay-ul real). Rulare: `./scripts/test.ps1`.
 - **Demonstrație:** F1 → 12 → Mergi (`l1_drone`). Drona te vede și te urmărește pe un drum A* în jurul stâlpilor (în Editor,
-  selectează drona ca să vezi drumul ca gizmo). Apoi deschide *Window → General → Test Runner* și rulează testele: 100 verzi.
+  selectează drona ca să vezi drumul ca gizmo). Apoi deschide *Window → General → Test Runner* și rulează testele: 102 verzi.
 
 ## Bonus: cinematice 🧩
 
