@@ -1,0 +1,192 @@
+# Arhitectura Root Access
+
+Documentul descrie cum e organizat codul, cum comunică sistemele și cum se salvează jocul. Deciziile specifice Unity
+sunt explicate pe scurt, pentru cine vine din web sau backend.
+
+## 1. Principii
+
+- **Model separat de prezentare.** Logica de joc stă în clase C# simple, fără `MonoBehaviour`: `Inventory`,
+  `TraceMeter`, `QuestLog`, `SkillTree`, `Wallet`, `AStarPathfinder`, modelele de hacking. Componentele Unity sunt
+  „view-uri” subțiri peste ele. Logica se testează astfel în EditMode, fără scene, și se poate oglindi mai târziu în
+  `NetworkVariable` pentru co-op.
+- **Comunicare decuplată.** Sistemele nu se caută unele pe altele cu `Find*`. Folosim trei mecanisme:
+  1. `EventBus<T>`: publish/subscribe static și tipizat, cu payload `struct` (fără alocări la publicare);
+  2. `ServiceLocator`: registru pentru serviciile de lungă durată (GameManager, SceneLoader, AudioManager, PoolService,
+     SessionService, IPlayerTarget);
+  3. referințe serializate (`[SerializeField] private`), setate de generatoarele din Editor.
+- **Conținut generat din cod.** Scenele, prefab-urile, materialele, mixerul și animatorii sunt create de scripturi de
+  Editor rulate în batchmode, nu de mână. Așa build-ul e reproductibil, iar diff-urile importante rămân în C#.
+- **Fără valori „magice”.** Layere, tag-uri, ID-uri de scene, parametri de mixer și ID-uri de SFX/VFX stau în
+  `Core/Constants.cs` și `Core/Ids.cs`. Tot textul afișat jucătorului (în română) e în `Core/Strings.cs`.
+
+## 2. Module și assembly definitions
+
+Fiecare folder din `Assets/_Project/Scripts` are propriul `.asmdef`, adică un assembly .NET separat. Unity recompilează
+doar ce s-a schimbat, iar dependențele sunt explicite: un ciclu sau o referință interzisă dă eroare de compilare.
+
+```mermaid
+graph TD
+    Core
+    Input --> Core
+    Systems --> Core
+    VFX --> Core
+    Audio --> Core
+    Audio --> Systems
+    AI --> Core
+    AI --> VFX
+    Gameplay --> Core
+    Gameplay --> Systems
+    Gameplay --> VFX
+    Player --> Core
+    Player --> Input
+    Player --> Systems
+    Player --> VFX
+    Hacking --> Core
+    Hacking --> Input
+    UI --> Core
+    UI --> Input
+    UI --> Systems
+    Cinematics --> Core
+    Cinematics --> Input
+    Net --> Core
+    Editor[Editor - doar în Editor] --> Core & Input & Systems & Audio & VFX & Player & AI & Gameplay & Hacking & UI & Cinematics & Net
+    TestsEdit[Tests.EditMode] --> Core & AI & Systems & Hacking
+    TestsPlay[Tests.PlayMode] --> Core & AI & Audio & Systems & Hacking & Gameplay & Player & UI
+```
+
+| Assembly | Responsabilitate | Pachete externe |
+|---|---|---|
+| `Core` | EventBus, ServiceLocator, FSM generic, PoolService, SaveSystem, SettingsService, SceneLoader, GameManager, contracte (`IDamageable`, `IInteractable`, `IHackable`, `IPlayerTarget`…), constante, `Strings` | — |
+| `Input` | asset-ul `.inputactions`, wrapper-ul C# generat, `InputReader` (ScriptableObject cu evenimente), `RebindService`, `InputModeController` | Input System |
+| `Systems` | Inventory, TraceMeter, Wallet, SkillTree, QuestLog, Dialogue, `GameSession` + `SaveData`, `SessionService`, `GameDatabase` | — |
+| `VFX` | VfxSpawner (pool), ScreenShake (Cinemachine impulse), CameraController, FlickerLight2D, DissolveController, Parallax, FoliageWind, SkyboxBackdrop | URP 2D, Cinemachine |
+| `Audio` | AudioManager (surse în pool), MusicDirector (stealth ↔ alertă), MixerSnapshots, FootstepPlayer, SfxLibrary | — |
+| `AI` | A* (`AStarGrid`, `AStarPathfinder`, `PathfindingGrid`, `PathRequestQueue`), VisionCone, Guard (FSM), SecurityCamera, Drone, Turret | URP 2D |
+| `Player` | PlayerController (FSM cu 9 stări), PlayerSensors, PlayerHealth, PlayerInteractor, PlayerVisibility, AnimatorBridge | Input System |
+| `Gameplay` | Terminal, Door, Elevator, NetworkNode/TeleportPad, Pickup, Hazard, Checkpoint, LevelExit, HideZone, WaterBody2D, WindZone2D, AlarmZone, LevelContext, terminalele din Hub | URP 2D, TMP |
+| `Hacking` | modelele PatternMemory / WireConnect / PortScan, view-urile lor, `HackingOverlay` | UGUI, TMP |
+| `UI` | meniuri, setări, pauză, HUD, game over, nivel complet, loading, inventar, skill tree, jurnal de misiuni, dialog, panoul de barem F1 | UGUI, TMP |
+| `Cinematics` | CutsceneController, SkipCutscene, receptori de semnale Timeline | Timeline, Cinemachine |
+| `Net` | `IInfiltratorRole`, `IOperatorRole`, `NetworkBootstrap`, `RelayServiceStub` (doar stub-uri, P7) | Netcode for GameObjects |
+| `Editor` | ProjectSetup, PlaceholderArtGenerator, SceneBuilder + fabrici, BuildScript, RubricValidator | pachete de Editor |
+
+Regulă: `Core` nu depinde de nimic. Un modul de gameplay nu referă alt modul de gameplay (`Player` nu vede `AI`, `AI` nu
+vede `Player`). Când două module trebuie să comunice, folosesc contractele din `Core` și evenimentele de pe bus. Exemplu:
+drona urmărește un `IPlayerTarget` luat din ServiceLocator, nu un `PlayerController`.
+
+## 3. Ciclul de viață și scenele
+
+```
+Bootstrap (build index 0) ──► MainMenu ──► Hub ──► Level01_Rooftops ──► …
+          ▲
+ [RuntimeInitializeOnLoadMethod(BeforeSceneLoad)] SystemsBootstrapper
+ instanțiază o singură dată Resources/SystemsRoot (DontDestroyOnLoad):
+ GameManager, SceneLoader, SessionService, AudioManager, MusicDirector, MixerSnapshots,
+ PoolService, VfxSpawner, ScreenShake, UIRoot (HUD, meniuri, overlay de hacking, loading, panou F1)
+```
+
+- `SystemsRoot` apare înaintea primei scene. De aceea orice scenă poate fi pornită direct în Editor.
+- `GameManager` ține starea de nivel înalt (`Boot`, `MainMenu`, `Loading`, `Playing`, `Paused`, `Hacking`, `Dialogue`,
+  `GameOver`, `LevelComplete`), setează `Time.timeScale` și publică `GameStateChanged`. UI-ul reacționează la acest eveniment.
+- `SceneLoader` încarcă asincron cu `allowSceneActivation = false` până trece durata minimă a ecranului de încărcare
+  (progresul vine prin `SceneLoadProgress`), apoi publică `SceneLoadCompleted`.
+- `LevelContext` (execution order −200) plasează jucătorul: întâi la spawn-ul cerut (fast travel, panoul F1, `-ra-spawn`),
+  altfel la ultimul checkpoint, altfel la spawn-ul implicit.
+
+## 4. Fluxul de evenimente
+
+Toate evenimentele sunt `readonly struct : IEvent`, definite în `Core/Events/*.cs` și `Systems/SystemEvents.cs`.
+
+| Domeniu | Evenimente |
+|---|---|
+| Scene / stare | `SceneLoadStarted`, `SceneLoadProgress`, `SceneLoadCompleted`, `GameStateChanged`, `SettingsChanged`, `LevelCompleted` |
+| Jucător | `PlayerHealthChanged`, `PlayerDied`, `PlayerRespawnRequested`, `PlayerRespawned`, `PlayerHiddenChanged`, `CheckpointReached`, `InteractionPromptChanged` |
+| Stealth | `TraceNoise`, `TraceChanged`, `TraceLevelChanged`, `AlarmRaised` |
+| Hacking | `HackRequested`, `HackSessionStarted`, `HackResolved`, `HackSessionEnded` |
+| Progres | `ObjectiveReported`, `QuestChanged`, `InventoryChanged`, `CreditsChanged`, `SkillUnlockedEvent`, `ToastRequested` |
+| Dialog | `DialogueRequested`, `DialogueLineShown`, `DialogueEnded` |
+| Prezentare | `SfxRequested`, `FootstepRequested`, `VfxRequested`, `ScreenShakeRequested`, `MusicMoodRequested`, `UnderwaterChanged`, `CameraZoneEntered`, `TeleportStarted`, `TeleportCompleted` |
+
+Exemplu, hack-ul unei uși:
+
+```
+PlayerInteractor (E) ─► Terminal.Interact ─► HackRequested(id, minigame, dificultate)
+HackingOverlay ─► HackSessionStarted ─► GameManager: Playing→Hacking · PlayerController: stare Hack · CameraController: zoom
+   minigame terminat ─► HackResolved(id, succes) + HackSessionEnded
+Terminal (succes) ─► IHackable.ApplyHack(Open) pe Door ─► animator + SFX
+                 ─► ObjectiveReported(Hack, terminalId) ─► SessionService ─► QuestLog.Report ─► QuestChanged ─► HUD
+                 ─► Wallet.Add / SkillTree.AddXp ─► CreditsChanged ─► HUD
+Terminal (eșec)  ─► TraceNoise(+15) ─► SessionService ─► TraceMeter ─► TraceChanged/TraceLevelChanged ─► HUD, MusicDirector, MixerSnapshots
+```
+
+Exemplu, detecția: `VisionCone.CanSee` (raycast) ─► `Guard` intră în Suspicious/Chase, iar camerele, dronele și
+zonele de alarmă publică `TraceNoise` (camerele și `AlarmZone` publică și `AlarmRaised`). `SessionService` trimite
+zgomotul în `TraceMeter`, care trece pragurile 25 / 60 / 100 și publică `TraceLevelChanged`. La acest eveniment
+reacționează `MusicDirector` (muzica de alertă), `MixerSnapshots` (snapshot-ul `Alarm`) și HUD-ul (la 100 afișează
+„BLOCARE TOTALĂ”). `AlarmRaised` nu are încă abonați: e punctul de legătură pentru gardienii care converg spre alarmă (P3).
+
+## 5. Jucătorul și AI-ul
+
+- **PlayerController**: `Rigidbody2D` dinamic plus un FSM cu stări-obiect (Grounded, Airborne, WallSlide, Dash, Swim,
+  Hack, Hurt, Dead, Teleport). Input-ul e bufferizat în controller (jump buffer, coyote time, dash buffer). Toate
+  valorile reglabile stau în asset-ul `PlayerMovementConfig`. `PlayerSensors` face boxcast/raycast pentru sol, perete
+  și tavan, fără alocări.
+- **A\***: grilă de celule (`AStarGrid`, construită de `PathfindingGrid` din layerele Ground/Wall), heap binar,
+  vecinătate 8 fără tăierea colțurilor, buffere refolosite și ștampile de generație în loc de ștergerea array-urilor.
+  `PathRequestQueue` limitează numărul de căutări pe cadru.
+- **Guard**: FSM Patrol → Suspicious → Chase → Search → Return. Variantele Heavy/Sniper diferă doar prin `GuardConfig`
+  și prefab variant.
+
+## 6. Formatul de salvare
+
+- Fișier: `Application.persistentDataPath/Saves/slot0.json`. Pe Windows:
+  `%USERPROFILE%\AppData\LocalLow\CerneaBogdanAndrei\Root Access\Saves\slot0.json`.
+- Scrierea e atomică: întâi `slot0.json.tmp`, apoi înlocuiește fișierul vechi.
+- Plicul (`SaveEnvelope`) are versiune, iar încărcarea aplică migrări:
+
+```json
+{
+  "version": 1,
+  "savedAtUtc": "2026-11-25T08:40:00.0000000Z",
+  "payload": "{\"sceneName\":\"Level01_Rooftops\",\"checkpointId\":\"cp_1\",\"checkpointX\":55,\"checkpointY\":0,
+              \"hasCheckpoint\":true,\"credits\":175,\"xp\":25,\"playTimeSeconds\":312.4,
+              \"unlockedSkills\":[],\"inventory\":[{\"itemId\":\"usb_key\",\"quantity\":1}],
+              \"quests\":[{\"questId\":\"main_first_contract\",\"status\":0,\"objectiveCounts\":[1,1,0],\"objectiveFailed\":[false,false,false]}],
+              \"unlockedLevels\":[\"hub\",\"level01\"],\"hackedTerminals\":[\"terminal_l1_door\"]}"
+}
+```
+
+- `SaveSystem.CurrentVersion = 1`. Când se schimbă forma lui `SaveData`, crește versiunea și se înregistrează
+  `RegisterMigration(vechi, json => jsonNou)`. Un fișier mai vechi trece prin migrări în lanț. Unul mai nou sau fără
+  migrare întoarce `VersionMismatch`, iar unul corupt întoarce `Corrupted`. Toate cazurile au teste EditMode.
+- Salvarea reține doar ID-uri (iteme, quest-uri, skill-uri). La încărcare, `GameDatabase` le rezolvă în ScriptableObject-uri.
+- Setările (volum, rezoluție, fullscreen, VSync, rebind-uri ca JSON) se salvează separat, în `PlayerPrefs`, prin
+  `SettingsService` și interfața `ISettingsStore`, care în teste e înlocuită cu una în memorie.
+
+## 7. Randare
+
+- URP cu două renderere: index 0 = **Renderer2D**, pentru gameplay (lumini 2D, normal maps, Shadow Caster 2D); index 1 =
+  **UniversalRenderer**, pentru meniu/credite și pentru camera de cer. Renderer2D nu desenează skybox și nu se poate
+  combina cu alt renderer, așa că `SkyboxBackdrop` randează materialul Skybox într-un RenderTexture mic, afișat pe un
+  quad în spatele tuturor straturilor.
+- Shadere proprii (HLSL, `Art/Shaders`): Sprite Dissolve (Lit), Sprite Grass Wind (Lit), Hologram, Neon Pulse, Water
+  Surface, Particles Additive, Backdrop. Conversia celor trei cerute de barem în Shader Graph e planificată în P5.
+- Post-processing minim, pentru 60 FPS pe Iris Xe: Bloom calitate joasă și Color Adjustments, câte un profil per scenă.
+
+## 8. Pipeline-ul de conținut
+
+```
+PlaceholderArtGenerator.GenerateAll   sprite-uri + normal maps + skybox + audio procedural (PixelCanvas, ProceduralAudio)
+SceneBuilder.BuildAll
+  ├─ AssetFactory      materiale, tile-uri, profile de volum, item-e/quest-uri/skill-uri/dialoguri (SeedContent)
+  ├─ MixerBuilder      AudioMixer prin reflection: grupuri, snapshot-uri, parametri expuși
+  ├─ AnimationFactory  Animator Controllers, clipuri, blend trees, Animation Events
+  ├─ VfxFactory        prefab-urile ParticleSystem
+  ├─ UIRootBuilder     UIRoot, canvas-urile din meniu și credite
+  ├─ PrefabFactory     jucător, inamici + variante, interactive, mediu, CameraRig, SystemsRoot
+  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops, RubricShowcase, Credits + Build Settings
+BuildScript.BuildWindows
+```
+
+Generatoarele pot fi rulate de oricâte ori: scenele și prefab-urile se recreează din cod. Asset-urile importate de mână
+stau în `Assets/ThirdParty` și sunt legate de generatoare prin `GeneratedArt`/`EditorPaths`.
