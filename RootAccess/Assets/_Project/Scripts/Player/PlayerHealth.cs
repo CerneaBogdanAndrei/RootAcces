@@ -76,6 +76,7 @@ namespace RootAccess.Player
                 return;
             }
 
+            Debug.Log($"[PlayerHealth] Died from {damage.Type} at {transform.position}.", this);
             EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.Death, transform.position));
             EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.Death, transform.position));
             _controller.OnDied();

@@ -52,6 +52,7 @@ namespace RootAccess.Gameplay
 
         private void Place(Vector3 position)
         {
+            Debug.Log($"[LevelContext] '{gameObject.scene.name}': player placed at {position}.", this);
             player.position = position;
             if (player.TryGetComponent(out Rigidbody2D body)) body.position = position;
         }

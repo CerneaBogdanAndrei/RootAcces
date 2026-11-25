@@ -76,9 +76,36 @@ namespace RootAccess.EditorTools
 
         private static void Save(Scene scene, string name)
         {
+            BakeTilemapColliders(scene, name);
             EditorAssetUtil.EnsureFolder(EditorPaths.SceneFolder(name));
             if (!EditorSceneManager.SaveScene(scene, EditorPaths.ScenePath(name)))
                 throw new System.InvalidOperationException($"Could not save scene {name}.");
+        }
+
+        /// <summary>
+        /// Batchmode never runs the tilemap collider's deferred update, so the composite would be saved with no paths and
+        /// the player would fall through every floor. Generate the shapes explicitly and fail loudly if any are missing.
+        /// </summary>
+        private static void BakeTilemapColliders(Scene scene, string name)
+        {
+            foreach (GameObject root in scene.GetRootGameObjects())
+            foreach (TilemapCollider2D tileCollider in root.GetComponentsInChildren<TilemapCollider2D>(true))
+            {
+                var tilemap = tileCollider.GetComponent<Tilemap>();
+                tilemap.CompressBounds();
+                tileCollider.ProcessTilemapChanges();
+                int paths = 0;
+                if (tileCollider.TryGetComponent(out CompositeCollider2D composite))
+                {
+                    composite.GenerateGeometry();
+                    paths = composite.pathCount;
+                }
+
+                int tiles = tilemap.GetUsedTilesCount();
+                if (tiles > 0 && composite != null && paths == 0)
+                    throw new System.InvalidOperationException($"{name}/{tileCollider.name}: {tiles} tile(s) but the composite collider has no paths.");
+                EditorAssetUtil.Log($"{name}/{tileCollider.name}: {tiles} tile type(s), {paths} collider path(s), shapes={tileCollider.shapeCount}");
+            }
         }
 
         private static GameObject Place(GameObject prefab, Vector3 position, Transform parent = null, string name = null)
@@ -377,7 +404,7 @@ namespace RootAccess.EditorTools
             Place(ctx, "RooftopAC", new Vector3(-2f, 0f), props);
             GameObject sign = Place(ctx, "NeonSign", new Vector3(4.5f, 6.5f), props);
             sign.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-            Label(props, SeedContent.Labels.HubWelcome, new Vector3(-4f, 8.5f), 6f, new Color(0.3f, 1f, 1f));
+            Label(props, SeedContent.Labels.HubWelcome, new Vector3(0f, 8.5f), 6f, new Color(0.3f, 1f, 1f));
 
             Transform lights = Group("Lights", hub.Root);
             Light2D lampA = PrefabFactory.Light(lights, "CeilingSpot_A", Light2D.LightType.Point, new Color(1f, 0.85f, 0.6f), 1.3f, 8f, new Vector3(-8f, 9.5f), true, 35f, 70f);
@@ -574,9 +601,9 @@ namespace RootAccess.EditorTools
                 Fill(showcase.Walls, x0 - 1, x0 - 1, 0, 11, ctx.TileBrick);
                 Fill(showcase.Walls, x0 + RoomWidth + 1, x0 + RoomWidth + 1, 0, 11, ctx.TileBrick);
                 Fill(showcase.Backdrop, x0, x0 + RoomWidth, 0, 11, ctx.TileBrick);
-                Label(room, $"{titles[i]}", new Vector3(x0 + 10.5f, 9.5f), 7f, new Color(0.3f, 1f, 1f), 20f);
-                Label(room, summaries[i], new Vector3(x0 + 10.5f, 7.6f), 3.2f, new Color(0.9f, 0.9f, 1f), 19f);
-                Label(room, SeedContent.Labels.ShowcaseHint, new Vector3(x0 + 10.5f, 6.3f), 2.4f, new Color(0.6f, 0.65f, 0.8f), 19f);
+                Label(room, $"{titles[i]}", new Vector3(x0 + 10.5f, 6.6f), 6f, new Color(0.3f, 1f, 1f), 18f);
+                Label(room, summaries[i], new Vector3(x0 + 10.5f, 5.75f), 3f, new Color(0.9f, 0.9f, 1f), 17f);
+                Label(room, SeedContent.Labels.ShowcaseHint, new Vector3(x0 + 10.5f, 4.95f), 2.4f, new Color(0.6f, 0.65f, 0.8f), 17f);
                 Spawn(ctx, room, $"room_{i + 1:00}", new Vector3(x0 + 5f, 0f));
                 entryPads[i] = Place(ctx, "TeleportPad", new Vector3(x0 + 2f, 0f), room, "Pad_Entry");
                 exitPads[i] = Place(ctx, "TeleportPad", new Vector3(x0 + RoomWidth - 1.5f, 0f), room, "Pad_Exit");

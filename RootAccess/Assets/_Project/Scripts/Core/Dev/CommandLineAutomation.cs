@@ -67,6 +67,7 @@ namespace RootAccess.Core
                 if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
                 ScreenCapture.CaptureScreenshot(_screenshotPath);
                 Debug.Log($"[Automation] Screenshot requested: {_screenshotPath}");
+                LogPlayerDiagnostics("screenshot");
             }
 
             if (_quitAt > 0f && Time.realtimeSinceStartup >= _quitAt)
@@ -89,8 +90,23 @@ namespace RootAccess.Core
             }
 
             bool arrived = string.IsNullOrEmpty(_targetScene) || evt.SceneName == _targetScene;
+            if (arrived && IsActive) LogPlayerDiagnostics($"arrived in {evt.SceneName}");
             if (arrived && !string.IsNullOrEmpty(_screenshotPath) && _screenshotAt < 0f)
                 _screenshotAt = Time.realtimeSinceStartup + _screenshotDelay;
+        }
+
+        private static void LogPlayerDiagnostics(string moment)
+        {
+            if (!ServiceLocator.TryGet(out IPlayerTarget player))
+            {
+                Debug.Log($"[Automation] {moment}: no player registered.");
+                return;
+            }
+
+            Vector2 origin = player.Position + Vector2.up;
+            RaycastHit2D ground = Physics2D.Raycast(origin, Vector2.down, 60f, Layers.SolidMask);
+            string groundInfo = ground.collider != null ? $"{ground.collider.name} at y={ground.point.y:0.00}" : "none";
+            Debug.Log($"[Automation] {moment}: player pos={player.Position} vel={player.Velocity} alive={player.IsAlive} ground={groundInfo}");
         }
 
         private static string Value(string[] args, string key)
