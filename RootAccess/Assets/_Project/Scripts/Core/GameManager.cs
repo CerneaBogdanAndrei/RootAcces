@@ -150,7 +150,9 @@ namespace RootAccess.Core
         }
 
         public static GameState StateForScene(string sceneName) =>
-            SceneNames.IsGameplayScene(sceneName) ? GameState.Playing : GameState.MainMenu;
+            SceneNames.IsGameplayScene(sceneName) ? GameState.Playing
+            : SceneNames.IsCutsceneScene(sceneName) ? GameState.Cutscene
+            : GameState.MainMenu;
 
         private void OnSceneLoadStarted(SceneLoadStarted _) => SetState(GameState.Loading);
 

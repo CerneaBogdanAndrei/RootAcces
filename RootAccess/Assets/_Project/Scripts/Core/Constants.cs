@@ -95,6 +95,11 @@ namespace RootAccess.Core
         public const string Level05 = "Level05_HQ";
         public const string RubricShowcase = "RubricShowcase";
         public const string Credits = "Credits";
+        public const string Intro = "Intro";
+        public const string Finale = "Finale";
+
+        /// <summary>Timeline-only scenes: no player, no HUD; they load the next scene when the cutscene ends or is skipped.</summary>
+        public static bool IsCutsceneScene(string sceneName) => sceneName == Intro || sceneName == Finale;
 
         public static bool IsGameplayScene(string sceneName) =>
             sceneName == Hub || sceneName == Level01 || sceneName == Level02 || sceneName == Level03 ||

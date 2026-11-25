@@ -22,7 +22,7 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 |---|---|---|---|---|
 | 1 | Mișcare / săritură | ✅ (înot: 🟡) | Level01 `l1_movement` | `room_01` |
 | 2 | Materiale / texturi | ✅ | RubricShowcase `room_02` | `room_02` |
-| 3 | Mediu: copaci / iarbă | 🟡 | Level01 `l1_park` | `room_03` |
+| 3 | Mediu: copaci / iarbă | ✅ | Level01 `l1_park` | `room_03` |
 | 4 | Apă / skybox | ✅ | Level04 `l4_water` | `room_04` |
 | 5 | Lumini / cameră | ✅ | Hub `hub_center` | `room_05` |
 | 6 | Prefab-uri | ✅ | RubricShowcase `room_06` | `room_06` |
@@ -32,7 +32,7 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 | 10 | Animații / Animator | ✅ | RubricShowcase `room_10` | `room_10` |
 | 11 | Coliziuni / triggere | ✅ | Level01 `l1_security` | `room_11` |
 | 12 | Scripturi | ✅ | Level01 `l1_drone` | `room_12` |
-| B1 | Cinematice (Timeline) | 🧩 | RubricShowcase `room_13` | `room_13` |
+| B1 | Cinematice (Timeline) | ✅ | Intro (cutscene) | `room_13` |
 | B2 | Multiplayer co-op | 🧩 | RubricShowcase `room_14` | `room_14` |
 
 ---
@@ -71,14 +71,18 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 - **Demonstrație:** Prezentare barem → camera 2. Lumina punctiformă se mișcă peste sprite-uri cu normal map, terminalul
   din dreapta se dizolvă și reapare, nodul hologramă pâlpâie, neonul pulsează (cu Bloom).
 
-## 3. Mediu: copaci / iarbă (opțional) 🟡
+## 3. Mediu: copaci / iarbă (opțional) ✅
 
 - **Scene:** `Level01_Rooftops` (parcul de pe acoperiș, spawn `l1_park`), `RubricShowcase` camera 3.
-- **Prefab-uri:** `Environment/Tree.prefab`, `Environment/GrassPatch.prefab`, `Environment/WindZone.prefab`.
+- **Prefab-uri:** `Environment/Tree.prefab` (sprite `tree_rigged` cu 4 oase și 45 de vârfuri cu greutăți + `SpriteSkin`),
+  `Environment/GrassPatch.prefab`, `Environment/WindZone.prefab`.
 - **Scripturi:** `VFX/FoliageWind.cs` (vânt scriptat, trimite poziția jucătorului ca vector global), `Gameplay/World/WindZone2D.cs`,
   `VFX/ParallaxLayer.cs`, Shader Graph-ul `SG_GrassWind` (iarba se apleacă în jurul jucătorului; matematica vântului e un
   nod Custom Function care apelează `Art/Shaders/RootAccessShaderGraph.hlsl`).
-- **Ce lipsește:** copacii se leagănă prin transform, nu cu oase 2D Animation/SpriteSkin (**P5**).
+- **Oase 2D Animation:** `Editor/Generation/SpriteRigFactory.cs` scrie lanțul de oase (Trunk → Bough → Canopy → Crown) și un
+  mesh-grilă cu greutăți prin provider-ii Sprite Editor (exact ce ar salva Skinning Editor-ul); `PrefabFactory` creează
+  transformările oaselor și le leagă de `SpriteSkin`. `FoliageWind` rotește oasele de deasupra trunchiului, iar mesh-ul
+  se îndoaie lin (verificat în testul PlayMode `ParkTrees_AreSpriteSkinRigsBentByTheWind`).
 - **Demonstrație:** F1 → 3 → Mergi. Copacii se leagănă, iar iarba se îndoaie când alergi prin ea. Intră în WindZone (rafală)
   și urmărește straturile parallax din fundal.
 
@@ -214,11 +218,18 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
   selectează drona ca să vezi drumul ca gizmo). În `l1_security`, mergi spre gardian: la ~4,5 m te aude și vine să
   verifice (semnul galben); ghemuit (Ctrl) nu faci zgomot. Apoi *Window → General → Test Runner*: 126 de teste verzi.
 
-## Bonus: cinematice 🧩
+## Bonus: cinematice ✅
 
-- **Ce există:** `Cinematics/CutsceneController.cs` (PlayableDirector + blocarea input-ului), `SkipCutscene.cs`
-  (Enter/Esc), `SignalReceiver`, pachetele Timeline + Cinemachine. Camera 13 din showcase e rezervată.
-- **Ce lipsește:** asset-urile Timeline pentru intro și final (**P5**).
+- **Scene:** `Intro` (după Joc nou, apoi ascunzătoarea) și `Finale` (după ieșirea din nivelul 5, apoi creditele).
+- **Asset-uri:** `Timelines/TL_Intro.playable`, `TL_Finale.playable`, clipurile `AC_*_Puppet.anim`, semnalele `SIG_*.signal`,
+  generate de `Editor/Generation/CutsceneFactory.cs`.
+- **Track-uri:** Animation (păpușa hackerului merge pe acoperiș, cu cadrele de alergare), Cinemachine (cadru larg și cadru
+  apropiat cu blend între ele), Activation (titlu, subtitrări, dispariția la teleport), Signal (shake, alarmă, VFX de
+  teleport și flux de date prin `CutsceneSignalReceiver`).
+- **Scripturi:** `Cinematics/CutsceneController.cs` (pornește la Start, starea `GameState.Cutscene`, încarcă scena următoare),
+  `SkipCutscene.cs` (Enter/Esc).
+- **Demonstrație:** Meniu → Joc nou (sau F1 → Cinematice → Mergi). Intro-ul rulează ~17 s; Enter îl sare direct în
+  ascunzătoare.
 
 ## Bonus: multiplayer co-op 🧩
 

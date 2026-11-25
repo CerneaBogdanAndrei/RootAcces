@@ -43,6 +43,9 @@ namespace RootAccess.EditorTools
         private static readonly List<string> NormalMaps = new();
         private static readonly List<string> PlainTextures = new();
 
+        /// <summary>Tree sprite rigged with bones for SpriteSkin (see <see cref="SpriteRigFactory"/>).</summary>
+        public const string RiggedTree = "tree_rigged";
+
         [MenuItem("Root Access/Setup/2. Generate Placeholder Art")]
         public static void GenerateAll()
         {
@@ -65,6 +68,7 @@ namespace RootAccess.EditorTools
 
                 AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
                 ConfigureImporters();
+                SpriteRigFactory.RigVerticalChain(GeneratedArt.SpritePath(RiggedTree), SpriteRigFactory.TreeBones);
                 EditorAssetUtil.Log($"Generated {Sprites.Count} sprites, {NormalMaps.Count} normal maps, {PlainTextures.Count} textures.");
             });
         }
@@ -300,6 +304,21 @@ namespace RootAccess.EditorTools
             }
 
             SaveSprite("tree_canopy", canopy.Noise(0.05f, 12).Outline(Outline), new Vector2(0.5f, 0.1f), withNormal: true);
+
+            // One-piece tree for the 2D Animation rig (160 px tall = the bone chain in SpriteRigFactory.TreeBones).
+            var rigged = new PixelCanvas(96, 160);
+            Color32 bark = new(78, 52, 40, 255);
+            rigged.Rect(44, 0, 8, 118, bark).Rect(40, 0, 16, 6, new Color32(60, 40, 30, 255))
+                .Line(48, 70, 26, 100, bark, 3).Line(48, 88, 72, 112, bark, 3);
+            var leaves = new System.Random(33);
+            for (int i = 0; i < 34; i++)
+            {
+                float x = 14 + (float)leaves.NextDouble() * 68, y = 86 + (float)leaves.NextDouble() * 62;
+                byte g = (byte)(90 + leaves.Next(70));
+                rigged.Circle(x, y, 8 + (float)leaves.NextDouble() * 8, new Color32((byte)(20 + leaves.Next(20)), g, (byte)(60 + leaves.Next(40)), 255));
+            }
+
+            SaveSprite(RiggedTree, rigged.Noise(0.05f, 13).Outline(Outline), new Vector2(0.5f, 0f), withNormal: true);
 
             var grass = new PixelCanvas(32, 16);
             for (int x = 0; x < 32; x++)

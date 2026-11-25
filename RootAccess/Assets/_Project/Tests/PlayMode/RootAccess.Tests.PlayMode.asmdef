@@ -11,7 +11,12 @@
         "RootAccess.Hacking",
         "RootAccess.Gameplay",
         "RootAccess.Player",
-        "RootAccess.UI"
+        "RootAccess.UI",
+        "RootAccess.Cinematics",
+        "RootAccess.VFX",
+        "Unity.Timeline",
+        "Unity.Cinemachine",
+        "Unity.2D.Animation.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -74,7 +74,8 @@ Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-r
 must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses them to photograph every screen. Spawn ids: `hub_center`, `l1_start`,
 `l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
 `l2_vault`, `l3_start`, `l3_drones`, `l3_nodes`, `l3_core`, `l4_start`, `l4_water`, `l4_sluice`, `l4_gate`, `l5_start`,
-`l5_security`, `l5_elevator`, `l5_drones`, `l5_nodes`, `showcase_start`, `room_01`..`room_14`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments.
+`l5_security`, `l5_elevator`, `l5_drones`, `l5_nodes`, `showcase_start`, `room_01`..`room_14`. Cutscene scenes `Intro`
+(New Game → Intro → Hub) and `Finale` (Level 5 exit → Finale → Credits) are built by `Editor/Generation/CutsceneFactory.cs`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments.
 
 ## Unity 6000.3 gotchas learned the hard way
 
@@ -93,6 +94,8 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 - Opening a new scene in batchmode can unload ScriptableObjects the build context still holds (the C# wrapper turns
   fake-null and a SerializedProperty silently stores None). Wrap SO references wired into scenes in `BuildContext.Fresh(...)`.
 - Raycasts that start exactly on a collider's surface do not report it: start ground/wall probes ~0.5 above the feet.
+- Sprite rigs: bones/weights go through `ISpriteBoneDataProvider` + `ISpriteMeshDataProvider` (root bone in pixels from the
+  rect origin, children in parent-local pixels, vertices in rect pixels); the 2D Animation post-processor bakes bind poses.
 - `_CameraSortingLayerTexture` needs both `m_UseCameraSortingLayersTexture` and `m_CameraSortingLayersTextureBound`
   (a sorting layer *unique id*) on the Renderer2DData; the Shader Graph property must be non-exposed.
 - Shader Graphs are generated (`Editor/Generation/ShaderGraphFactory.cs` + `ShaderGraphWriter.cs`): nodes are written without
@@ -103,7 +106,7 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 - EditMode (`Tests/EditMode`, 103 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
   SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet.
-- PlayMode (`Tests/PlayMode`, 30 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
+- PlayMode (`Tests/PlayMode`, 35 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
   teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
   Wire Connect through the real overlay (camera disabled, data shard + credits awarded).

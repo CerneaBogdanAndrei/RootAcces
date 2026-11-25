@@ -27,7 +27,7 @@ namespace RootAccess.EditorTools
         public static readonly string[] BuildOrder =
         {
             SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.Level03,
-            SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits
+            SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale
         };
 
         internal sealed class GameplayScene
@@ -64,6 +64,7 @@ namespace RootAccess.EditorTools
                 BuildLevel03(ctx);
                 BuildLevel04(ctx);
                 BuildLevel05(ctx);
+                CutsceneFactory.BuildAll(ctx);
                 BuildRubricShowcase(ctx);
                 BuildCredits(ctx);
                 ConfigureBuildSettings();
@@ -328,7 +329,6 @@ namespace RootAccess.EditorTools
             return wind;
         }
 
-        internal static Transform Canopy(GameObject tree) => tree.transform.Find("Canopy");
 
         // ---------------------------------------------------------------- Bootstrap / menu / credits
 
@@ -454,7 +454,7 @@ namespace RootAccess.EditorTools
             layout.Spawn("l1_park", 2f);
             var canopies = new List<Transform>();
             foreach (float x in new[] { 4f, 9.5f, 15f })
-                canopies.Add(Canopy(Place(ctx, "Tree", layout.P(x), layout.Props)));
+                canopies.AddRange(PrefabFactory.SwayBones(Place(ctx, "Tree", layout.P(x), layout.Props)));
             for (float x = 2f; x < 19f; x += 3f) Place(ctx, "GrassPatch", layout.P(x), layout.Props);
             FoliageWind wind = Foliage(layout.Props, canopies);
             GameObject windZone = Place(ctx, "WindZone", layout.P(12f), layout.Props);
@@ -643,7 +643,7 @@ namespace RootAccess.EditorTools
             layout.Hint(SeedContent.Labels.L5Mainframe, 6f, 5f, 12f);
             layout.DataVault(SeedContent.Ids.TerminalLevel05Mainframe, "Terminal_Mainframe", 4);
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
-            layout.Exit(SeedContent.Ids.ExitLevel05, SeedContent.Ids.Level05, null, SceneNames.Credits);
+            layout.Exit(SeedContent.Ids.ExitLevel05, SeedContent.Ids.Level05, null, SceneNames.Finale);
             layout.Finish();
             Save(scene, SceneNames.Level05);
         }
@@ -770,10 +770,9 @@ namespace RootAccess.EditorTools
                     PrefabFactory.Light(room, "MovingKeyLight", Light2D.LightType.Point, new Color(1f, 0.9f, 0.8f), 1.4f, 5f, P(7f, 4f));
                     break;
                 case 2:
-                    var canopies = new List<Transform>
-                    {
-                        Canopy(Place(ctx, "Tree", P(6f, 0f), room)), Canopy(Place(ctx, "Tree", P(13f, 0f), room))
-                    };
+                    var canopies = new List<Transform>();
+                    canopies.AddRange(PrefabFactory.SwayBones(Place(ctx, "Tree", P(6f, 0f), room)));
+                    canopies.AddRange(PrefabFactory.SwayBones(Place(ctx, "Tree", P(13f, 0f), room)));
                     for (float x = 3f; x < 18f; x += 3f) Place(ctx, "GrassPatch", P(x, 0f), room);
                     FoliageWind wind = Foliage(room, canopies);
                     GameObject windZone = Place(ctx, "WindZone", P(9f, 0f), room);
