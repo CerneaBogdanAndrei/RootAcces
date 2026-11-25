@@ -65,6 +65,10 @@ namespace RootAccess.Core
             public const string EmpDetonated = "EMP: {0} sisteme dezactivate";
             public const string ExtraAttempt = "Încercare suplimentară (abilitate)";
             public const string SluiceOpened = "Stavila e deschisă: apa urcă";
+            public const string LevelTime = "Timp în nivel";
+            public const string BestTime = "record";
+            public const string TotalTime = "Timp total de joc";
+            public const string CreditsAndXp = "{0} Credite  ·  {1} XP";
         }
 
         public static class Panels

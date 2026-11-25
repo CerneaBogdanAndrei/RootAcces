@@ -25,6 +25,9 @@ namespace RootAccess.UI
         [SerializeField] private Gradient traceGradient;
         [SerializeField] private float toastSeconds = 2.2f;
 
+        private int _credits;
+        private int _xp;
+
         private float _toastUntil;
         private float _healthTarget = 1f;
         private float _traceTarget;
@@ -43,6 +46,7 @@ namespace RootAccess.UI
             EventBus<PlayerHealthChanged>.Subscribe(OnHealth);
             EventBus<TraceChanged>.Subscribe(OnTrace);
             EventBus<CreditsChanged>.Subscribe(OnCredits);
+            EventBus<XpChanged>.Subscribe(OnXp);
             EventBus<QuestChanged>.Subscribe(OnQuest);
             EventBus<InteractionPromptChanged>.Subscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Subscribe(OnHidden);
@@ -56,6 +60,7 @@ namespace RootAccess.UI
             EventBus<PlayerHealthChanged>.Unsubscribe(OnHealth);
             EventBus<TraceChanged>.Unsubscribe(OnTrace);
             EventBus<CreditsChanged>.Unsubscribe(OnCredits);
+            EventBus<XpChanged>.Unsubscribe(OnXp);
             EventBus<QuestChanged>.Unsubscribe(OnQuest);
             EventBus<InteractionPromptChanged>.Unsubscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Unsubscribe(OnHidden);
@@ -108,7 +113,19 @@ namespace RootAccess.UI
 
         private void OnCredits(CreditsChanged evt)
         {
-            if (creditsLabel != null) creditsLabel.text = $"{evt.Credits} {Strings.Hud.Credits}";
+            _credits = evt.Credits;
+            RenderWallet();
+        }
+
+        private void OnXp(XpChanged evt)
+        {
+            _xp = evt.Xp;
+            RenderWallet();
+        }
+
+        private void RenderWallet()
+        {
+            if (creditsLabel != null) creditsLabel.text = string.Format(Strings.Hud.CreditsAndXp, _credits, _xp);
         }
 
         private void OnQuest(QuestChanged evt)

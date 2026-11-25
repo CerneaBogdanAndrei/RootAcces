@@ -42,7 +42,10 @@ namespace RootAccess.UI
             if (summaryLabel != null && ServiceLocator.TryGet(out SessionService session))
             {
                 GameSession s = session.Session;
-                summaryLabel.text = $"{Strings.Hud.Credits}: {s.Wallet.Credits}\nXP: {s.Skills.Xp}\n{Strings.Hud.Trace}: {Mathf.RoundToInt(s.Trace.Value)}%";
+                string best = s.LevelTimes.TryGetValue(evt.LevelId, out float seconds) ? TimeFormat.Clock(seconds) : "-";
+                summaryLabel.text = $"{Strings.Hud.LevelTime}: {TimeFormat.Clock(session.CurrentLevelSeconds)}   ({Strings.Hud.BestTime}: {best})\n" +
+                                    $"{Strings.Hud.TotalTime}: {TimeFormat.Clock(s.PlayTimeSeconds)}\n" +
+                                    $"{Strings.Hud.Credits}: {s.Wallet.Credits}   ·   XP: {s.Skills.Xp}   ·   {Strings.Hud.Trace}: {Mathf.RoundToInt(s.Trace.Value)}%";
             }
 
             Show();

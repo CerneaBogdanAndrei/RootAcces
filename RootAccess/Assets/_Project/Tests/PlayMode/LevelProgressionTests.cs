@@ -41,6 +41,8 @@ namespace RootAccess.Tests.PlayMode
             yield return SliceTestUtil.LoadScene(SceneNames.Level01);
             yield return ReachExit("level01");
             Assert.IsTrue(session.Session.IsLevelUnlocked(Level02Id), "Finishing Level 1 must unlock the office tower.");
+            Assert.IsTrue(session.Session.LevelTimes.ContainsKey("level01"), "Completing a level records its time.");
+            Assert.Greater(session.Session.LevelTimes["level01"], 0f);
 
             yield return SliceTestUtil.LoadScene(SceneNames.Hub);
             TerminalScreenView terminal = Object.FindFirstObjectByType<TerminalScreenView>(FindObjectsInactive.Include);

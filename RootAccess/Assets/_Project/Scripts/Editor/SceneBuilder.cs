@@ -48,6 +48,7 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.RunBatchStep("SceneBuilder", () =>
             {
                 var ctx = new BuildContext();
+                PlaytimeReport.Clear();
                 AssetFactory.BuildAll(ctx);
                 AnimationFactory.BuildAll(ctx);
                 VfxFactory.BuildAll(ctx);
@@ -65,6 +66,7 @@ namespace RootAccess.EditorTools
                 BuildLevel04(ctx);
                 BuildLevel05(ctx);
                 CutsceneFactory.BuildAll(ctx);
+                PlaytimeReport.Write();
                 BuildRubricShowcase(ctx);
                 BuildCredits(ctx);
                 ConfigureBuildSettings();
@@ -419,6 +421,9 @@ namespace RootAccess.EditorTools
             GameObject sign = Place(ctx, "NeonSign", new Vector3(4.5f, 6.5f), props);
             sign.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
             Label(props, SeedContent.Labels.HubWelcome, new Vector3(0f, 8.5f), 6f, new Color(0.3f, 1f, 1f));
+            GameObject briefing = PrefabFactory.Go("DialogueZone_Briefing", props, Layers.Trigger, new Vector3(2.5f, 1f));
+            briefing.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
+            EditorAssetUtil.SetField(briefing.AddComponent<DialogueZone>(), "dialogue", BuildContext.Fresh(ctx.Briefing));
 
             Transform lights = Group("Lights", hub.Root);
             Light2D lampA = PrefabFactory.Light(lights, "CeilingSpot_A", Light2D.LightType.Point, new Color(1f, 0.85f, 0.6f), 1.3f, 8f, new Vector3(-8f, 9.5f), true, 35f, 70f);
@@ -491,6 +496,7 @@ namespace RootAccess.EditorTools
             layout.Rooftops(2);
             layout.Exit(SeedContent.Ids.ExitLevel01, SeedContent.Ids.Level01, ctx.Level02);
             Rect rect = layout.Finish();
+            PlaytimeReport.Add(Strings.Levels.Level01, layout);
 
             Parallax(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -2f);
             for (float x = rect.xMin + 20f; x < rect.xMax; x += 45f)
@@ -538,6 +544,7 @@ namespace RootAccess.EditorTools
             layout.DroneArena(1);
             layout.Exit(SeedContent.Ids.ExitLevel02, SeedContent.Ids.Level02, ctx.Level03);
             layout.Finish();
+            PlaytimeReport.Add(Strings.Levels.Level02, layout);
             Save(scene, SceneNames.Level02);
         }
 
@@ -581,6 +588,7 @@ namespace RootAccess.EditorTools
             layout.TurretHall(2);
             layout.Exit(SeedContent.Ids.ExitLevel03, SeedContent.Ids.Level03, ctx.Level04);
             layout.Finish();
+            PlaytimeReport.Add(Strings.Levels.Level03, layout);
             Save(scene, SceneNames.Level03);
         }
 
@@ -613,6 +621,7 @@ namespace RootAccess.EditorTools
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
             layout.Exit(SeedContent.Ids.ExitLevel04, SeedContent.Ids.Level04, ctx.Level05);
             layout.Finish();
+            PlaytimeReport.Add(Strings.Levels.Level04, layout);
             Save(scene, SceneNames.Level04);
         }
 
@@ -645,6 +654,7 @@ namespace RootAccess.EditorTools
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
             layout.Exit(SeedContent.Ids.ExitLevel05, SeedContent.Ids.Level05, null, SceneNames.Finale);
             layout.Finish();
+            PlaytimeReport.Add(Strings.Levels.Level05, layout);
             Save(scene, SceneNames.Level05);
         }
 

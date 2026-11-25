@@ -4,8 +4,9 @@ using System.Collections.Generic;
 namespace RootAccess.Systems
 {
     /// <summary>
-    /// Serializable snapshot of a game session (JsonUtility). Bump <see cref="RootAccess.Core.SaveSystem.CurrentVersion"/>
-    /// and register a migration whenever this shape changes.
+    /// Serializable snapshot of a game session (JsonUtility). New fields with defaults stay compatible with older saves
+    /// (JsonUtility keeps the initializer for missing keys, e.g. <see cref="levelTimes"/>); renaming or removing a field
+    /// needs a <see cref="RootAccess.Core.SaveSystem.CurrentVersion"/> bump and a registered migration.
     /// </summary>
     [Serializable]
     public sealed class SaveData
@@ -23,5 +24,14 @@ namespace RootAccess.Systems
         public List<QuestSaveData> quests = new();
         public List<string> unlockedLevels = new();
         public List<string> hackedTerminals = new();
+        public List<LevelTimeData> levelTimes = new();
+    }
+
+    /// <summary>Best completion time of one level (play time, pauses excluded).</summary>
+    [Serializable]
+    public sealed class LevelTimeData
+    {
+        public string levelId;
+        public float seconds;
     }
 }

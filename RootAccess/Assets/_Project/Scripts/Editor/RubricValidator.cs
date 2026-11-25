@@ -306,10 +306,25 @@ namespace RootAccess.EditorTools
                 "Packages/manifest.json, Scripts/Net");
             Add(item, "Co-op asimetric funcțional (Relay)", false, "P7 în ROADMAP.md (acum doar stub-uri)", Severity.Planned);
 
+            item = "Durată de joc (≥ 30 min)";
+            (bool longEnough, string durationEvidence) = ReadPlaytimeEstimate();
+            Add(item, "Hub + 5 niveluri + cutscene-uri: estimarea primei treceri ≥ 30 min", longEnough, durationEvidence);
+
             item = "Prezentare barem";
             Add(item, "Scena RubricShowcase cu o cameră per punct (14) + panoul F1", index.ShowcaseRooms >= 14 && uiRoot != null && HasAll(uiRoot, "DebugRubricPanel"),
                 $"{index.ShowcaseRooms} camere în RubricShowcase");
             return checks;
+        }
+
+        /// <summary>Reads the total from the report written by the content build (<see cref="PlaytimeReport"/>).</summary>
+        private static (bool ok, string evidence) ReadPlaytimeEstimate()
+        {
+            if (!File.Exists(PlaytimeReport.ReportPath)) return (false, $"{PlaytimeReport.ReportPath} lipsă (rulează SceneBuilder.BuildAll)");
+            System.Text.RegularExpressions.Match match = System.Text.RegularExpressions.Regex.Match(
+                File.ReadAllText(PlaytimeReport.ReportPath), @"\*\*Total\*\*.*?\*\*([0-9]+(?:[.,][0-9]+)?)\*\*");
+            if (!match.Success) return (false, "totalul nu a fost găsit în raport");
+            float minutes = float.Parse(match.Groups[1].Value.Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
+            return (minutes >= 30f, $"{minutes:0.0} min estimate ({PlaytimeReport.ReportPath}); cronometrarea reală rămâne de făcut");
         }
 
         // ---------------------------------------------------------------- index

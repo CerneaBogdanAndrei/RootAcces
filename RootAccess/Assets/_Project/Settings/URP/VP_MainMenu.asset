@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7402499171156992673
+--- !u!114 &-8103202378012995473
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,7 +50,7 @@ MonoBehaviour:
   dirtIntensity:
     m_OverrideState: 1
     m_Value: 0
---- !u!114 &-6525352851280271979
+--- !u!114 &-8044329025674037017
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,10 +91,10 @@ MonoBehaviour:
   m_Name: VP_MainMenu
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.VolumeProfile
   components:
-  - {fileID: -7402499171156992673}
-  - {fileID: -6525352851280271979}
-  - {fileID: 9221722676041867747}
---- !u!114 &9221722676041867747
+  - {fileID: -8103202378012995473}
+  - {fileID: -8044329025674037017}
+  - {fileID: 1492801929300180896}
+--- !u!114 &1492801929300180896
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
