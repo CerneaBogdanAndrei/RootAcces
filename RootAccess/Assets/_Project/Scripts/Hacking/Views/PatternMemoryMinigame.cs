@@ -22,6 +22,9 @@ namespace RootAccess.Hacking
         private Coroutine _routine;
 
         public override HackingMinigameType Type => HackingMinigameType.PatternMemory;
+
+        /// <summary>Test hook: the running puzzle (null before the first Begin).</summary>
+        internal PatternMemoryModel Model => _model;
         public override string Hint => Strings.Hacking.PatternMemoryHint;
 
         protected override void OnBegin(int difficulty, int seed)
@@ -76,6 +79,9 @@ namespace RootAccess.Hacking
             SetStatus(Strings.Hacking.YourTurn);
             _routine = null;
         }
+
+        /// <summary>Test hook: same path as clicking a grid cell.</summary>
+        internal void PressCell(int index) => OnCellPressed(index);
 
         private void OnCellPressed(int index)
         {

@@ -332,6 +332,7 @@ namespace RootAccess.EditorTools
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = Color.black;
             cam.orthographic = true;
+            camera.AddComponent<AudioListener>();
             PrefabFactory.Go("Bootstrap").AddComponent<BootstrapLoader>();
             Save(scene, SceneNames.Bootstrap);
         }

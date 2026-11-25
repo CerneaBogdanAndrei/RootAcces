@@ -1,0 +1,27 @@
+{
+    "name": "RootAccess.Tests.EditMode",
+    "rootNamespace": "RootAccess.Tests.EditMode",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "RootAccess.Core",
+        "RootAccess.AI",
+        "RootAccess.Systems",
+        "RootAccess.Hacking"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

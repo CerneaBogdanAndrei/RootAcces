@@ -13,6 +13,8 @@ namespace RootAccess.AI
     {
         private enum Mode { Idle, Chase, Return, Disabled }
 
+        private const float TargetChestHeight = 0.6f;
+
         [SerializeField] private float moveSpeed = 3.6f;
         [SerializeField] private float acceleration = 12f;
         [SerializeField] private float aggroRange = 9f;
@@ -74,7 +76,7 @@ namespace RootAccess.AI
 
             if (_mode is Mode.Idle or Mode.Disabled || Time.time < _nextRepath) return;
             _nextRepath = Time.time + repathInterval;
-            Vector2 goal = _mode == Mode.Chase && player != null ? player.Position + Vector2.up * 0.5f : _home;
+            Vector2 goal = _mode == Mode.Chase && player != null ? AimPoint(player) : _home;
             RequestPath(goal);
         }
 
@@ -125,7 +127,7 @@ namespace RootAccess.AI
             float distance = targetValid ? Vector2.Distance(player.Position, _body.position) : float.MaxValue;
             switch (_mode)
             {
-                case Mode.Idle when targetValid && distance <= aggroRange && HasLineOfSight(player.Position):
+                case Mode.Idle when targetValid && distance <= aggroRange && HasLineOfSight(AimPoint(player)):
                     _mode = Mode.Chase;
                     _nextRepath = 0f;
                     EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.Spotted, transform.position));
@@ -138,7 +140,7 @@ namespace RootAccess.AI
                     _mode = Mode.Idle;
                     _path.Clear();
                     break;
-                case Mode.Return when targetValid && distance <= aggroRange * 0.8f && HasLineOfSight(player.Position):
+                case Mode.Return when targetValid && distance <= aggroRange * 0.8f && HasLineOfSight(AimPoint(player)):
                     _mode = Mode.Chase;
                     _nextRepath = 0f;
                     break;
@@ -180,6 +182,9 @@ namespace RootAccess.AI
         }
 
         private bool HasLineOfSight(Vector2 target) => HasClearSegment(_body.position, target);
+
+        /// <summary>The player's pivot sits on the floor surface; aim at the chest so ground colliders never block sight.</summary>
+        private static Vector2 AimPoint(IPlayerTarget player) => player.Position + Vector2.up * TargetChestHeight;
 
         private static bool HasClearSegment(Vector2 from, Vector2 to) =>
             Physics2D.Linecast(from, to, Layers.ObstacleMask).collider == null;
