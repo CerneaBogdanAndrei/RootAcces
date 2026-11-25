@@ -115,8 +115,14 @@ namespace RootAccess.EditorTools
             EditorUtility.SetDirty(itemDb);
 
             ctx.SilentSteps = Skill(SeedContent.Ids.SkillSilentSteps, SeedContent.Skills.SilentSteps, SeedContent.Skills.SilentStepsDesc, SkillBranch.Stealth, 100, SkillEffect.SilentSteps);
+            SkillDefinition camouflage = Skill(SeedContent.Ids.SkillCamouflage, SeedContent.Skills.Camouflage, SeedContent.Skills.CamouflageDesc, SkillBranch.Stealth, 180, SkillEffect.LongerShadows, ctx.SilentSteps);
             ctx.Overclock = Skill(SeedContent.Ids.SkillOverclock, SeedContent.Skills.Overclock, SeedContent.Skills.OverclockDesc, SkillBranch.Hacking, 120, SkillEffect.FasterHacking);
-            ctx.ServoLegs = Skill(SeedContent.Ids.SkillServoLegs, SeedContent.Skills.ServoLegs, SeedContent.Skills.ServoLegsDesc, SkillBranch.Hardware, 150, SkillEffect.DoubleJump, ctx.SilentSteps);
+            SkillDefinition secondChance = Skill(SeedContent.Ids.SkillSecondChance, SeedContent.Skills.SecondChance, SeedContent.Skills.SecondChanceDesc, SkillBranch.Hacking, 160, SkillEffect.ExtraHackAttempt, ctx.Overclock);
+            SkillDefinition remoteHack = Skill(SeedContent.Ids.SkillRemoteHack, SeedContent.Skills.RemoteHack, SeedContent.Skills.RemoteHackDesc, SkillBranch.Hacking, 240, SkillEffect.RemoteHack, secondChance);
+            ctx.ServoLegs = Skill(SeedContent.Ids.SkillServoLegs, SeedContent.Skills.ServoLegs, SeedContent.Skills.ServoLegsDesc, SkillBranch.Hardware, 120, SkillEffect.DashCooldown);
+            SkillDefinition armor = Skill(SeedContent.Ids.SkillArmor, SeedContent.Skills.Armor, SeedContent.Skills.ArmorDesc, SkillBranch.Hardware, 180, SkillEffect.ArmorPlating, ctx.ServoLegs);
+            SkillDefinition capacitors = Skill(SeedContent.Ids.SkillEmpCapacitors, SeedContent.Skills.EmpCapacitors, SeedContent.Skills.EmpCapacitorsDesc, SkillBranch.Hardware, 220, SkillEffect.EmpCapacity, ctx.ServoLegs);
+            ctx.Skills = new[] { ctx.SilentSteps, camouflage, ctx.Overclock, secondChance, remoteHack, ctx.ServoLegs, armor, capacitors };
 
             ctx.MainQuest = Quest(SeedContent.Ids.MainQuest, SeedContent.Quests.MainTitle, SeedContent.Quests.MainDesc, true, 300, 150,
                 new ObjectiveDefinition("reach_l1", SeedContent.Quests.ReachLevel, ObjectiveType.Reach, SeedContent.Ids.Level01),
@@ -127,6 +133,9 @@ namespace RootAccess.EditorTools
             ctx.SideQuest = Quest(SeedContent.Ids.SideQuest, SeedContent.Quests.SideTitle, SeedContent.Quests.SideDesc, false, 120, 60,
                 new ObjectiveDefinition("collect_usb", SeedContent.Quests.CollectUsb, ObjectiveType.Collect, SeedContent.Ids.UsbKey),
                 new ObjectiveDefinition("hack_camera", SeedContent.Quests.HackCamera, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel01Camera));
+            ctx.GhostQuest = Quest(SeedContent.Ids.GhostQuest, SeedContent.Quests.GhostTitle, SeedContent.Quests.GhostDesc, false, 200, 120,
+                new ObjectiveDefinition("ghost_exit", SeedContent.Quests.GhostExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel01),
+                new ObjectiveDefinition("ghost_stealth", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty));
 
             ctx.HubLevel = Level(SeedContent.Ids.Hub, SceneNames.Hub, Strings.Levels.Hub, true, 0);
             ctx.Level01 = Level(SeedContent.Ids.Level01, SceneNames.Level01, Strings.Levels.Level01, true, 1);
@@ -149,11 +158,15 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetFields(ctx.Database, so =>
             {
                 so.Require("items").objectReferenceValue = itemDb;
-                so.SetArray("quests", new[] { ctx.MainQuest, ctx.SideQuest });
-                so.SetArray("skills", new[] { ctx.SilentSteps, ctx.Overclock, ctx.ServoLegs });
+                so.SetArray("quests", new[] { ctx.MainQuest, ctx.SideQuest, ctx.GhostQuest });
+                so.SetArray("skills", ctx.Skills);
                 so.SetArray("levels", ctx.Levels);
                 so.Require("startingQuest").objectReferenceValue = ctx.MainQuest;
                 so.Require("startingCredits").intValue = 150;
+                SerializedProperty grants = so.Require("startingItems");
+                grants.arraySize = 1;
+                grants.GetArrayElementAtIndex(0).FindPropertyRelative("item").objectReferenceValue = ctx.EmpGrenade;
+                grants.GetArrayElementAtIndex(0).FindPropertyRelative("quantity").intValue = 2;
             });
         }
 

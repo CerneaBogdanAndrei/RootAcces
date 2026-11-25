@@ -24,6 +24,8 @@ namespace RootAccess.EditorTools
         public PlayerMovementConfig PlayerConfig;
         public GuardConfig GuardBase, GuardHeavy, GuardSniper;
         public ItemDefinition UsbKey, DataShard, EmpGrenade, Exploit;
+        public SkillDefinition[] Skills;
+        public QuestDefinition GhostQuest;
         public SkillDefinition SilentSteps, Overclock, ServoLegs;
         public QuestDefinition MainQuest, SideQuest;
         public LevelDefinition HubLevel, Level01, RubricLevel;

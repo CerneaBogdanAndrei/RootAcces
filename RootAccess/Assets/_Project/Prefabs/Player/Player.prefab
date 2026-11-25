@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5449965599753734508}
   - component: {fileID: 6880355512189987976}
   - component: {fileID: 1526120823957563740}
+  - component: {fileID: 1080980413853369370}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -178,7 +179,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: RootAccess.Player::RootAccess.Player.PlayerInteractor
   input: {fileID: 11400000, guid: 26c41d3137fee7541922981e0869a0a1, type: 2}
   radius: 1.2
+  remoteHackRadius: 4
   scanInterval: 0.1
+--- !u!114 &1080980413853369370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1155393361658105139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f71148cfb1b59c940a2a86476c60c451, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RootAccess.Player::RootAccess.Player.PlayerGrenadeThrower
+  input: {fileID: 11400000, guid: 26c41d3137fee7541922981e0869a0a1, type: 2}
+  grenadePrefab: {fileID: 5344175673739451910, guid: c778d8036d0ef4547a841be3cc08cce1, type: 3}
+  grenadeItem: {fileID: 11400000, guid: 5d390fbdee2acaa43be750fb53c148be, type: 2}
+  throwSpeed: 12
+  cooldown: 0.6
+  spawnOffset: {x: 0.35, y: 1.1}
 --- !u!1 &2507640182488456379
 GameObject:
   m_ObjectHideFlags: 0
@@ -409,3 +429,4 @@ MonoBehaviour:
   probeDistance: 0.4
   fallbackSurface: 0
   silent: 0
+  silencedBySkill: 1

@@ -14,6 +14,7 @@ namespace RootAccess.Systems
         [SerializeField] private QuestDefinition startingQuest;
         [SerializeField] private TraceSettings traceSettings = TraceSettings.Default;
         [SerializeField, Min(0)] private int startingCredits = 150;
+        [SerializeField] private ItemGrant[] startingItems = new ItemGrant[0];
 
         public ItemDatabase Items => items;
         public QuestDefinition[] Quests => quests;
@@ -22,6 +23,7 @@ namespace RootAccess.Systems
         public QuestDefinition StartingQuest => startingQuest;
         public TraceSettings TraceSettings => traceSettings;
         public int StartingCredits => startingCredits;
+        public ItemGrant[] StartingItems => startingItems;
 
         public ItemDefinition FindItem(string id) => items != null ? items.Find(id) : null;
 

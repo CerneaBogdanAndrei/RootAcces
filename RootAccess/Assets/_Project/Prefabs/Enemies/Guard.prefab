@@ -441,6 +441,7 @@ MonoBehaviour:
   probeDistance: 0.4
   fallbackSurface: 0
   silent: 0
+  silencedBySkill: 0
 --- !u!1 &7899154231339814094
 GameObject:
   m_ObjectHideFlags: 0

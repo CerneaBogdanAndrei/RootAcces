@@ -153,8 +153,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34fe74d24e133ef4296ead722f88474a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RootAccess.Gameplay::RootAccess.Gameplay.ShopTerminal
-  stock: {fileID: 11400000, guid: 5d390fbdee2acaa43be750fb53c148be, type: 2}
-  price: 50
+  offers:
+  - item: {fileID: 11400000, guid: 5d390fbdee2acaa43be750fb53c148be, type: 2}
+    price: 60
+  - item: {fileID: 11400000, guid: 06921536fd8621744aa94d4a9cab1e7c, type: 2}
+    price: 90
+  - item: {fileID: 11400000, guid: 05943411259e7154781354ddb885f4bc, type: 2}
+    price: 250
 --- !u!1 &8358992922739743329
 GameObject:
   m_ObjectHideFlags: 0

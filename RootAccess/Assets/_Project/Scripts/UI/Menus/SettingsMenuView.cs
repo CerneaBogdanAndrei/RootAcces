@@ -48,9 +48,22 @@ namespace RootAccess.UI
                 if (button != null) button.Rebound += SaveBindings;
         }
 
-        private void OnEnable() => EventBus<GameStateChanged>.Subscribe(OnGameStateChanged);
+        private void OnEnable()
+        {
+            EventBus<GameStateChanged>.Subscribe(OnGameStateChanged);
+            CommandLineAutomation.CommandRequested += OnAutomationCommand;
+        }
 
-        private void OnDisable() => EventBus<GameStateChanged>.Unsubscribe(OnGameStateChanged);
+        private void OnDisable()
+        {
+            EventBus<GameStateChanged>.Unsubscribe(OnGameStateChanged);
+            CommandLineAutomation.CommandRequested -= OnAutomationCommand;
+        }
+
+        private void OnAutomationCommand(string command)
+        {
+            if (command == AutomationCommands.Settings && !IsVisible) Open(null);
+        }
 
         private void OnDestroy() => ServiceLocator.Unregister(this);
 

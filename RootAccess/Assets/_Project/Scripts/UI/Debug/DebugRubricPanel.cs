@@ -26,12 +26,19 @@ namespace RootAccess.UI
 
         private void OnEnable()
         {
+            CommandLineAutomation.CommandRequested += OnAutomationCommand;
             if (input != null) input.DebugPanelEvent += Toggle;
         }
 
         private void OnDisable()
         {
+            CommandLineAutomation.CommandRequested -= OnAutomationCommand;
             if (input != null) input.DebugPanelEvent -= Toggle;
+        }
+
+        private void OnAutomationCommand(string command)
+        {
+            if (command == AutomationCommands.RubricPanel && !IsVisible) Toggle();
         }
 
         public void Toggle()

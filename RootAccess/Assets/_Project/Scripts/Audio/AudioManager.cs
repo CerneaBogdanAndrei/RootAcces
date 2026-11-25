@@ -112,7 +112,7 @@ namespace RootAccess.Audio
             FootstepEntry entry = library != null ? library.GetFootsteps(evt.Surface) : null;
             if (entry == null || entry.Clips.Length == 0) return;
             AudioClip clip = entry.Clips[Random.Range(0, entry.Clips.Length)];
-            PlayClip(clip, evt.Position, true, entry.Volume, Random.Range(0.92f, 1.08f), sfxGroup);
+            PlayClip(clip, evt.Position, true, entry.Volume * evt.Volume, Random.Range(0.92f, 1.08f), sfxGroup);
         }
 
         private void OnSettingsChanged(SettingsChanged evt)

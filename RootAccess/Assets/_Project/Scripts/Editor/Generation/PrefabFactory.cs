@@ -129,8 +129,25 @@ namespace RootAccess.EditorTools
 
         // ---------------------------------------------------------------- player
 
+        /// <summary>Pooled EMP charge thrown by the player (see PlayerGrenadeThrower / EmpGrenade).</summary>
+        private static GameObject BuildEmpGrenade(BuildContext ctx)
+        {
+            GameObject grenade = Go("EmpGrenade", null, Layers.Default);
+            var body = grenade.AddComponent<Rigidbody2D>();
+            body.gravityScale = 1.6f;
+            body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            body.angularDamping = 0.5f;
+            Box<CircleCollider2D>(grenade, new Vector2(0.36f, 0.36f), Vector2.zero, false);
+            Sprite(grenade, "pickup_emp", ctx.SpriteUnlit, SortingLayers.VFX, 2);
+            grenade.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
+            Light(grenade.transform, "Glow", Light2D.LightType.Point, new Color(0.4f, 0.8f, 1f), 0.9f, 1.6f);
+            grenade.AddComponent<EmpGrenade>();
+            return Save(ctx, grenade, EditorPaths.PrefabsPlayer);
+        }
+
         private static void BuildPlayer(BuildContext ctx)
         {
+            GameObject grenadePrefab = BuildEmpGrenade(ctx);
             GameObject root = Go("Player", null, Layers.Player);
             root.tag = Tags.Player;
             var body = root.AddComponent<Rigidbody2D>();
@@ -147,7 +164,11 @@ namespace RootAccess.EditorTools
             animator.runtimeAnimatorController = ctx.PlayerAnimator;
             var bridge = visual.AddComponent<PlayerAnimatorBridge>();
             var footsteps = visual.AddComponent<FootstepPlayer>();
-            EditorAssetUtil.SetField(footsteps, "feet", root.transform);
+            EditorAssetUtil.SetFields(footsteps, so =>
+            {
+                so.Require("feet").objectReferenceValue = root.transform;
+                so.Require("silencedBySkill").boolValue = true;
+            });
 
             Light(root.transform, "PlayerGlow", Light2D.LightType.Point, new Color(0.3f, 0.9f, 1f), 0.5f, 2.4f, new Vector3(0f, 1f, 0f));
 
@@ -167,6 +188,13 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetField(health, "flashRenderer", sprite);
             var interactor = root.AddComponent<PlayerInteractor>();
             EditorAssetUtil.SetField(interactor, "input", ctx.Input);
+            var thrower = root.AddComponent<PlayerGrenadeThrower>();
+            EditorAssetUtil.SetFields(thrower, so =>
+            {
+                so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("grenadePrefab").objectReferenceValue = grenadePrefab;
+                so.Require("grenadeItem").objectReferenceValue = ctx.EmpGrenade;
+            });
             EditorAssetUtil.SetFields(bridge, so =>
             {
                 so.Require("controller").objectReferenceValue = controller;
@@ -448,12 +476,19 @@ namespace RootAccess.EditorTools
             PickupVariant("Pickup_Credits", null, "pickup_credit", 50, new Color(1f, 0.85f, 0.3f));
 
             Console(ctx, "JobBoard", typeof(JobBoard), new Color(1f, 0.6f, 0.9f), c => EditorAssetUtil.SetFields(c, so =>
-            {
-                so.Require("contract").objectReferenceValue = ctx.SideQuest;
-                so.Require("briefing").objectReferenceValue = ctx.Briefing;
-            }));
+                so.SetArray("contracts", new[] { ctx.SideQuest, ctx.GhostQuest })));
             Console(ctx, "FastTravelTerminal", typeof(FastTravelTerminal), new Color(0.4f, 1f, 1f), c => EditorAssetUtil.SetField(c, "destination", ctx.Level01));
-            Console(ctx, "ShopTerminal", typeof(ShopTerminal), new Color(1f, 0.85f, 0.3f), c => EditorAssetUtil.SetField(c, "stock", ctx.EmpGrenade));
+            Console(ctx, "ShopTerminal", typeof(ShopTerminal), new Color(1f, 0.85f, 0.3f), c => EditorAssetUtil.SetFields(c, so =>
+            {
+                (ItemDefinition item, int price)[] stock = { (ctx.EmpGrenade, 60), (ctx.UsbKey, 90), (ctx.Exploit, 250) };
+                SerializedProperty offers = so.Require("offers");
+                offers.arraySize = stock.Length;
+                for (int i = 0; i < stock.Length; i++)
+                {
+                    offers.GetArrayElementAtIndex(i).FindPropertyRelative("item").objectReferenceValue = stock[i].item;
+                    offers.GetArrayElementAtIndex(i).FindPropertyRelative("price").intValue = stock[i].price;
+                }
+            }));
             Console(ctx, "SkillTerminal", typeof(SkillTerminal), new Color(0.5f, 1f, 0.5f), null);
 
             GameObject exit = Go("LevelExit", null, Layers.Trigger);

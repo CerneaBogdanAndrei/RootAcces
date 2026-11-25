@@ -14,10 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SkillDefinition
   skillId: hardware_servo_legs
   displayName: Servo-picioare
-  description: "Deblocheaz\u0103 s\u0103ritura dubl\u0103 (necesit\u0103 Pa\u0219i
-    silen\u021Bio\u0219i)."
+  description: "Dash-ul se re\xEEncarc\u0103 cu 40% mai repede."
   branch: 2
-  xpCost: 150
-  effect: 1
-  prerequisites:
-  - {fileID: 11400000, guid: 3c31fecc1c257264e83debea85c43529, type: 2}
+  xpCost: 120
+  effect: 8
+  prerequisites: []

@@ -15,6 +15,12 @@ namespace RootAccess.EditorTools
             public const string SkillSilentSteps = "stealth_silent_steps";
             public const string SkillOverclock = "hacking_overclock";
             public const string SkillServoLegs = "hardware_servo_legs";
+            public const string SkillCamouflage = "stealth_optical_camouflage";
+            public const string SkillSecondChance = "hacking_second_chance";
+            public const string SkillRemoteHack = "hacking_remote_access";
+            public const string SkillArmor = "hardware_armor_plating";
+            public const string SkillEmpCapacitors = "hardware_emp_capacitors";
+            public const string GhostQuest = "side_ghost_run";
             public const string MainQuest = "main_first_contract";
             public const string SideQuest = "side_data_courier";
             public const string Level01 = "level01";
@@ -40,11 +46,21 @@ namespace RootAccess.EditorTools
         public static class Skills
         {
             public const string SilentSteps = "Pași silențioși";
-            public const string SilentStepsDesc = "Pașii tăi nu mai fac zgomot pe metal.";
+            public const string SilentStepsDesc = "Tălpi amortizate: pașii tăi se aud de trei ori mai încet.";
+            public const string Camouflage = "Camuflaj optic";
+            public const string CamouflageDesc = "Când ești văzut, nivelul de urmărire crește cu 30% mai încet.";
             public const string Overclock = "Overclock neural";
-            public const string OverclockDesc = "Minijocurile de spargere sunt mai lente.";
+            public const string OverclockDesc = "Fiecare terminal e cu un nivel de dificultate mai ușor.";
+            public const string SecondChance = "A doua șansă";
+            public const string SecondChanceDesc = "Dacă o spargere eșuează, primești automat încă o încercare.";
+            public const string RemoteHack = "Acces de la distanță";
+            public const string RemoteHackDesc = "Poți sparge terminalele de la aproximativ 4 metri.";
             public const string ServoLegs = "Servo-picioare";
-            public const string ServoLegsDesc = "Deblochează săritura dublă (necesită Pași silențioși).";
+            public const string ServoLegsDesc = "Dash-ul se reîncarcă cu 40% mai repede.";
+            public const string Armor = "Blindaj subdermal";
+            public const string ArmorDesc = "+1 punct de viață maxim.";
+            public const string EmpCapacitors = "Condensatori EMP";
+            public const string EmpCapacitorsDesc = "Raza grenadelor EMP crește cu 50%.";
         }
 
         public static class Quests
@@ -60,6 +76,9 @@ namespace RootAccess.EditorTools
             public const string SideDesc = "Adu o cheie USB și dezactivează camera de pe fațadă.";
             public const string CollectUsb = "Găsește o cheie USB";
             public const string HackCamera = "Dezactivează camera de securitate";
+            public const string GhostTitle = "Fantoma de pe acoperiș";
+            public const string GhostDesc = "Clientul vrea o operațiune curată: ajunge la extracție fără să declanșezi alarma.";
+            public const string GhostExit = "Ajunge la punctul de extracție din Sectorul 7";
         }
 
         public static class Dialogue

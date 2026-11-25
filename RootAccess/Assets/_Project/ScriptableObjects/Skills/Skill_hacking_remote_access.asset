@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd3e569f81691147b4ec7b973dd57f9, type: 3}
+  m_Name: Skill_hacking_remote_access
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SkillDefinition
+  skillId: hacking_remote_access
+  displayName: "Acces de la distan\u021B\u0103"
+  description: "Po\u021Bi sparge terminalele de la aproximativ 4 metri."
+  branch: 1
+  xpCost: 240
+  effect: 6
+  prerequisites:
+  - {fileID: 11400000, guid: 24fa42d54239a9c44983080e05bea51b, type: 2}

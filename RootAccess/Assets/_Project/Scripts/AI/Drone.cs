@@ -9,7 +9,7 @@ namespace RootAccess.AI
     /// spread over frames), smooths the path with line-of-sight skipping and damages on contact (OnCollisionEnter2D).
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public sealed class Drone : MonoBehaviour, IHackable
+    public sealed class Drone : MonoBehaviour, IHackable, IEmpTarget
     {
         private enum Mode { Idle, Chase, Return, Disabled }
 
@@ -104,10 +104,16 @@ namespace RootAccess.AI
             EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.Sparks, collision.GetContact(0).point));
         }
 
-        public void ApplyHack(HackAction action)
+        public bool IsEmpDisabled => _mode == Mode.Disabled;
+
+        public void ApplyEmp(float seconds) => Disable(seconds);
+
+        public void ApplyHack(HackAction action) => Disable(disabledSeconds);
+
+        private void Disable(float seconds)
         {
             _mode = Mode.Disabled;
-            _disabledUntil = Time.time + disabledSeconds;
+            _disabledUntil = Mathf.Max(_disabledUntil, Time.time + seconds);
             _path.Clear();
             _body.gravityScale = 1f;
             EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.Sparks, transform.position));

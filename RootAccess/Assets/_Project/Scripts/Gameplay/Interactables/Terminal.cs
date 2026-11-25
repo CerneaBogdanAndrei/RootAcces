@@ -19,7 +19,7 @@ namespace RootAccess.Gameplay
     /// A failed hack adds trace. Variants (Terminal_Door / _Camera / _Data) only differ in serialized data.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public sealed class Terminal : MonoBehaviour, IInteractable
+    public sealed class Terminal : MonoBehaviour, IInteractable, IRemoteInteractable
     {
         private static int _nextRequestId;
 
@@ -38,7 +38,11 @@ namespace RootAccess.Gameplay
         [SerializeField] private Color hackedColor = new(0.2f, 1f, 0.6f);
         [SerializeField] private DissolveController glitch;
 
+        private const float RetryDelaySeconds = 0.35f;
+
         private int _pendingRequest = -1;
+        private bool _extraAttemptUsed;
+        private float _retryAt = -1f;
 
         public string TerminalId => terminalId;
         public TerminalKind Kind => kind;
@@ -70,15 +74,33 @@ namespace RootAccess.Gameplay
                 }
         }
 
-        public bool CanInteract(IInteractor interactor) => !IsHacked && _pendingRequest < 0;
+        public bool CanInteract(IInteractor interactor) => !IsHacked && _pendingRequest < 0 && _retryAt < 0f;
 
         public void Interact(IInteractor interactor)
         {
             if (!CanInteract(interactor)) return;
+            _extraAttemptUsed = false;
+            RequestHack();
+        }
+
+        private void Update()
+        {
+            if (_retryAt < 0f || Time.unscaledTime < _retryAt) return;
+            _retryAt = -1f;
+            RequestHack();
+        }
+
+        /// <summary>"Overclock" skill: every terminal is one difficulty step easier (minimum 1).</summary>
+        private void RequestHack()
+        {
+            int effectiveDifficulty = HasSkill(SkillEffect.FasterHacking) ? Mathf.Max(1, difficulty - 1) : difficulty;
             _pendingRequest = ++_nextRequestId;
             EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.HackBeep, transform.position));
-            EventBus<HackRequested>.Publish(new HackRequested(_pendingRequest, minigame, difficulty, transform.position));
+            EventBus<HackRequested>.Publish(new HackRequested(_pendingRequest, minigame, effectiveDifficulty, transform.position));
         }
+
+        private static bool HasSkill(SkillEffect effect) =>
+            ServiceLocator.TryGet(out SessionService session) && session.HasSkillEffect(effect);
 
         private void OnHackResolved(HackResolved evt)
         {
@@ -92,6 +114,15 @@ namespace RootAccess.Gameplay
             }
 
             if (evt.Aborted) return;
+            if (!_extraAttemptUsed && HasSkill(SkillEffect.ExtraHackAttempt))
+            {
+                // The overlay is still closing: retry a moment later so the new session starts from a clean state.
+                _extraAttemptUsed = true;
+                _retryAt = Time.unscaledTime + RetryDelaySeconds;
+                EventBus<ToastRequested>.Publish(new ToastRequested(Strings.Hud.ExtraAttempt));
+                return;
+            }
+
             EventBus<TraceNoise>.Publish(new TraceNoise(failTrace, TraceSource.FailedHack, transform.position));
             EventBus<SfxRequested>.Publish(new SfxRequested(SfxId.HackFail, transform.position));
             EventBus<VfxRequested>.Publish(new VfxRequested(VfxId.Sparks, transform.position));

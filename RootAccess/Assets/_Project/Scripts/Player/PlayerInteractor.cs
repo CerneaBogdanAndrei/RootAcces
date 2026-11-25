@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RootAccess.Core;
 using RootAccess.Input;
+using RootAccess.Systems;
 using UnityEngine;
 
 namespace RootAccess.Player
@@ -11,6 +12,7 @@ namespace RootAccess.Player
     {
         [SerializeField] private InputReader input;
         [SerializeField, Min(0.1f)] private float radius = 1.2f;
+        [SerializeField, Min(0.1f)] private float remoteHackRadius = 4f;
         [SerializeField, Min(0.02f)] private float scanInterval = 0.1f;
 
         private readonly List<Collider2D> _results = new(16);
@@ -49,7 +51,8 @@ namespace RootAccess.Player
         private IInteractable FindBest()
         {
             Vector2 origin = transform.position;
-            int count = Physics2D.OverlapCircle(origin, radius, _filter, _results);
+            bool remoteHack = ServiceLocator.TryGet(out SessionService session) && session.HasSkillEffect(SkillEffect.RemoteHack);
+            int count = Physics2D.OverlapCircle(origin, remoteHack ? Mathf.Max(radius, remoteHackRadius) : radius, _filter, _results);
             IInteractable best = null;
             float bestDistance = float.MaxValue;
             for (int i = 0; i < count; i++)
@@ -57,6 +60,7 @@ namespace RootAccess.Player
                 IInteractable candidate = _results[i].GetComponentInParent<IInteractable>();
                 if (candidate == null) continue;
                 float distance = ((Vector2)candidate.InteractionPosition - origin).sqrMagnitude;
+                if (distance > radius * radius && candidate is not IRemoteInteractable) continue;
                 if (distance >= bestDistance) continue;
                 bestDistance = distance;
                 best = candidate;

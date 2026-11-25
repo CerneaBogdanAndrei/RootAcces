@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SkillDefinition
   skillId: hacking_overclock
   displayName: Overclock neural
-  description: Minijocurile de spargere sunt mai lente.
+  description: "Fiecare terminal e cu un nivel de dificultate mai u\u0219or."
   branch: 1
   xpCost: 120
   effect: 4

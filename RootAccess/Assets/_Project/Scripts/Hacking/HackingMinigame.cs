@@ -17,6 +17,18 @@ namespace RootAccess.Hacking
         [SerializeField] protected Button buttonTemplate;
         [SerializeField] protected TMP_Text statusLabel;
 
+        /// <summary>Neutral tints so a cell's own colour (wire colour, flash colour) is shown as-is; selection only brightens it.</summary>
+        private static readonly ColorBlock MinigameColors = new()
+        {
+            normalColor = Color.white,
+            highlightedColor = new Color(1f, 1f, 1f, 1f),
+            selectedColor = new Color(0.85f, 1f, 1f, 1f),
+            pressedColor = new Color(0.75f, 0.75f, 0.75f, 1f),
+            disabledColor = new Color(0.65f, 0.65f, 0.65f, 0.8f),
+            colorMultiplier = 1.15f,
+            fadeDuration = 0.06f
+        };
+
         public event Action<bool> Finished;
 
         public abstract HackingMinigameType Type { get; }
@@ -78,6 +90,7 @@ namespace RootAccess.Hacking
             Button button = Instantiate(buttonTemplate, content);
             button.gameObject.SetActive(true);
             button.name = label;
+            button.colors = MinigameColors;
             if (button.TryGetComponent(out Image image)) image.color = color;
             TMP_Text text = button.GetComponentInChildren<TMP_Text>(true);
             if (text != null) text.text = label;

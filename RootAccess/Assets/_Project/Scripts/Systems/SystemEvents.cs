@@ -80,3 +80,41 @@ namespace RootAccess.Systems
         public ToastRequested(string message) => Message = message;
     }
 }
+
+namespace RootAccess.Systems
+{
+    public enum TerminalTab
+    {
+        Inventory,
+        Skills,
+        Quests,
+        Shop,
+        Contracts
+    }
+
+    /// <summary>
+    /// Opens the full-screen personal terminal. Hub consoles add their own content: a vendor's offers, the job board's
+    /// contracts, or permission to unlock skills (only the hideout's skill terminal grants it).
+    /// </summary>
+    public readonly struct TerminalScreenRequested : RootAccess.Core.IEvent
+    {
+        public readonly TerminalTab Tab;
+        public readonly ShopOffer[] Offers;
+        public readonly QuestDefinition[] Contracts;
+        public readonly bool AllowSkillUnlock;
+
+        public TerminalScreenRequested(TerminalTab tab, ShopOffer[] offers = null, QuestDefinition[] contracts = null, bool allowSkillUnlock = false)
+        {
+            Tab = tab;
+            Offers = offers;
+            Contracts = contracts;
+            AllowSkillUnlock = allowSkillUnlock;
+        }
+    }
+
+    public readonly struct XpChanged : RootAccess.Core.IEvent
+    {
+        public readonly int Xp;
+        public XpChanged(int xp) => Xp = xp;
+    }
+}

@@ -1,4 +1,5 @@
 using RootAccess.Core;
+using RootAccess.Systems;
 using UnityEngine;
 
 namespace RootAccess.Audio
@@ -13,6 +14,10 @@ namespace RootAccess.Audio
         [SerializeField] private float probeDistance = 0.4f;
         [SerializeField] private SurfaceType fallbackSurface = SurfaceType.Concrete;
         [SerializeField] private bool silent;
+        [SerializeField, Tooltip("Player only: the 'silent steps' skill makes these footsteps much quieter.")]
+        private bool silencedBySkill;
+
+        private const float SilentStepsVolume = 0.3f;
 
         public bool Silent
         {
@@ -26,7 +31,10 @@ namespace RootAccess.Audio
             Vector2 origin = feet != null ? feet.position : transform.position;
             RaycastHit2D hit = Physics2D.Raycast(origin + Vector2.up * 0.1f, Vector2.down, probeDistance, Layers.SolidMask);
             SurfaceType surface = hit.collider != null ? SurfaceTag.Resolve(hit.collider, fallbackSurface) : fallbackSurface;
-            EventBus<FootstepRequested>.Publish(new FootstepRequested(surface, origin));
+            float volume = silencedBySkill && ServiceLocator.TryGet(out SessionService session) && session.HasSkillEffect(SkillEffect.SilentSteps)
+                ? SilentStepsVolume
+                : 1f;
+            EventBus<FootstepRequested>.Publish(new FootstepRequested(surface, origin, volume));
         }
     }
 }

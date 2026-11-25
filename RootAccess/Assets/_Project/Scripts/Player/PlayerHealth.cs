@@ -1,4 +1,5 @@
 using RootAccess.Core;
+using RootAccess.Systems;
 using UnityEngine;
 
 namespace RootAccess.Player
@@ -14,7 +15,7 @@ namespace RootAccess.Player
         private float _invulnerableUntil;
 
         public int Current { get; private set; }
-        public int Max => _controller.Config.MaxHealth;
+        public int Max => _controller.Config.MaxHealth + _controller.BonusHealth;
         public bool IsAlive => Current > 0;
         public bool IsInvulnerable => Time.time < _invulnerableUntil;
 
@@ -40,12 +41,14 @@ namespace RootAccess.Player
         {
             EventBus<CheckpointReached>.Subscribe(OnCheckpoint);
             EventBus<PlayerRespawnRequested>.Subscribe(OnRespawnRequested);
+            EventBus<SkillUnlockedEvent>.Subscribe(OnSkillUnlocked);
         }
 
         private void OnDisable()
         {
             EventBus<CheckpointReached>.Unsubscribe(OnCheckpoint);
             EventBus<PlayerRespawnRequested>.Unsubscribe(OnRespawnRequested);
+            EventBus<SkillUnlockedEvent>.Unsubscribe(OnSkillUnlocked);
         }
 
         private void Update()
@@ -93,6 +96,14 @@ namespace RootAccess.Player
         private void Publish() => EventBus<PlayerHealthChanged>.Publish(new PlayerHealthChanged(Current, Max));
 
         private void OnCheckpoint(CheckpointReached evt) => _respawnPoint = evt.Position;
+
+        private void OnSkillUnlocked(SkillUnlockedEvent evt)
+        {
+            if (!IsAlive || evt.Skill == null || evt.Skill.Effect != SkillEffect.ArmorPlating) return;
+            _controller.RefreshAbilities();
+            Current = Mathf.Min(Max, Current + 1);
+            Publish();
+        }
 
         private void OnRespawnRequested(PlayerRespawnRequested _)
         {

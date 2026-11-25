@@ -16,10 +16,16 @@ MonoBehaviour:
   quests:
   - {fileID: 11400000, guid: 24c6990f81dbec14ba927f736a2f99dc, type: 2}
   - {fileID: 11400000, guid: b346d65402767e94491a80ffc0a50a3b, type: 2}
+  - {fileID: 11400000, guid: 839100f42cdbb0a4a8ab915121f41e12, type: 2}
   skills:
   - {fileID: 11400000, guid: 3c31fecc1c257264e83debea85c43529, type: 2}
+  - {fileID: 11400000, guid: 82b5120f1326e704ab506aab31166b48, type: 2}
   - {fileID: 11400000, guid: 6e26806393ff41048ae2fcb57c88aae9, type: 2}
+  - {fileID: 11400000, guid: 24fa42d54239a9c44983080e05bea51b, type: 2}
+  - {fileID: 11400000, guid: 113a3a93dbc943f4aabd78101f21752f, type: 2}
   - {fileID: 11400000, guid: c41d78493df490848b5bee0915f8b463, type: 2}
+  - {fileID: 11400000, guid: 2b498449c6eebe34fbf9cab43545bd2b, type: 2}
+  - {fileID: 11400000, guid: cbb7567752b1e764a935ab36297d9b8d, type: 2}
   levels:
   - {fileID: 11400000, guid: 41074dc1a7808dd4aa67645823538b49, type: 2}
   - {fileID: 11400000, guid: e039e08e571879c45bdeec03f7470958, type: 2}
@@ -36,3 +42,6 @@ MonoBehaviour:
     decayDelaySeconds: 3
     lockdownFloor: 50
   startingCredits: 150
+  startingItems:
+  - item: {fileID: 11400000, guid: 5d390fbdee2acaa43be750fb53c148be, type: 2}
+    quantity: 2

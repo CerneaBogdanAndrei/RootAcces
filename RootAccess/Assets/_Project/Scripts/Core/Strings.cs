@@ -60,15 +60,58 @@ namespace RootAccess.Core
             public const string CheckpointSaved = "Checkpoint salvat";
             public const string ItemPickedUp = "Ai obținut: {0}";
             public const string InventoryFull = "Inventar plin";
+            public const string EmpCount = "EMP ×{0}";
+            public const string NoEmp = "Nu ai grenade EMP";
+            public const string EmpDetonated = "EMP: {0} sisteme dezactivate";
+            public const string ExtraAttempt = "Încercare suplimentară (abilitate)";
         }
 
         public static class Panels
         {
             public const string Inventory = "INVENTAR";
-            public const string Quests = "CONTRACTE";
+            public const string Quests = "MISIUNI";
             public const string Skills = "ABILITĂȚI";
+            public const string Shop = "MAGAZIN";
+            public const string Contracts = "CONTRACTE";
+            public const string Title = "TERMINAL PERSONAL";
             public const string InventoryHint = "[Tab] Închide";
+            public const string CloseHint = "[Esc] Închide";
             public const string Continue = "[Enter] Continuă";
+            public const string Header = "{0} credite   ·   {1} XP";
+            public const string Empty = "Nimic aici încă.";
+            public const string Close = "Închide";
+            public const string Buy = "Cumpără";
+            public const string Unlock = "Deblochează";
+            public const string Accept = "Acceptă";
+            public const string Quantity = "Cantitate: {0}";
+            public const string Value = "Valoare: {0} credite";
+            public const string Price = "Preț: {0} credite";
+            public const string Owned = "Deții: {0}";
+            public const string Cost = "Cost: {0} XP";
+            public const string Requires = "Necesită: {0}";
+            public const string Rewards = "Recompensă: {0} credite, {1} XP";
+            public const string SkillUnlocked = "DEBLOCATĂ";
+            public const string SkillAvailable = "Disponibilă";
+            public const string SkillMissingPrerequisite = "Blocată: lipsește o abilitate anterioară";
+            public const string SkillNotEnoughXp = "XP insuficient";
+            public const string SkillOnlyAtTerminal = "Deblocarea se face la terminalul de abilități din ascunzătoare.";
+            public const string QuestActive = "în desfășurare";
+            public const string QuestCompleted = "finalizată";
+            public const string QuestFailed = "eșuată";
+            public const string ContractAvailable = "disponibil";
+            public const string ObjectiveDone = "[x] ";
+            public const string ObjectiveOpen = "[ ] ";
+            public const string ObjectiveFailed = "[!] ";
+            public const string Optional = " (opțional)";
+            public const string Stealth = "Rămâi nedetectat";
+            public const string NotEnoughCredits = "Credite insuficiente";
+        }
+
+        public static class Branches
+        {
+            public const string Stealth = "Stealth";
+            public const string Hacking = "Hacking";
+            public const string Hardware = "Hardware";
         }
 
         public static class Prompts

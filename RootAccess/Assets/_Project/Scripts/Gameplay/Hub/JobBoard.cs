@@ -4,26 +4,16 @@ using UnityEngine;
 
 namespace RootAccess.Gameplay
 {
-    /// <summary>Darknet job board: accepts the next contract (quest) and optionally plays its briefing.</summary>
+    /// <summary>Darknet job board: lists side contracts that can be accepted from the terminal screen.</summary>
     public sealed class JobBoard : HubConsole
     {
-        [SerializeField] private QuestDefinition contract;
-        [SerializeField] private DialogueDefinition briefing;
+        [SerializeField] private QuestDefinition[] contracts = new QuestDefinition[0];
 
         public override string Prompt => Strings.Prompts.JobBoard;
 
-        protected override void Use(IInteractor interactor)
-        {
-            if (contract == null || !TryGetSession(out SessionService session)) return;
-            if (session.Session.Quests.Get(contract.QuestId) != null)
-            {
-                Toast(string.Format(Strings.Hub.ContractActive, contract.Title));
-                return;
-            }
+        public override bool CanInteract(IInteractor interactor) => contracts.Length > 0;
 
-            session.StartQuest(contract);
-            Toast(string.Format(Strings.Hub.ContractAccepted, contract.Title));
-            if (briefing != null) EventBus<DialogueRequested>.Publish(new DialogueRequested(briefing));
-        }
+        protected override void Use(IInteractor interactor) =>
+            EventBus<TerminalScreenRequested>.Publish(new TerminalScreenRequested(TerminalTab.Contracts, contracts: contracts));
     }
 }

@@ -17,8 +17,10 @@ namespace RootAccess.AI
     /// vision cone. Melee hits resolve on the attack animation's hit frame (Animation Event).
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public sealed class Guard : MonoBehaviour
+    public sealed class Guard : MonoBehaviour, IEmpTarget
     {
+        private const float EmpStunFraction = 0.5f;
+
         [SerializeField] private GuardConfig config;
         [SerializeField] private VisionCone vision;
         [SerializeField] private Transform[] patrolPoints = new Transform[0];
@@ -36,6 +38,7 @@ namespace RootAccess.AI
         private GuardReturnState _return;
         private Rigidbody2D _body;
         private float _attackReadyAt;
+        private float _stunnedUntil;
         private bool _attackPending;
         private Vector2 _patrolStart;
 
@@ -47,6 +50,9 @@ namespace RootAccess.AI
         public int Facing { get; private set; } = 1;
         public Vector2 Position => _body.position;
         public IPlayerTarget Target { get; private set; }
+
+        /// <summary>An EMP fries the guard's visor: blind and dazed for a fraction of the blast duration.</summary>
+        public bool IsEmpDisabled => Time.time < _stunnedUntil;
         internal Transform[] PatrolPoints => patrolPoints;
         internal Vector2 PatrolStart => _patrolStart;
 
@@ -74,10 +80,33 @@ namespace RootAccess.AI
 
         private void Start() => _fsm.ChangeState(_patrol);
 
+        public void ApplyEmp(float seconds)
+        {
+            _stunnedUntil = Mathf.Max(_stunnedUntil, Time.time + seconds * EmpStunFraction);
+            CanSeePlayer = false;
+            vision.SetActive(false);
+            Stop();
+        }
+
         private void Update()
         {
             ServiceLocator.TryGet(out IPlayerTarget player);
             Target = player;
+
+            if (IsEmpDisabled)
+            {
+                Stop();
+                UpdatePresentation();
+                return;
+            }
+
+            if (_stunnedUntil > 0f)
+            {
+                _stunnedUntil = 0f;
+                vision.SetActive(true);
+                Awareness = Mathf.Max(Awareness, 0.5f);
+                ChangeState(GuardStateId.Search);
+            }
 
             float dt = Time.deltaTime;
             CanSeePlayer = vision.CanSee(Target, out float normalizedDistance);
@@ -98,7 +127,10 @@ namespace RootAccess.AI
             UpdatePresentation();
         }
 
-        private void FixedUpdate() => _fsm.FixedTick(Time.fixedDeltaTime);
+        private void FixedUpdate()
+        {
+            if (!IsEmpDisabled) _fsm.FixedTick(Time.fixedDeltaTime);
+        }
 
         internal void ChangeState(GuardStateId id)
         {

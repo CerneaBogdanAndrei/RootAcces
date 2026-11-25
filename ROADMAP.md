@@ -41,7 +41,7 @@ Total estimat: aproximativ 140–185 de ore.
 **Barem închis:** 1 (fără observații), 8 (meniuri complete).
 **Teste noi:** PlayMode pentru coyote time, jump buffer, wall-jump și dash (input simulat cu `InputTestFixture`).
 
-## P2: hacking, terminale, inventar (16–20 h)
+## P2: hacking, terminale, inventar (16–20 h) ✅ făcut (PR „P2”)
 
 **Livrabile**
 - Finisarea minijocurilor: WireConnect (terminale de date) și PortScan (terminale de cameră) funcționează deja și au teste

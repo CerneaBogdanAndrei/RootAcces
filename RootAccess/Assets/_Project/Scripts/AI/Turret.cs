@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RootAccess.AI
 {
     /// <summary>Stationary turret: tracks a visible player and fires pooled projectiles. Hackable (disabled).</summary>
-    public sealed class Turret : MonoBehaviour, IHackable
+    public sealed class Turret : MonoBehaviour, IHackable, IEmpTarget
     {
         [SerializeField] private VisionCone vision;
         [SerializeField] private Transform head;
@@ -20,6 +20,9 @@ namespace RootAccess.AI
 
         public string HackLabel => Strings.HackTargets.Turret;
         public bool IsHacked => Time.time < _disabledUntil;
+        public bool IsEmpDisabled => IsHacked;
+
+        public void ApplyEmp(float seconds) => _disabledUntil = Mathf.Max(_disabledUntil, Time.time + seconds);
 
         private void Start() => ServiceLocator.TryGet(out _pool);
 

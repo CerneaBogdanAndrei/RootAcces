@@ -139,6 +139,21 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
   Joc nou arată ecranul de loading cu bara de progres. În joc: Esc = pauză. Moartea (de exemplu pe podeaua electrică sau
   în laser, din `l1_security`) duce la Game Over, iar ieșirea de la capătul Level01 duce la Nivel complet.
 
+## Mecanici avansate (cerința disciplinei)
+
+- **Terminal personal** (`UI/Screens/TerminalScreenView.cs`, tasta Tab/I): oprește timpul (`GameState.Terminal`) și are
+  tab-urile Inventar, Abilități, Misiuni; din consolele din Hub se deschide pe Magazin (`ShopTerminal`), Contracte
+  (`JobBoard`) sau Abilități cu deblocare permisă (`SkillTerminal`, singurul loc unde se cheltuie XP).
+- **Skill tree** pe 3 ramuri, 8 abilități cu prerechizite și efecte reale: Stealth (pași silențioși, camuflaj optic),
+  Hacking (overclock = dificultate −1, a doua șansă la spargere, acces de la distanță), Hardware (dash mai des, +1 viață,
+  rază EMP +50%).
+- **Magazin** (`Systems/Economy/Shop.cs`, testat în EditMode): cumpărare „totul sau nimic”, refuză dacă inventarul e plin.
+- **Grenada EMP** (`Player/PlayerGrenadeThrower.cs` + `Gameplay/World/EmpGrenade.cs`, tasta G): consumă un item din
+  inventar, se aruncă spre cursor sau stick, dezactivează tot ce implementează `IEmpTarget` (camere, drone, turele, vizorul
+  gardienilor).
+- **Demonstrație:** Joc nou → în Hub, E pe consola galbenă (magazin) → cumpără o grenadă; consola verde (abilități);
+  consola roz (contracte) → acceptă un contract; Tab → inventar și misiuni. În showcase, camera 12: G spre dronă și turelă.
+
 ## 9. Sunet (opțional) ✅
 
 - **Scene:** toate. `RubricShowcase` camera 9 (zonă de alarmă, podea de sticlă și de iarbă pentru pași diferiți).
@@ -205,9 +220,9 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 |---|---|
 | ≥30 de minute de joc (Hub + 5 niveluri × 6–8 min) | ⏳ P3–P6 (acum: Hub + secțiunea de test din Nivelul 1) |
 | Meniu de start, setări, play | ✅ |
-| GUI în joc: viață, scor/credite, inventar, misiune activă | ✅ HUD; inventarul are UI schelet (P2) |
+| GUI în joc: viață, scor/credite, inventar, misiune activă | ✅ HUD (viață, urmărire, credite, EMP, misiune activă) + terminal personal |
 | Input tastatură + mouse (și gamepad) | ✅ toate hărțile au binding-uri KBM și gamepad |
 | Personaje și inamici animați | ✅ (sprite-uri placeholder) |
 | Obiecte scriptate, coliziuni | ✅ |
-| Mecanici avansate: interacțiune, inventar, skill tree, quest-uri, pathfinding | ✅ logică + teste; UI pentru skill tree/jurnal în P2–P4 |
+| Mecanici avansate: interacțiune, inventar, skill tree, quest-uri, pathfinding | ✅ logică + UI (terminal personal cu tab-uri: inventar, abilități pe 3 ramuri, misiuni, magazin, contracte) + teste |
 | Livrare: proiect + executabil pe Google Drive | ✅ `scripts/package-for-drive.ps1` (urcarea finală în P8) |
