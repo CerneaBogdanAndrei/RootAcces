@@ -329,7 +329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.SessionService
   database: {fileID: 11400000, guid: 6d95262b2ca1bdb4d8ea13980ec058ef, type: 2}
-  newGameScene: Hub
+  newGameScene: Intro
 --- !u!114 &6396797659412406353
 MonoBehaviour:
   m_ObjectHideFlags: 0

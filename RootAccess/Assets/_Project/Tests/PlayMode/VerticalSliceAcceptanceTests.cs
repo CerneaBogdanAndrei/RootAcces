@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using RootAccess.AI;
 using RootAccess.Audio;
+using RootAccess.Cinematics;
 using RootAccess.Core;
 using RootAccess.Gameplay;
 using RootAccess.Hacking;
@@ -44,7 +45,11 @@ namespace RootAccess.Tests.PlayMode
             Assert.AreEqual(GameState.MainMenu, SliceTestUtil.Game.State);
 
             Button newGame = MenuButton("NewGame");
-            yield return SliceTestUtil.LoadAndWait(SceneNames.Hub, () => newGame.onClick.Invoke());
+            yield return SliceTestUtil.LoadAndWait(SceneNames.Intro, () => newGame.onClick.Invoke());
+            Assert.AreEqual(GameState.Cutscene, SliceTestUtil.Game.State, "New Game opens the intro cutscene.");
+            CutsceneController intro = Object.FindFirstObjectByType<CutsceneController>();
+            yield return SliceTestUtil.WaitUntil(() => intro.IsPlaying, 3f, "the intro to start");
+            yield return SliceTestUtil.LoadAndWait(SceneNames.Hub, intro.Skip);
             Assert.AreEqual(GameState.Playing, SliceTestUtil.Game.State);
             yield return new WaitForSecondsRealtime(1f);
             Assert.IsTrue(SliceTestUtil.Player.IsGrounded, "The player must stand on the Hub floor.");

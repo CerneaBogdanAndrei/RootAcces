@@ -75,7 +75,7 @@ namespace RootAccess.Tests.PlayMode
             string next = Object.FindFirstObjectByType<LevelExit>().TargetScene;
             yield return ReachExit(levelId);
             if (unlocks != null) Assert.IsTrue(session.Session.IsLevelUnlocked(unlocks), $"Finishing {levelId} must unlock {unlocks}.");
-            else Assert.AreEqual(SceneNames.Credits, next, "The finale's exit rolls the credits.");
+            else Assert.AreEqual(SceneNames.Finale, next, "The last exit plays the finale cutscene (then the credits).");
         }
 
         [UnityTest, Timeout(90000)]

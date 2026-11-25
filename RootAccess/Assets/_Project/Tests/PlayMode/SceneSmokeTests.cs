@@ -39,7 +39,7 @@ namespace RootAccess.Tests.PlayMode
                 new[]
                 {
                     SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.Level03,
-                    SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits
+                    SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale
                 },
                 new List<string>(BuildScenes()));
             Assert.AreEqual(SceneNames.Bootstrap, Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(0)),
@@ -59,6 +59,12 @@ namespace RootAccess.Tests.PlayMode
             }
 
             yield return new WaitForSecondsRealtime(RunSeconds);
+
+            if (SceneNames.IsCutsceneScene(sceneName))
+            {
+                Assert.AreEqual(GameState.Cutscene, SliceTestUtil.Game.State, $"{sceneName} runs its Timeline in the Cutscene state.");
+                yield break;
+            }
 
             if (!SceneNames.IsGameplayScene(sceneName))
             {

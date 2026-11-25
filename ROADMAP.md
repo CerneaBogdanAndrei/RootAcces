@@ -93,7 +93,11 @@ misiunile principale înlănțuite pe toate cele 5 niveluri. Skill tree-ul și j
 **Barem închis:** 4 (complet), mecanicile avansate „skill tree” și „quest-uri”.
 **Teste noi:** EditMode pentru efectele skill-urilor, PlayMode pentru plutirea în apă și pentru finalizarea fiecărui nivel.
 
-## P5: VFX, audio, mediu, Shader Graph, cutscene-uri (20–26 h)
+## P5: VFX, audio, mediu, Shader Graph, cutscene-uri (20–26 h) ✅ făcut (PR „P5”)
+
+Realizat: copacii cu oase (`SpriteRigFactory` + `SpriteSkin`, legănați de `FoliageWind`), cutscene-urile Timeline `Intro`
+și `Finale` (Animation, Cinemachine, Activation, Signal; se pot sări). Rămân pentru polish: audio și artă din pachete reale
+(ASSETS.md), care țin de dezvoltator.
 
 **Livrabile**
 - ✅ **Shader Graph** (făcut devreme, în etapa „Shader Graph”): hologramă, dissolve/glitch, neon pulse și iarba cu vânt

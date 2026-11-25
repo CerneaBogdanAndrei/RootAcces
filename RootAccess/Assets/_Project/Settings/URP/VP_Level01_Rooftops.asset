@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4073188177351712905
+--- !u!114 &-8014574746648283789
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,7 +50,7 @@ MonoBehaviour:
   dirtIntensity:
     m_OverrideState: 1
     m_Value: 0
---- !u!114 &-1906787062782370565
+--- !u!114 &-1670703146455358336
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,10 +91,10 @@ MonoBehaviour:
   m_Name: VP_Level01_Rooftops
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.VolumeProfile
   components:
-  - {fileID: -4073188177351712905}
-  - {fileID: 1110399178611151752}
-  - {fileID: -1906787062782370565}
---- !u!114 &1110399178611151752
+  - {fileID: -8014574746648283789}
+  - {fileID: 8659333206699352387}
+  - {fileID: -1670703146455358336}
+--- !u!114 &8659333206699352387
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}

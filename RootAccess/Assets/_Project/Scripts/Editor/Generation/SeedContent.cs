@@ -151,7 +151,7 @@ namespace RootAccess.EditorTools
         {
             public const string Movement = "Controller Rigidbody2D: accelerație, săritură variabilă, coyote time, buffer, dublu salt, dash, wall-jump, ghemuire, înot.";
             public const string Materials = "Materiale pe suprafețe (metal, sticlă, neon, beton), shadere dizolvare/hologramă/neon, normal maps.";
-            public const string Environment = "Copaci și iarbă cu vânt din script și shader care se îndoaie lângă jucător.";
+            public const string Environment = "Copaci cu oase (SpriteSkin) legănați de vânt și iarbă cu shader care se îndoaie lângă jucător.";
             public const string Water = "Apă cu arcuri dinamice și refracție (Shader Graph), plutire, înot, stavilă care inundă puțul; skybox de noapte.";
             public const string Lighting = "Lumini 2D Global/Point/Spot/Freeform, neon pâlpâitor, umbre, Cinemachine cu confiner și shake.";
             public const string Prefabs = "Prefab-uri și variante (Guard_Heavy/Sniper, Terminal_Door/Camera/Data), obiecte din pool.";
@@ -161,7 +161,7 @@ namespace RootAccess.EditorTools
             public const string Animation = "Animator Controllers cu blend trees, Animation Events pentru pași și lovituri.";
             public const string Collisions = "Matrice de coliziuni, OnCollisionEnter2D (daune, aterizare), triggere, raycast-uri.";
             public const string Scripts = "Arhitectură pe asmdef-uri, EventBus, A* propriu pentru drone, teste EditMode/PlayMode.";
-            public const string Cinematics = "Cutscene-uri Timeline + Cinemachine, sărite cu Enter/Esc (P5).";
+            public const string Cinematics = "Cutscene-uri Timeline + Cinemachine (intro după Joc nou, final după nivelul 5), sărite cu Enter/Esc.";
             public const string Multiplayer = "Co-op asimetric Netcode + Relay: interfețe și bootstrap (P7).";
         }
 

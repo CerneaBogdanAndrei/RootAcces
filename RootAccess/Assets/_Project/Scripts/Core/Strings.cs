@@ -210,6 +210,19 @@ namespace RootAccess.Core
             public const string RubricShowcase = "Prezentare barem";
         }
 
+        public static class Cutscenes
+        {
+            public const string Skip = "[Enter / Esc] Sari peste";
+            public const string IntroTitle = "ROOT ACCESS";
+            public const string Intro1 = "Sectorul 7. Orașul nu doarme niciodată, iar rețeaua lui nu uită nimic.";
+            public const string Intro2 = "Corporațiile dețin serverele. Eu dețin cheile.";
+            public const string Intro3 = "Un contract nou așteaptă în ascunzătoare. E timpul să intru.";
+            public const string FinaleTitle = "ROOT ACCESS: CONFIRMAT";
+            public const string Finale1 = "Mainframe-ul Halden e al nostru. Fiecare ușă din oraș răspunde acum la comanda mea.";
+            public const string Finale2 = "Alarma sună degeaba. Până ajung gardienii pe acoperiș, eu sunt doar un semnal în rețea.";
+            public const string Finale3 = "Sfârșit. Mulțumim că ai jucat.";
+        }
+
         public static class Credits
         {
             public const string Title = "CREDITE";

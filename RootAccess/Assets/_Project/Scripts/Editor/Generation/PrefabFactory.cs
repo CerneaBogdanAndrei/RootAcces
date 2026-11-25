@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using RootAccess.AI;
 using RootAccess.Audio;
 using RootAccess.Core;
@@ -13,6 +15,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.U2D;
+using UnityEngine.U2D.Animation;
 using Object = UnityEngine.Object;
 
 namespace RootAccess.EditorTools
@@ -614,11 +618,7 @@ namespace RootAccess.EditorTools
             ShadowCaster(crate);
             Save(ctx, crate, EditorPaths.PrefabsEnvironment);
 
-            GameObject tree = Go("Tree", null, Layers.Default);
-            Sprite(tree, "tree_trunk", ctx.SpriteLit, SortingLayers.Environment, 1);
-            GameObject canopy = Go("Canopy", tree.transform, Layers.Default, new Vector3(0f, 2.3f, 0f));
-            Sprite(canopy, "tree_canopy", ctx.GrassWind, SortingLayers.Environment, 2);
-            Save(ctx, tree, EditorPaths.PrefabsEnvironment);
+            Save(ctx, RiggedTree(ctx), EditorPaths.PrefabsEnvironment);
 
             GameObject grass = Go("GrassPatch", null, Layers.Default);
             for (int i = 0; i < 3; i++)
@@ -669,6 +669,37 @@ namespace RootAccess.EditorTools
             spawn.AddComponent<SpawnPoint>();
             Save(ctx, spawn, EditorPaths.PrefabsEnvironment);
         }
+
+        /// <summary>
+        /// Tree deformed by 2D Animation: the sprite carries 4 bones + weights (SpriteRigFactory); SpriteSkin binds them to a
+        /// transform chain built from the sprite's own bones, the way the package's "Create Bones" button does.
+        /// FoliageWind then sways those bones and the mesh bends smoothly.
+        /// </summary>
+        private static GameObject RiggedTree(BuildContext ctx)
+        {
+            GameObject tree = Go("Tree", null, Layers.Default);
+            SpriteRenderer renderer = Sprite(tree, PlaceholderArtGenerator.RiggedTree, ctx.SpriteLit, SortingLayers.Environment, 1);
+            SpriteBone[] bones = renderer.sprite.GetBones();
+            if (bones.Length == 0) throw new InvalidOperationException("tree_rigged has no bones: run PlaceholderArtGenerator.GenerateAll.");
+            var transforms = new Transform[bones.Length];
+            for (int i = 0; i < bones.Length; i++)
+            {
+                Transform parent = bones[i].parentId >= 0 ? transforms[bones[i].parentId] : tree.transform;
+                Transform bone = Go(bones[i].name, parent).transform;
+                bone.localPosition = bones[i].position;
+                bone.localRotation = bones[i].rotation;
+                transforms[i] = bone;
+            }
+
+            var skin = tree.AddComponent<SpriteSkin>();
+            skin.SetRootBone(tree.transform);
+            skin.SetBoneTransforms(transforms);
+            return tree;
+        }
+
+        /// <summary>Bones the wind sways: everything above the trunk.</summary>
+        public static IEnumerable<Transform> SwayBones(GameObject tree) =>
+            tree.GetComponent<SpriteSkin>().boneTransforms.Skip(1);
 
         // ---------------------------------------------------------------- camera + systems
 

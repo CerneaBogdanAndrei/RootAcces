@@ -148,7 +148,12 @@ namespace RootAccess.EditorTools
                 grass != null && IsShaderGraph(grassMaterial) && HasShaderProperty(grass, "_BendRadius"),
                 grass != null ? $"M_GrassWind → {Path.GetFileName(AssetDatabase.GetAssetPath(grass))} (_BendRadius; poziția jucătorului vine ca vector global din FoliageWind)" : "material M_GrassWind lipsă");
             Add(item, "Straturi parallax (fundal/prim-plan)", index.Scene("ParallaxLayer") >= 2, $"{index.Scene("ParallaxLayer")} ParallaxLayer în scene");
-            Add(item, "Copaci cu oase 2D Animation (SpriteSkin)", index.Any("SpriteSkin") > 0, $"{index.Any("SpriteSkin")} SpriteSkin (acum: legănare prin transform, P5)", Severity.Planned);
+            GameObject tree = index.FindPrefab("Tree");
+            Component skin = tree != null ? tree.GetComponents<Component>().FirstOrDefault(c => c != null && c.GetType().Name == "SpriteSkin") : null;
+            int bones = skin != null ? new SerializedObject(skin).FindProperty("m_BoneTransforms").arraySize : 0;
+            Add(item, "Copaci cu oase 2D Animation (SpriteSkin, 4 oase cu greutăți) legănați de FoliageWind",
+                skin != null && bones >= 3 && index.InScene("SpriteSkin", SceneNames.Level01),
+                $"Tree.prefab: SpriteSkin cu {bones} oase; {index.Scene("SpriteSkin")} copaci în scene (Editor/Generation/SpriteRigFactory.cs)");
 
             // 4. Water / skybox
             item = Strings.Rubric.Water;
@@ -289,8 +294,11 @@ namespace RootAccess.EditorTools
             // Bonus
             item = Strings.Rubric.Cinematics;
             Add(item, "CutsceneController + SkipCutscene (Timeline)", FindType("CutsceneController") != null && FindType("SkipCutscene") != null, "Scripts/Cinematics");
-            Add(item, "Asset-uri Timeline (intro + final)", AssetDatabase.FindAssets("t:TimelineAsset", new[] { EditorPaths.Root }).Length >= 2,
-                $"{AssetDatabase.FindAssets("t:TimelineAsset", new[] { EditorPaths.Root }).Length} timeline-uri (P5)", Severity.Planned);
+            int timelines = AssetDatabase.FindAssets("t:TimelineAsset", new[] { EditorPaths.Root }).Length;
+            Add(item, "Cutscene-uri Timeline (intro + final) în build, cu CutsceneController",
+                timelines >= 2 && SceneInBuild(SceneNames.Intro) && SceneInBuild(SceneNames.Finale) &&
+                index.InScene("CutsceneController", SceneNames.Intro) && index.InScene("CutsceneController", SceneNames.Finale),
+                $"{timelines} timeline-uri (Animation, Cinemachine, Activation, Signal); scenele Intro și Finale");
             item = Strings.Rubric.Multiplayer;
             string manifest = File.ReadAllText("Packages/manifest.json");
             Add(item, "Pachete Netcode + Transport + Multiplayer Services, interfețe IInfiltratorRole/IOperatorRole",

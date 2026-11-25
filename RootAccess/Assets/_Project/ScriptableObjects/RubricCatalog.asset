@@ -24,8 +24,8 @@ MonoBehaviour:
     sceneName: RubricShowcase
     spawnId: room_02
   - title: "3. Mediu: copaci / iarb\u0103"
-    summary: "Copaci \u0219i iarb\u0103 cu v\xE2nt din script \u0219i shader care
-      se \xEEndoaie l\xE2ng\u0103 juc\u0103tor."
+    summary: "Copaci cu oase (SpriteSkin) leg\u0103na\u021Bi de v\xE2nt \u0219i iarb\u0103
+      cu shader care se \xEEndoaie l\xE2ng\u0103 juc\u0103tor."
     sceneName: Level01_Rooftops
     spawnId: l1_park
   - title: "4. Ap\u0103 / skybox"
@@ -74,9 +74,10 @@ MonoBehaviour:
     sceneName: Level01_Rooftops
     spawnId: l1_drone
   - title: 'Bonus: Cinematice'
-    summary: "Cutscene-uri Timeline + Cinemachine, s\u0103rite cu Enter/Esc (P5)."
-    sceneName: RubricShowcase
-    spawnId: room_13
+    summary: "Cutscene-uri Timeline + Cinemachine (intro dup\u0103 Joc nou, final
+      dup\u0103 nivelul 5), s\u0103rite cu Enter/Esc."
+    sceneName: Intro
+    spawnId: 
   - title: 'Bonus: Multiplayer co-op'
     summary: "Co-op asimetric Netcode + Relay: interfe\u021Be \u0219i bootstrap (P7)."
     sceneName: RubricShowcase

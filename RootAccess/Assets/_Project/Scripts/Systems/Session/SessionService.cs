@@ -11,7 +11,8 @@ namespace RootAccess.Systems
     public sealed class SessionService : MonoBehaviour, ISessionService
     {
         [SerializeField] private GameDatabase database;
-        [SerializeField] private string newGameScene = SceneNames.Hub;
+        [SerializeField, Tooltip("New Game opens the intro cutscene, which then loads the hideout.")]
+        private string newGameScene = SceneNames.Intro;
 
         /// <summary>"Optical camouflage" skill: detection noise raises the trace meter this much slower.</summary>
         private const float CamouflageTraceMultiplier = 0.7f;
