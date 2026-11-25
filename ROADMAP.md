@@ -85,8 +85,8 @@ per cameră de nivel).
 ## P5: VFX, audio, mediu, Shader Graph, cutscene-uri (20–26 h)
 
 **Livrabile**
-- **Shader Graph:** hologramă, glitch/dissolve și neon pulse refăcute ca `.shadergraph` (create din Editor, nu scrise de
-  mână), plus distorsiunea apei. Materialele `M_Hologram`, `M_Dissolve`, `M_NeonCyan/Magenta` trec pe ele.
+- ✅ **Shader Graph** (făcut devreme, în etapa „Shader Graph”): hologramă, dissolve/glitch, neon pulse și iarba cu vânt
+  sunt `.shadergraph` generate din Editor; distorsiunea apei vine cu nivelul Sewers (P4).
 - **Copaci cu oase:** sprite-uri cu rig 2D Animation (`SpriteSkin`, 3–4 oase), legănați de `FoliageWind`.
 - Audio real: muzică stealth/alertă pe straturi, ambianță per nivel, pași pe fiecare suprafață, din pachetele din ASSETS.md.
 - Artă reală pentru tileset-uri, inamici și UI, plus fonturi.

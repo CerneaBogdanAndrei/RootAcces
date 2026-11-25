@@ -60,7 +60,7 @@ Editor entry points (`-executeMethod`):
 |---|---|
 | `RootAccess.EditorTools.ProjectSetup.Run` | URP asset + renderers, player/editor settings, tags, layers, collision matrix |
 | `RootAccess.EditorTools.PlaceholderArtGenerator.GenerateAll` | procedural sprites, normal maps, skybox, audio |
-| `RootAccess.EditorTools.SceneBuilder.BuildAll` | materials, shaders' materials, mixer, animators, prefabs, all scenes, Build Settings |
+| `RootAccess.EditorTools.SceneBuilder.BuildAll` | Shader Graphs (`ShaderGraphFactory`), materials, mixer, animators, prefabs, all scenes, Build Settings |
 | `RootAccess.EditorTools.BuildScript.BuildWindows` | Windows x64 player (`-ra-development` for a dev build) |
 | `RootAccess.EditorTools.RubricValidator.RunBatch` | rubric evidence table -> `RootAccess/Logs/RubricReport.md` |
 
@@ -85,6 +85,9 @@ Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-r
 - Non-sequential enums (`Light2D.NormalMapQuality`) must be set via `intValue`, not `enumValueIndex`.
 - PlayMode tests: the runner adds its own `InitTestScene…` to Build Settings — filter to `Assets/_Project/Scenes/`.
 - Regenerating content rewrites sub-asset fileIDs (controllers, volume profiles): large but harmless diffs.
+- Shader Graphs are generated (`Editor/Generation/ShaderGraphFactory.cs` + `ShaderGraphWriter.cs`): nodes are written without
+  slots (Shader Graph recreates them on load), only custom-function slots and constants are explicit. Edit the factory,
+  not the `.shadergraph` files; the factory fails the build if a graph does not import as an error-free shader.
 
 ## Testing
 
