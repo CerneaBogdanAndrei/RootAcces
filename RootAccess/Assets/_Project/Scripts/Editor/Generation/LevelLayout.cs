@@ -26,17 +26,20 @@ namespace RootAccess.EditorTools
         private const int OutdoorHeadroom = 13;
 
         private readonly BuildContext _ctx;
+        private readonly LevelTheme _theme;
         private readonly SceneBuilder.GameplayScene _scene;
         private readonly string _prefix;
         private readonly int _startX;
         private int _counter;
         private int _maxTop;
+        private string _lastDecor;
         private readonly List<(int x0, int x1, int above)> _shells = new();
         private readonly List<(string segment, float seconds)> _estimate = new();
 
-        public LevelLayout(BuildContext ctx, SceneBuilder.GameplayScene scene, string idPrefix, int startX, int ceiling = 0)
+        public LevelLayout(BuildContext ctx, SceneBuilder.GameplayScene scene, LevelTheme theme, string idPrefix, int startX, int ceiling = 0)
         {
             _ctx = ctx;
+            _theme = theme;
             _scene = scene;
             _prefix = idPrefix;
             _startX = startX;
@@ -47,7 +50,10 @@ namespace RootAccess.EditorTools
             Spawns = SceneBuilder.Group("SpawnPoints", scene.Root);
             Hazards = SceneBuilder.Group("Hazards", scene.Root);
             Lights = SceneBuilder.Group("Lights", scene.Root);
-            Fill(_scene.Walls, startX - 3, startX - 1, BaseY, Ceiling > 0 ? Ceiling + 1 : OutdoorHeadroom + 4, _ctx.TileBrick);
+            _scene.Backdrop.color = theme.BackdropTint;
+            _scene.Ground.GetComponent<SurfaceTag>().SetSurface(theme.GroundSurface);
+            _scene.Walls.GetComponent<SurfaceTag>().SetSurface(theme.WallSurface);
+            Fill(_scene.Walls, startX - 3, startX - 1, BaseY, Ceiling > 0 ? Ceiling + 1 : OutdoorHeadroom + 4, theme.Wall);
         }
 
         public int X { get; private set; }
@@ -63,6 +69,7 @@ namespace RootAccess.EditorTools
         public Transform Hazards { get; }
         public Transform Lights { get; }
         public BuildContext Ctx => _ctx;
+        public LevelTheme Theme => _theme;
 
         /// <summary>Segment-by-segment playtime estimate for a first run (see <see cref="Estimate"/>).</summary>
         public IReadOnlyList<(string segment, float seconds)> PlaytimeBreakdown => _estimate;
@@ -91,29 +98,29 @@ namespace RootAccess.EditorTools
         public void Block(int from, int to, int rise = 0)
         {
             int top = Floor + rise;
-            Fill(_scene.Ground, X + from, X + to - 1, BaseY, top - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+            Fill(_scene.Ground, X + from, X + to - 1, BaseY, top - 1, _theme.Ground);
             if (Indoor) Shell(from, to, top);
             _maxTop = Mathf.Max(_maxTop, top);
         }
 
         /// <summary>One-tile-thick platform whose walkable top is <see cref="Floor"/> + <paramref name="height"/>.</summary>
         public void Platform(int from, int to, int height) =>
-            Fill(_scene.Ground, X + from, X + to - 1, Floor + height - 1, Floor + height - 1, _ctx.TileMetalTop);
+            SceneBuilder.Fill(_scene.Ground, X + from, X + to - 1, Floor + height - 1, Floor + height - 1, _theme.Tile(_theme.Platform));
 
         /// <summary>Wall tiles (separate tilemap/layer from the floor) for columns [from, to), rows [Floor+y0, Floor+y1).</summary>
-        public void Wall(int from, int to, int y0, int y1, TileBase tile = null) =>
-            Fill(_scene.Walls, X + from, X + to - 1, Floor + y0, Floor + y1 - 1, tile ?? _ctx.TileConcrete);
+        public void Wall(int from, int to, int y0, int y1) =>
+            Fill(_scene.Walls, X + from, X + to - 1, Floor + y0, Floor + y1 - 1, _theme.Wall);
 
         /// <summary>Interior: backdrop wall and a two-tile ceiling over columns [from, to) for a floor at <paramref name="top"/>.</summary>
         private void Shell(int from, int to, int top)
         {
-            Fill(_scene.Backdrop, X + from, X + to - 1, top, top + Ceiling - 1, _ctx.TileBrick);
-            Fill(_scene.Walls, X + from, X + to - 1, top + Ceiling, top + Ceiling + 1, _ctx.TileConcrete);
+            Fill(_scene.Backdrop, X + from, X + to - 1, top, top + Ceiling - 1, _theme.Back);
+            Fill(_scene.Walls, X + from, X + to - 1, top + Ceiling, top + Ceiling + 1, _theme.Ceiling);
             _shells.Add((X + from, X + to - 1, top + Ceiling + 2));
         }
 
-        private static void Fill(Tilemap map, int x0, int x1, int y0, int y1, TileBase tile, TileBase top = null) =>
-            SceneBuilder.Fill(map, x0, x1, y0, y1, tile, top);
+        private void Fill(Tilemap map, int x0, int x1, int y0, int y1, LevelTheme.Picker picker) =>
+            SceneBuilder.FillTheme(map, x0, x1, y0, y1, picker, _theme);
 
         private void Advance(int width) => X += width;
 
@@ -124,16 +131,57 @@ namespace RootAccess.EditorTools
             return light;
         }
 
+        /// <summary>Lamp of the biome: a fixture hung from the ceiling indoors, a street lamp outdoors.</summary>
         private void Decor(int width)
         {
-            if (Indoor)
+            if (!Indoor)
             {
-                Lamp(width * 0.5f, Ceiling - 0.6f, new Color(0.75f, 0.9f, 1f), 1f, Ceiling + 2f);
+                Put("StreetLamp", P(width - 1.5f));
                 return;
             }
 
-            Put("StreetLamp", P(width - 1.5f));
+            GameObject lamp = Put(_theme.LampPrefab, P(width * 0.5f, Ceiling), Lights);
+            Light2D light = lamp.GetComponentInChildren<Light2D>();
+            light.color = _theme.Lamp;
+            light.pointLightOuterRadius = Ceiling + 2.5f;
         }
+
+        /// <summary>
+        /// Background props of the biome standing on the floor between <paramref name="from"/> and <paramref name="to"/>
+        /// (tile offsets from <see cref="X"/>), spaced by their own width; indoors a wall piece hangs above them.
+        /// </summary>
+        public void Scatter(float from, float to, int seed = 0)
+        {
+            string[] decor = _theme.Decor;
+            float x = from;
+            for (int i = 0; decor.Length > 0; i++)
+            {
+                int pick = LevelTheme.Hash(X + Mathf.RoundToInt(x) * 7, seed * 31 + i) % decor.Length;
+                // Never the same prop twice in a row (two reception desks side by side read as a copy-paste).
+                if (decor[pick] == _lastDecor && decor.Length > 1) pick = (pick + 1) % decor.Length;
+                string prefab = decor[pick];
+                _lastDecor = prefab;
+                float width = Footprint(prefab);
+                if (x + width > to) break;
+                Put(prefab, P(x + width * 0.5f), Props, $"{prefab}_{++_counter}");
+                x += width + 1.5f + LevelTheme.Hash(i, X + seed) % 3;
+            }
+
+            if (Indoor && to - from >= 6f) WallPiece((from + to) * 0.5f, seed);
+        }
+
+        /// <summary>Poster, screen, pipe or moss on the back wall (indoor biomes with wall decor only).</summary>
+        private void WallPiece(float dx, int seed)
+        {
+            if (_theme.WallDecor.Length == 0) return;
+            string wall = _theme.WallDecor[LevelTheme.Hash(X, seed + 5) % _theme.WallDecor.Length];
+            if (_ctx.Prefab(wall).name == "Decor_HangingMoss") Put(wall, P(dx, Ceiling));
+            else if (_ctx.Prefab(wall).name == "Decor_PipeVertical") Put(wall, P(dx));
+            else Put(wall, P(dx, Mathf.Min(4.2f, Ceiling - 2.5f)));
+        }
+
+        private float Footprint(string prefab) =>
+            Mathf.Max(1f, _ctx.Prefab(prefab).GetComponent<SpriteRenderer>().sprite.bounds.size.x);
 
         private Hazard[] HazardsOf(IEnumerable<GameObject> objects)
         {
@@ -176,6 +224,7 @@ namespace RootAccess.EditorTools
             Estimate("Culoar", 6f + width * 0.25f);
             Block(0, width);
             Decor(width);
+            Scatter(1f, width - 1f, width);
             if (hint != null) Hint(hint, width * 0.5f);
             Advance(width);
             return this;
@@ -205,6 +254,7 @@ namespace RootAccess.EditorTools
                 }
 
                 if (i % 2 == 1) Put("RooftopAC", P(1.5f));
+                else if (i > 0) Scatter(0.5f, width - 0.5f, i);
                 Advance(width);
                 int gap = gapWidths[i % gapWidths.Length];
                 Pit(0, gap, -2.5f, 0);
@@ -227,8 +277,8 @@ namespace RootAccess.EditorTools
             const int width = 14;
             Block(0, width);
             int hangTop = Indoor ? Ceiling : height + 3;
-            Wall(4, 5, 2, hangTop, _ctx.TileBrick);
-            Wall(8, 10, 0, height, _ctx.TileBrick);
+            Wall(4, 5, 2, hangTop);
+            Wall(8, 10, 0, height);
             Put("Pickup_Credits", P(9f, height + 0.5f));
             if (hint != null) Hint(hint, 2.5f, 5f, 8f);
             Advance(width);
@@ -245,7 +295,8 @@ namespace RootAccess.EditorTools
             Block(0, width);
             int walkHeight = 5;
             if (catwalk) Platform(3, width - 3, walkHeight);
-            Put("RooftopAC", P(1.8f));
+            if (Indoor) Scatter(0.6f, 3.2f, width);
+            else Put("RooftopAC", P(1.8f));
             Put("Crate", P(width - 4.5f, 0.5f));
             Put("HideZone", P(width * 0.35f));
             float y = guardOnCatwalk ? walkHeight : 0f;
@@ -269,7 +320,7 @@ namespace RootAccess.EditorTools
             const int width = 16;
             Block(0, width);
             int wallTop = Indoor ? Ceiling : OutdoorHeadroom;
-            Wall(12, 13, 3, wallTop, _ctx.TileConcrete);
+            Wall(12, 13, 3, wallTop);
             GameObject camera = Put("SecurityCamera", P(11.4f, Indoor ? Ceiling - 1.2f : 7.5f), Enemies);
             EditorAssetUtil.SetFields(camera.GetComponent<SecurityCamera>(), so => so.Require("centerAngle").floatValue = -125f);
             GameObject door = Put("Door", P(12.5f));
@@ -291,7 +342,7 @@ namespace RootAccess.EditorTools
             Estimate($"Coridor cu {lasers} lasere", 25f + lasers * 6f);
             int width = 5 + lasers * 3 + 2;
             Block(0, width);
-            Wall(3, width - 1, 4, Indoor ? Ceiling : 8, _ctx.TileConcrete);
+            Wall(3, width - 1, 4, Indoor ? Ceiling : 8);
             var beams = new List<GameObject>();
             for (int i = 0; i < lasers; i++)
             {
@@ -377,7 +428,7 @@ namespace RootAccess.EditorTools
             Advance(6);
             int lower = Floor;
             // The shaft floor is one tile lower, so the parked platform sits flush with the corridor floor.
-            Fill(_scene.Ground, X, X + 3, BaseY, lower - 2, _ctx.TileMetal, _ctx.TileMetalTop);
+            Fill(_scene.Ground, X, X + 3, BaseY, lower - 2, _theme.Ground);
             var elevator = Put("Elevator", new Vector3(X + 2f, lower - 0.25f), Props).GetComponent<Elevator>();
             Transform a = PrefabFactory.Go("Elevator_A", Props, Layers.Default, new Vector3(X + 2f, lower - 0.25f)).transform;
             Transform b = PrefabFactory.Go("Elevator_B", Props, Layers.Default, new Vector3(X + 2f, lower + rise - 0.25f)).transform;
@@ -390,8 +441,8 @@ namespace RootAccess.EditorTools
             });
             if (Indoor)
             {
-                Fill(_scene.Backdrop, X, X + 3, lower, lower + rise + Ceiling - 1, _ctx.TileBrick);
-                Fill(_scene.Walls, X, X + 3, lower + rise + Ceiling, lower + rise + Ceiling + 1, _ctx.TileConcrete);
+                Fill(_scene.Backdrop, X, X + 3, lower, lower + rise + Ceiling - 1, _theme.Back);
+                Fill(_scene.Walls, X, X + 3, lower + rise + Ceiling, lower + rise + Ceiling + 1, _theme.Ceiling);
             }
 
             Put("NeonSign", P(-1.5f, Indoor ? Ceiling - 2.5f : 5f));
@@ -410,7 +461,7 @@ namespace RootAccess.EditorTools
             Estimate("Seif de date", 35f + difficulty * 5f);
             const int width = 12;
             Block(0, width);
-            Wall(0, 1, 0, 1, _ctx.TileConcrete);
+            Wall(0, 1, 0, 1);
             GameObject terminal = HackTerminal("Terminal_Data", 6f, terminalId, terminalName);
             EditorAssetUtil.SetFields(terminal.GetComponent<Terminal>(), so => so.Require("difficulty").intValue = difficulty);
             Put("NeonSign", P(3f, Indoor ? Ceiling - 2.5f : 5f));
@@ -449,11 +500,12 @@ namespace RootAccess.EditorTools
         public WaterBody2D WaterPool(int width, int depth, bool dive = false, int crates = 2)
         {
             Estimate(dive ? "Bazin cu scufundare" : "Bazin", dive ? 35f : 22f);
-            Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - depth - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+            Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - depth - 1, _theme.Ground);
             if (Indoor) Shell(0, width, Floor);
+            if (Indoor) Fill(_scene.Backdrop, X, X + width - 1, Floor - depth, Floor - 1, _theme.Back);
             WaterBody2D water = Water(X + width * 0.5f, Floor - depth, width, depth - 0.5f);
             for (int i = 0; i < crates; i++) Put("Crate", P(2f + i * (width - 4f) / Mathf.Max(1, crates - 1), 0.5f));
-            if (dive) Wall(width / 2 - 1, width / 2 + 1, -2, Indoor ? Ceiling : 8, _ctx.TileConcrete);
+            if (dive) Wall(width / 2 - 1, width / 2 + 1, -2, Indoor ? Ceiling : 8);
             Advance(width);
             Block(0, 2);
             Advance(2);
@@ -472,9 +524,9 @@ namespace RootAccess.EditorTools
             Block(0, 6);
             if (spawnId != null) Spawn(spawnId, 1f);
             Advance(6);
-            Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - shaftDepth - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+            Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - shaftDepth - 1, _theme.Ground);
             if (Indoor) Shell(0, width, Floor + ledge);
-            if (Indoor) Fill(_scene.Backdrop, X, X + width - 1, Floor - shaftDepth, Floor + ledge - 1, _ctx.TileBrick);
+            if (Indoor) Fill(_scene.Backdrop, X, X + width - 1, Floor - shaftDepth, Floor + ledge - 1, _theme.Back);
             Platform(1, 3, -3);
             WaterBody2D water = Water(X + width * 0.5f, Floor - shaftDepth, width, 1f);
             var control = PrefabFactory.Go("FloodControl", Hazards, Layers.Default, P(width * 0.5f, 0f)).AddComponent<FloodControl>();
@@ -516,7 +568,7 @@ namespace RootAccess.EditorTools
                 if (Indoor) ShellTo(0, 5, BaseY, ceiling);
                 Advance(5);
                 Floor = floor + heights[i % heights.Length];
-                Fill(_scene.Ground, X, X + 5, BaseY, Floor - 1, _ctx.TileMetal, _ctx.TileMetalTop);
+                Fill(_scene.Ground, X, X + 5, BaseY, Floor - 1, _theme.Ground);
                 _maxTop = Mathf.Max(_maxTop, Floor);
                 if (Indoor) ShellTo(0, 6, Floor, ceiling);
                 GameObject arrival = Put("NetworkNode", P(1.2f), Props, $"NetworkNode_Chain_{i + 1}a");
@@ -538,8 +590,8 @@ namespace RootAccess.EditorTools
         /// <summary>Interior shell between explicit rows (used where neighbouring floors differ, e.g. the node towers).</summary>
         private void ShellTo(int from, int to, int bottom, int ceiling)
         {
-            Fill(_scene.Backdrop, X + from, X + to - 1, bottom, ceiling - 1, _ctx.TileBrick);
-            Fill(_scene.Walls, X + from, X + to - 1, ceiling, ceiling + 1, _ctx.TileConcrete);
+            Fill(_scene.Backdrop, X + from, X + to - 1, bottom, ceiling - 1, _theme.Back);
+            Fill(_scene.Walls, X + from, X + to - 1, ceiling, ceiling + 1, _theme.Ceiling);
             _shells.Add((X + from, X + to - 1, ceiling + 2));
             _maxTop = Mathf.Max(_maxTop, ceiling - Ceiling);
         }
@@ -569,6 +621,7 @@ namespace RootAccess.EditorTools
         {
             Estimate("Checkpoint", 4f);
             Block(0, 5);
+            if (Indoor) WallPiece(1f, 3);
             GameObject checkpoint = Put("Checkpoint", P(2.5f), Props, $"Checkpoint_{checkpointId}");
             EditorAssetUtil.SetFields(checkpoint.GetComponent<Gameplay.Checkpoint>(), so => so.Require("checkpointId").stringValue = checkpointId);
             if (spawnId != null) Spawn(spawnId, 1f);
@@ -581,6 +634,7 @@ namespace RootAccess.EditorTools
         {
             Estimate("Ieșire", 5f);
             Block(0, 8);
+            Scatter(0.5f, 3.5f, 9);
             GameObject exit = Put("LevelExit", P(5f), Props, "LevelExit");
             EditorAssetUtil.SetFields(exit.GetComponent<LevelExit>(), so =>
             {
@@ -602,9 +656,9 @@ namespace RootAccess.EditorTools
         public Rect Finish()
         {
             int top = Indoor ? _maxTop + Ceiling + 2 : _maxTop + OutdoorHeadroom;
-            Fill(_scene.Walls, X, X + 2, BaseY, top + 3, _ctx.TileBrick);
+            Fill(_scene.Walls, X, X + 2, BaseY, top + 3, _theme.Wall);
             foreach ((int x0, int x1, int above) in _shells)
-                if (above <= top + 2) Fill(_scene.Walls, x0, x1, above, top + 2, _ctx.TileConcrete);
+                if (above <= top + 2) Fill(_scene.Walls, x0, x1, above, top + 2, _theme.Wall);
             // Outdoors the pits drop out of the bottom of the screen; indoors only the floor slab shows below the player.
             float bottom = Indoor ? -2f : -3f;
             var rect = new Rect(_startX - 1f, bottom, X - _startX + 2f, top - bottom);

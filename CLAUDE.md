@@ -31,7 +31,8 @@ D:\ProiectSPV\                 git repo (branch main, Git LFS for png/wav/…)
 ## Hard rules
 
 - **Never hand-write Unity YAML** (`.unity .prefab .asset .controller .anim .mat .mixer .meta`). Change the generator
-  instead (`Scripts/Editor/SceneBuilder.cs`, `Editor/Generation/*Factory.cs`, `PlaceholderArtGenerator.cs`) and rerun it.
+  instead (`Scripts/Editor/SceneBuilder.cs`, `Editor/Generation/*Factory.cs`, `PlaceholderArtGenerator.cs`,
+  `Editor/Generation/Art/*.cs` for the painted pixel art) and rerun it.
   Hand-written C#, `.asmdef`, `.inputactions`, `manifest.json`, `.shader/.hlsl`, docs and scripts are fine.
 - **Batchmode only, project closed in the Editor.** Scripts refuse to run when `RootAccess/Temp/UnityLockfile` is locked.
   After every run read the log for `error CS`, `Exception`, `Compilation failed`, `[RootAccess][FAIL]`.
@@ -62,7 +63,8 @@ Editor entry points (`-executeMethod`):
 | Method | Purpose |
 |---|---|
 | `RootAccess.EditorTools.ProjectSetup.Run` | URP asset + renderers, player/editor settings, tags, layers, collision matrix |
-| `RootAccess.EditorTools.PlaceholderArtGenerator.GenerateAll` | procedural sprites, normal maps, skybox, audio |
+| `RootAccess.EditorTools.PlaceholderArtGenerator.GenerateAll` | painted sprites/tiles/props (`Generation/Art`), normal maps, skybox, audio |
+| `RootAccess.EditorTools.ArtPreview.Run` | contact sheets of characters, biome tiles, props -> `RootAccess/Logs/ArtPreview` (no asset changes) |
 | `RootAccess.EditorTools.SceneBuilder.BuildAll` | Shader Graphs (`ShaderGraphFactory`), materials, mixer, animators, prefabs, all scenes, Build Settings, `Logs/PlaytimeEstimate.md` |
 | `RootAccess.EditorTools.BuildScript.BuildWindows` | Windows x64 player (`-ra-development` for a dev build) |
 | `RootAccess.EditorTools.RubricValidator.RunBatch` | rubric evidence table -> `RootAccess/Logs/RubricReport.md` |
@@ -78,7 +80,8 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 `l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
 `l2_vault`, `l3_start`, `l3_drones`, `l3_nodes`, `l3_core`, `l4_start`, `l4_water`, `l4_sluice`, `l4_gate`, `l5_start`,
 `l5_security`, `l5_elevator`, `l5_drones`, `l5_nodes`, `showcase_start`, `room_01`..`room_14`. Cutscene scenes `Intro`
-(New Game → Intro → Hub) and `Finale` (Level 5 exit → Finale → Credits) are built by `Editor/Generation/CutsceneFactory.cs`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments.
+(New Game → Intro → Hub) and `Finale` (Level 5 exit → Finale → Credits) are built by `Editor/Generation/CutsceneFactory.cs`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments; each level has a `LevelTheme`
+(biome tiles, lamp, ambient, decor scattered by `LevelLayout.Scatter`).
 
 ## Unity 6000.3 gotchas learned the hard way
 

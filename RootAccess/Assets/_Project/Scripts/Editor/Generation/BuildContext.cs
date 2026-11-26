@@ -38,10 +38,22 @@ namespace RootAccess.EditorTools
         public RubricCatalog Rubric;
         public MixerBuilder.Result Mixer;
 
-        public RuntimeAnimatorController PlayerAnimator, GuardAnimator, DroneAnimator, CameraAnimator, DoorAnimator;
+        public RuntimeAnimatorController PlayerAnimator, GuardAnimator, HeavyAnimator, SniperAnimator, FixerAnimator, DroneAnimator, CameraAnimator, DoorAnimator;
         public RuntimeAnimatorController PulseAnimator, ElevatorAnimator;
 
-        public TileBase TileMetal, TileMetalTop, TileConcrete, TileBrick, TileGlass;
+        /// <summary>See-through window tile (hideout window, materials room of the showcase).</summary>
+        public TileBase TileGlass;
+
+        /// <summary>Biome tiles by name (see <see cref="TileArt"/> / <see cref="LevelTheme"/>).</summary>
+        public readonly Dictionary<string, TileBase> ThemeTiles = new();
+
+        /// <summary>A biome tile by name; throws when the name was never painted (a typo in a <see cref="LevelTheme"/> picker).</summary>
+        public TileBase ThemeTile(string name)
+        {
+            if (ThemeTiles.TryGetValue(name, out TileBase tile)) return tile;
+            throw new KeyNotFoundException($"Theme tile '{name}' was not built (TileArt/AssetFactory.BuildTiles).");
+        }
+
         public VolumeProfile MenuProfile, HubProfile, Level01Profile, Level02Profile, Level03Profile, Level04Profile, Level05Profile, ShowcaseProfile;
 
         /// <summary>Levels 1–5 in order: what the hideout's fast-travel console lists.</summary>

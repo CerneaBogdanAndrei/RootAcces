@@ -210,6 +210,9 @@ raza EMP). Hacking-ul nu depinde de Systems, așa că efectele de spargere sunt 
 
 ```
 PlaceholderArtGenerator.GenerateAll   sprite-uri + normal maps + skybox + audio procedural (PixelCanvas, ProceduralAudio)
+  └─ Generation/Art    arta pictată din cod: Paint (rampe de culoare cu hue shift, primitive umbrite care scriu și
+                       normala), CharacterArt (schelet cu IK pe 2 oase → cadre de animație), TileArt (tile-uri pe 7
+                       biomuri), PropArt (decor + lămpi), GameplayArt (interactive, inamici, copac, skyline, key art)
 SceneBuilder.BuildAll
   ├─ AssetFactory      materiale, tile-uri, profile de volum, item-e/quest-uri/skill-uri/dialoguri (SeedContent)
   ├─ MixerBuilder      AudioMixer prin reflection: grupuri, snapshot-uri, parametri expuși
@@ -224,6 +227,11 @@ SceneBuilder.BuildAll
                        Finish() dimensionează confiner-ul și grila A*)
 BuildScript.BuildWindows
 ```
+
+Fiecare nivel are o `LevelTheme` (biom): ce tile pune pe suprafață, în masă, pe pereți, pe tavan și pe peretele din
+spate (selectoare după coordonate, ca ferestrele să stea în coloane), lumina ambientală, lampa, suprafața pașilor și
+recuzita de decor pe care `LevelLayout.Scatter` o așază între segmente. `ArtPreview.Run` scrie planșe de previzualizare în
+`Logs/ArtPreview` fără să atingă asset-urile, pentru iterații rapide pe desen.
 
 Generatoarele pot fi rulate de oricâte ori: scenele și prefab-urile se recreează din cod. Asset-urile importate de mână
 stau în `Assets/ThirdParty` și sunt legate de generatoare prin `GeneratedArt`/`EditorPaths`.

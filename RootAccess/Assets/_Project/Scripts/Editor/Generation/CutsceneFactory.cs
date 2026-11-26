@@ -121,7 +121,10 @@ namespace RootAccess.EditorTools
             Transform grid = SceneBuilder.Group("Grid", set);
             grid.gameObject.AddComponent<Grid>();
             Tilemap roof = SceneBuilder.Tilemap(grid, "Roof", Layers.Default, ctx.Metal, SortingLayers.Environment, 0, false, SurfaceType.Metal, Color.white);
-            SceneBuilder.Fill(roof, -14, 14, -6, -1, ctx.TileMetal, ctx.TileMetalTop);
+            LevelTheme rooftop = LevelTheme.For(Biome.Rooftop, ctx);
+            SceneBuilder.FillTheme(roof, -14, 14, -6, -1, rooftop.Ground, rooftop);
+            SceneBuilder.Place(ctx, "Decor_WaterTower", new Vector3(-6f, 0f), set);
+            SceneBuilder.Place(ctx, "Decor_Antennas", new Vector3(3.5f, 0f), set);
             SceneBuilder.Place(ctx, "NeonSign", new Vector3(-8f, 5f), set);
             SceneBuilder.Place(ctx, "NeonSign", new Vector3(9f, 6f), set);
             SceneBuilder.Place(ctx, "StreetLamp", new Vector3(-11f, 0f), set);

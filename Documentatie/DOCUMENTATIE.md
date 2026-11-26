@@ -326,8 +326,10 @@ mesaje numite Netcode, cu payload binar `OperatorWire`) și aplică comenzile î
   muzică adaptivă (stealth ↔ alertă), pași diferiți pe fiecare suprafață și sunete de interfață. Volumele se reglează
   din setări.
 
-Grafica și sunetele sunt deocamdată placeholdere generate procedural de cod (`PlaceholderArtGenerator`, `ProceduralAudio`).
-Pachetele reale recomandate și licențele lor sunt în [ASSETS.md](../ASSETS.md).
+Grafica e pixel art pictat din cod (`Editor/Generation/Art`): personajele sunt desenate dintr-un schelet cu IK, fiecare
+nivel are biomul lui (tile-uri, decor, lămpi, lumină ambientală), iar fiecare sprite are hartă de normale pentru luminile
+2D. Sunetele sunt sintetizate (`ProceduralAudio`). Pachetele externe opționale și licențele lor sunt în
+[ASSETS.md](../ASSETS.md).
 
 ## 9. Arhitectura tehnică
 
@@ -338,7 +340,7 @@ Pachetele reale recomandate și licențele lor sunt în [ASSETS.md](../ASSETS.md
   `OperatorModel`, modelele de hacking), cu vederi MonoBehaviour, așa că se pot testa unitar și se pot sincroniza în rețea.
 - **Comunicare prin `EventBus<T>`** (evenimente `readonly struct`) și `ServiceLocator`; codul de gameplay nu folosește `Find*`.
 - **Conținut generat din cod**: toate scenele, prefab-urile, materialele, Shader Graph-urile, animatorii, mixerul,
-  timeline-urile și arta placeholder sunt create de scripturi de Editor (`SceneBuilder.BuildAll`), rulate în batchmode.
+  timeline-urile și grafica pixel art sunt create de scripturi de Editor (`SceneBuilder.BuildAll`), rulate în batchmode.
   Proiectul se reconstruiește identic pe orice PC, iar nimic nu e editat de mână în YAML-ul Unity.
 - **Nivelurile** sunt compuse din segmentele `LevelLayout`. `Finish()` dimensionează limitele camerei și grila A* după ce
   s-a construit nivelul. Fiecare segment declară și o estimare de timp (§11).
@@ -435,8 +437,8 @@ Pentru Google Drive se urcă cele două arhive din `dist/`:
 
 ## 14. Limitări și pași rămași
 
-- **Grafica și sunetele sunt placeholdere procedurale.** Arhitectura e pregătită pentru pachete reale: se importă în
-  `Assets/ThirdParty` și se leagă în generatoare (vezi ASSETS.md).
+- **Grafica e generată din cod.** Pachetele de artă externe rămân opționale: se importă în `Assets/ThirdParty` și se
+  leagă în generatoare (vezi ASSETS.md).
 - **Durata de joc e o estimare** (~52 de minute). O trecere completă cronometrată o confirmă; timpii se văd în joc.
 - **Co-op-ul LAN** e testat automat pe același PC (127.0.0.1). Pe două PC-uri, firewall-ul Windows trebuie să permită
   `RootAccess.exe` (portul 7777) la prima pornire a gazdei. Nu există join prin internet (Relay).

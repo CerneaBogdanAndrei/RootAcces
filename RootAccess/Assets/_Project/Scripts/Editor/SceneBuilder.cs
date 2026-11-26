@@ -289,8 +289,38 @@ namespace RootAccess.EditorTools
             tilemap.SetTiles(positions, tiles);
         }
 
-        internal static void Ground(BuildContext ctx, GameplayScene scene, int x0, int x1, int topY, int depth = 4) =>
-            Fill(scene.Ground, x0, x1, topY - depth, topY - 1, ctx.TileMetal, ctx.TileMetalTop);
+        /// <summary>
+        /// Fills a rectangle (inclusive) with tiles a <see cref="LevelTheme"/> picker chooses per cell; rows are counted from
+        /// the top (<c>fromTop</c>) and bottom (<c>fromBottom</c>) of the rectangle, so surfaces and window rows line up.
+        /// </summary>
+        internal static void FillTheme(Tilemap tilemap, int x0, int x1, int y0, int y1, LevelTheme.Picker picker, LevelTheme theme)
+        {
+            int count = (x1 - x0 + 1) * (y1 - y0 + 1);
+            if (count <= 0) return;
+            var positions = new Vector3Int[count];
+            var tiles = new TileBase[count];
+            int i = 0;
+            for (int x = x0; x <= x1; x++)
+            for (int y = y0; y <= y1; y++)
+            {
+                positions[i] = new Vector3Int(x, y, 0);
+                tiles[i] = theme.Tile(picker(x, y, y1 - y, y - y0));
+                i++;
+            }
+
+            tilemap.SetTiles(positions, tiles);
+        }
+
+        internal static void Ground(LevelTheme theme, GameplayScene scene, int x0, int x1, int topY, int depth = 4) =>
+            FillTheme(scene.Ground, x0, x1, topY - depth, topY - 1, theme.Ground, theme);
+
+        /// <summary>Applies a theme's backdrop tint and footstep surfaces to a gameplay scene's tilemaps.</summary>
+        internal static void Dress(GameplayScene scene, LevelTheme theme)
+        {
+            scene.Backdrop.color = theme.BackdropTint;
+            scene.Ground.GetComponent<SurfaceTag>().SetSurface(theme.GroundSurface);
+            scene.Walls.GetComponent<SurfaceTag>().SetSurface(theme.WallSurface);
+        }
 
         internal static void Spawn(BuildContext ctx, Transform parent, string id, Vector3 position)
         {
@@ -305,7 +335,7 @@ namespace RootAccess.EditorTools
             {
                 ("skyline_far", new Vector2(0.85f, 0.9f), baseY + 1f, SortingLayers.Background, 2f, new Color(0.8f, 0.75f, 1f)),
                 ("skyline_mid", new Vector2(0.6f, 0.7f), baseY, SortingLayers.Parallax, 2f, Color.white),
-                ("skyline_near", new Vector2(0.35f, 0.45f), baseY - 1f, SortingLayers.Parallax, 2f, new Color(0.8f, 0.8f, 0.9f))
+                ("skyline_near", new Vector2(0.35f, 0.45f), baseY - 1f, SortingLayers.Parallax, 2f, new Color(0.62f, 0.6f, 0.75f))
             };
 
             int order = 0;
@@ -410,14 +440,16 @@ namespace RootAccess.EditorTools
         private static void BuildHub(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene hub = Gameplay(ctx, SeedContent.Ids.Hub, ctx.HubProfile, new Color(0.55f, 0.45f, 0.85f), 0.35f,
+            LevelTheme theme = LevelTheme.For(Biome.Hideout, ctx);
+            GameplayScene hub = Gameplay(ctx, SeedContent.Ids.Hub, ctx.HubProfile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-16f, -2f, 32f, 13f), new Vector3(0f, 0f, 0f), "hub_center", false);
+            Dress(hub, theme);
 
-            Ground(ctx, hub, -16, 15, 0, 2);
-            Fill(hub.Walls, -16, -15, 0, 10, ctx.TileBrick);
-            Fill(hub.Walls, 14, 15, 0, 10, ctx.TileBrick);
-            Fill(hub.Walls, -16, 15, 10, 11, ctx.TileBrick);
-            Fill(hub.Backdrop, -14, 13, 0, 9, ctx.TileBrick);
+            Ground(theme, hub, -16, 15, 0, 2);
+            FillTheme(hub.Walls, -16, -15, 0, 9, theme.Wall, theme);
+            FillTheme(hub.Walls, 14, 15, 0, 9, theme.Wall, theme);
+            FillTheme(hub.Walls, -16, 15, 10, 11, theme.Ceiling, theme);
+            FillTheme(hub.Backdrop, -14, 13, 0, 9, theme.Back, theme);
             Fill(hub.Backdrop, -6, -2, 4, 7, ctx.TileGlass);
 
             Transform props = Group("Props", hub.Root);
@@ -434,7 +466,19 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetField(showcase.GetComponent<FastTravelTerminal>(), "destination", BuildContext.Fresh(ctx.RubricLevel));
             Place(ctx, "Crate", new Vector3(-13f, 0.5f), props);
             Place(ctx, "Crate", new Vector3(-12.6f, 1.5f), props);
-            Place(ctx, "RooftopAC", new Vector3(-2f, 0f), props);
+            Place(ctx, "Decor_Rig", new Vector3(-2f, 0f), props);
+            Place(ctx, "Decor_Sofa", new Vector3(5.6f, 0f), props);
+            Place(ctx, "Decor_Workbench", new Vector3(9f, 0f), props);
+            Place(ctx, "Decor_Plant", new Vector3(-11.4f, 0f), props);
+            Place(ctx, "Decor_Graffiti", new Vector3(-9f, 5.6f), props);
+            GameObject fixer = Place(ctx, "Npc_Fixer", new Vector3(4.2f, 0f), props, "Fixer");
+            fixer.transform.localScale = new Vector3(-1f, 1f, 1f);
+            foreach (float x in new[] { -8f, 0f, 8f })
+            {
+                GameObject lamp = Place(ctx, "Lamp_Office", new Vector3(x, 10f), props);
+                lamp.GetComponentInChildren<Light2D>().color = theme.Lamp;
+            }
+
             GameObject sign = Place(ctx, "NeonSign", new Vector3(4.5f, 6.5f), props);
             sign.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
             Label(props, SeedContent.Labels.HubWelcome, new Vector3(0f, 8.5f), 6f, new Color(0.3f, 1f, 1f));
@@ -462,9 +506,10 @@ namespace RootAccess.EditorTools
         private static void BuildLevel01(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level01, ctx.Level01Profile, new Color(0.55f, 0.62f, 0.95f), 0.4f,
+            LevelTheme theme = LevelTheme.For(Biome.Rooftop, ctx);
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level01, ctx.Level01Profile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-8f, -6f, 40f, 20f), new Vector3(0f, 0f), "l1_start", true);
-            var layout = new LevelLayout(ctx, level, "l1", -6);
+            var layout = new LevelLayout(ctx, level, theme, "l1", -6);
 
             GameObject dialogue = PrefabFactory.Go("DialogueZone_Intro", layout.Props, Layers.Trigger, layout.P(9f, 1f));
             dialogue.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
@@ -530,9 +575,10 @@ namespace RootAccess.EditorTools
         private static void BuildLevel02(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level02, ctx.Level02Profile, new Color(0.5f, 0.55f, 0.8f), 0.35f,
+            LevelTheme theme = LevelTheme.For(Biome.Office, ctx);
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level02, ctx.Level02Profile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-8f, -4f, 40f, 16f), new Vector3(0f, 0f), "l2_start", false);
-            var layout = new LevelLayout(ctx, level, "l2", -6, ceiling: 9);
+            var layout = new LevelLayout(ctx, level, theme, "l2", -6, ceiling: 9);
 
             GameObject dialogue = PrefabFactory.Go("DialogueZone_Office", layout.Props, Layers.Trigger, layout.P(8f, 1f));
             dialogue.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
@@ -585,9 +631,10 @@ namespace RootAccess.EditorTools
         private static void BuildLevel03(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level03, ctx.Level03Profile, new Color(0.35f, 0.55f, 0.9f), 0.32f,
+            LevelTheme theme = LevelTheme.For(Biome.Server, ctx);
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level03, ctx.Level03Profile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-8f, -2f, 40f, 16f), new Vector3(0f, 0f), "l3_start", false);
-            var layout = new LevelLayout(ctx, level, "l3", -6, ceiling: 11);
+            var layout = new LevelLayout(ctx, level, theme, "l3", -6, ceiling: 11);
             IntroRoom(layout, ctx.Level03Intro, SeedContent.Labels.L3Start, "ServerRack");
 
             layout.Dress("ServerRack", 2, 22, 4);
@@ -617,9 +664,10 @@ namespace RootAccess.EditorTools
         private static void BuildLevel04(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level04, ctx.Level04Profile, new Color(0.4f, 0.7f, 0.55f), 0.32f,
+            LevelTheme theme = LevelTheme.For(Biome.Sewer, ctx);
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level04, ctx.Level04Profile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-8f, -2f, 40f, 16f), new Vector3(0f, 0f), "l4_start", false);
-            var layout = new LevelLayout(ctx, level, "l4", -6, ceiling: 10);
+            var layout = new LevelLayout(ctx, level, theme, "l4", -6, ceiling: 10);
             IntroRoom(layout, ctx.Level04Intro, SeedContent.Labels.L4Start, "SewerPipe");
 
             layout.Spawn("l4_water", -3f);
@@ -650,9 +698,10 @@ namespace RootAccess.EditorTools
         private static void BuildLevel05(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level05, ctx.Level05Profile, new Color(0.75f, 0.55f, 0.5f), 0.34f,
+            LevelTheme theme = LevelTheme.For(Biome.Hq, ctx);
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level05, ctx.Level05Profile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-8f, -2f, 40f, 16f), new Vector3(0f, 0f), "l5_start", false);
-            var layout = new LevelLayout(ctx, level, "l5", -6, ceiling: 10);
+            var layout = new LevelLayout(ctx, level, theme, "l5", -6, ceiling: 10);
             IntroRoom(layout, ctx.Level05Intro, SeedContent.Labels.L5Start, null);
 
             layout.CameraGate("l5_gate_camera", "l5_gate_door", doorDifficulty: 3);
@@ -709,8 +758,10 @@ namespace RootAccess.EditorTools
         private static void BuildRubricShowcase(BuildContext ctx)
         {
             Scene scene = NewScene();
-            GameplayScene showcase = Gameplay(ctx, "rubric", ctx.ShowcaseProfile, new Color(0.7f, 0.7f, 0.9f), 0.55f,
+            LevelTheme theme = LevelTheme.For(Biome.Lab, ctx);
+            GameplayScene showcase = Gameplay(ctx, "rubric", ctx.ShowcaseProfile, theme.Ambient, theme.AmbientIntensity,
                 new Rect(-2f, -3f, RoomWidth + 4f, 15f), new Vector3(5f, 0f), "showcase_start", false);
+            Dress(showcase, theme);
             string[] titles =
             {
                 Strings.Rubric.Movement, Strings.Rubric.Materials, Strings.Rubric.Environment, Strings.Rubric.Water, Strings.Rubric.Lighting,
@@ -734,18 +785,18 @@ namespace RootAccess.EditorTools
                 bool waterRoom = i == 3;
                 if (waterRoom)
                 {
-                    Ground(ctx, showcase, x0, x0 + 3, 0, 6);
-                    Ground(ctx, showcase, x0 + 16, x0 + RoomWidth, 0, 6);
-                    Fill(showcase.Ground, x0, x0 + RoomWidth, -8, -6, ctx.TileMetal);
+                    Ground(theme, showcase, x0, x0 + 3, 0, 6);
+                    Ground(theme, showcase, x0 + 16, x0 + RoomWidth, 0, 6);
+                    FillTheme(showcase.Ground, x0, x0 + RoomWidth, -8, -6, theme.Ground, theme);
                 }
                 else
                 {
-                    Ground(ctx, showcase, x0, x0 + RoomWidth, 0);
+                    Ground(theme, showcase, x0, x0 + RoomWidth, 0);
                 }
 
-                Fill(showcase.Walls, x0 - 1, x0 - 1, 0, 11, ctx.TileBrick);
-                Fill(showcase.Walls, x0 + RoomWidth + 1, x0 + RoomWidth + 1, 0, 11, ctx.TileBrick);
-                Fill(showcase.Backdrop, x0, x0 + RoomWidth, 0, 11, ctx.TileBrick);
+                FillTheme(showcase.Walls, x0 - 1, x0 - 1, 0, 11, theme.Wall, theme);
+                FillTheme(showcase.Walls, x0 + RoomWidth + 1, x0 + RoomWidth + 1, 0, 11, theme.Wall, theme);
+                FillTheme(showcase.Backdrop, x0, x0 + RoomWidth, 0, 11, theme.Back, theme);
                 Label(room, $"{titles[i]}", new Vector3(x0 + 10.5f, 6.6f), 6f, new Color(0.3f, 1f, 1f), 18f);
                 Label(room, summaries[i], new Vector3(x0 + 10.5f, 5.75f), 3f, new Color(0.9f, 0.9f, 1f), 17f);
                 Label(room, SeedContent.Labels.ShowcaseHint, new Vector3(x0 + 10.5f, 4.95f), 2.4f, new Color(0.6f, 0.65f, 0.8f), 17f);
@@ -758,7 +809,7 @@ namespace RootAccess.EditorTools
                 PolygonCollider2D bounds = Bounds(room, "RoomBounds", new Rect(x0 - 2f, -3f - (waterRoom ? 6f : 0f), RoomWidth + 4f, 15f + (waterRoom ? 6f : 0f)));
                 EditorAssetUtil.SetFields(zone.AddComponent<CameraZone>(), so => so.Require("confinerShape").objectReferenceValue = bounds);
 
-                PopulateRoom(ctx, i, room, x0, showcase);
+                PopulateRoom(ctx, theme, i, room, x0, showcase);
             }
 
             for (int i = 0; i < RoomCount; i++)
@@ -777,19 +828,20 @@ namespace RootAccess.EditorTools
             Save(scene, SceneNames.RubricShowcase);
         }
 
-        private static void PopulateRoom(BuildContext ctx, int index, Transform room, int x0, GameplayScene scene)
+        private static void PopulateRoom(BuildContext ctx, LevelTheme theme, int index, Transform room, int x0, GameplayScene scene)
         {
             Vector3 P(float x, float y) => new(x0 + x, y, 0f);
+            TileBase platform = theme.Tile(theme.Platform);
             switch (index)
             {
                 case 0:
-                    Fill(scene.Ground, x0 + 7, x0 + 9, 3, 3, ctx.TileMetalTop);
-                    Fill(scene.Walls, x0 + 12, x0 + 12, 2, 8, ctx.TileConcrete);
-                    Fill(scene.Walls, x0 + 15, x0 + 15, 0, 8, ctx.TileConcrete);
+                    Fill(scene.Ground, x0 + 7, x0 + 9, 3, 3, platform);
+                    FillTheme(scene.Walls, x0 + 12, x0 + 12, 2, 8, theme.Wall, theme);
+                    FillTheme(scene.Walls, x0 + 15, x0 + 15, 0, 8, theme.Wall, theme);
                     break;
                 case 1:
-                    Fill(scene.Ground, x0 + 5, x0 + 6, 2, 3, ctx.TileMetal);
-                    Fill(scene.Walls, x0 + 8, x0 + 9, 2, 3, ctx.TileConcrete);
+                    FillTheme(scene.Ground, x0 + 5, x0 + 6, 2, 3, theme.Ground, theme);
+                    FillTheme(scene.Walls, x0 + 8, x0 + 9, 2, 3, theme.Wall, theme);
                     Fill(scene.Backdrop, x0 + 11, x0 + 12, 2, 3, ctx.TileGlass);
                     Place(ctx, "NeonSign", P(15f, 3f), room);
                     GameObject holo = Place(ctx, "NetworkNode", P(11.5f, 0f), room);
@@ -853,7 +905,7 @@ namespace RootAccess.EditorTools
                     rain.transform.localScale = new Vector3(0.5f, 1f, 1f);
                     GameObject nodeA = Place(ctx, "NetworkNode", P(5f, 0f), room);
                     GameObject nodeB = Place(ctx, "NetworkNode", P(15f, 4f), room);
-                    Fill(scene.Ground, x0 + 13, x0 + 17, 3, 3, ctx.TileMetalTop);
+                    Fill(scene.Ground, x0 + 13, x0 + 17, 3, 3, platform);
                     LinkNodes(nodeA, nodeB, false);
                     break;
                 case 8:
@@ -882,8 +934,8 @@ namespace RootAccess.EditorTools
                     Place(ctx, "Checkpoint", P(17f, 0f), room);
                     break;
                 case 11:
-                    Fill(scene.Walls, x0 + 8, x0 + 8, 1, 5, ctx.TileConcrete);
-                    Fill(scene.Walls, x0 + 12, x0 + 12, 4, 9, ctx.TileConcrete);
+                    FillTheme(scene.Walls, x0 + 8, x0 + 8, 1, 5, theme.Wall, theme);
+                    FillTheme(scene.Walls, x0 + 12, x0 + 12, 4, 9, theme.Wall, theme);
                     Place(ctx, "Drone", P(15f, 6f), room);
                     Place(ctx, "Turret", P(17f, 0f), room);
                     break;

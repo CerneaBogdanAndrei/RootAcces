@@ -27,7 +27,7 @@ namespace RootAccess.Core
             public const string GameOverHint = "Ai fost prins. Reia de la ultimul checkpoint.";
             public const string LevelComplete = "MISIUNE ÎNDEPLINITĂ";
             public const string Loading = "Se încarcă...";
-            public const string Version = "v0.1 · vertical slice";
+            public const string Version = "versiunea";
         }
 
         public static class Settings

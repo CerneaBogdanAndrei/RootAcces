@@ -95,5 +95,6 @@ Rulează `./scripts/package-for-drive.ps1 -Build` și urcă ambele fișiere din 
 
 ## Autor
 
-Cernea Bogdan-Andrei. Tot codul este scris de noi. Grafica și sunetele sunt placeholdere generate procedural
-(`PlaceholderArtGenerator`); pachetele externe se importă în `Assets/ThirdParty` (vezi [ASSETS.md](ASSETS.md)).
+Cernea Bogdan-Andrei. Tot codul este scris de noi. Grafica (pixel art cu hărți de normale) și sunetele sunt generate
+din cod (`Editor/Generation/Art`, `ProceduralAudio`); pachetele externe opționale se importă în `Assets/ThirdParty`
+(vezi [ASSETS.md](ASSETS.md)).

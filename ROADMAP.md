@@ -168,6 +168,17 @@ Drive și testul pe un PC curat rămân la dezvoltator.
 - Smoke pe un PC curat (dezarhivare, rulare, 30 de minute de joc).
 - Urcarea pe Google Drive a celor două arhive și a unui README de prezentare; tag `v1.0`.
 
+## P9: grafică nouă (v1.1) ✅ făcut (PR „P9”)
+
+- Personaje desenate dintr-un schelet (șold, trunchi, picioare cu IK pe 2 oase, brațe, cap): hacker cu glugă, eșarfă și
+  rucsac, gardian, gardian greu cu scut, lunetist, fixer-ul din ascunzătoare. Alergare pe 8 cadre, idle pe 4, înot,
+  hacking, cădere și moarte pe mai multe cadre; fiecare cadru are hartă de normale reală pentru luminile 2D.
+- 7 biomuri cu tile-uri proprii (acoperișuri cu fațade și ferestre, birouri, ferma de servere, canalizare, sediul
+  corporației, ascunzătoarea, laboratorul cu baremul), lămpi și ambianță pe biom.
+- 38 de piese de decor și 5 tipuri de lămpi (rezervor de apă, panou publicitar, birouri, automat de sucuri, răcire pentru servere, valve,
+  statuie, recepție etc.) așezate automat între segmente; obiectele de gameplay redesenate la aceleași dimensiuni.
+- Meniu principal cu ilustrație pixel-art (hackerul pe acoperiș, dronă, lună, ploaie); versiunea 1.1.
+
 ## Datorie tehnică urmărită
 
 - Regenerarea conținutului rescrie fileID-urile sub-asset-urilor (controllere, profile de volum), ceea ce produce diff-uri
