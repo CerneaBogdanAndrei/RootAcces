@@ -39,6 +39,9 @@ namespace RootAccess.EditorTools
 
             int rows = Mathf.CeilToInt(frames.Count / (float)columns);
             const int pad = 2;
+            // Keep the sheet inside the texture size limit as the catalogue grows: drop the zoom instead of failing.
+            const int maxSide = 8192;
+            while (scale > 1 && Mathf.Max((cellW + pad) * columns, (cellH + pad) * rows) * scale > maxSide) scale--;
             var sheet = new PixelCanvas((cellW + pad) * columns * scale, (cellH + pad) * rows * scale).Fill(Backdrop);
             int index = 0;
             foreach (PixelCanvas frame in frames.Values)

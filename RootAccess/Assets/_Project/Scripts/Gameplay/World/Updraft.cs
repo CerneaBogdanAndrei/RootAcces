@@ -10,6 +10,9 @@ namespace RootAccess.Gameplay
     /// Fan set in the floor that blows a column of air upwards (Level 6). Dynamic bodies inside the trigger have this
     /// step's gravity cancelled and are pushed towards <see cref="LiftSpeed"/>, so the player floats up a wall too tall
     /// to jump. A fan can start switched off (hack its terminal to start it) and can blow in pulses.
+    /// <para>The column queries its overlaps itself every physics step instead of waiting for OnTriggerStay2D: a player
+    /// standing still on the grill goes to sleep, and a sleeping body gets no trigger callbacks, so a gust starting under
+    /// an idle player would otherwise never lift them.</para>
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public sealed class Updraft : MonoBehaviour, IHackable
@@ -26,6 +29,9 @@ namespace RootAccess.Gameplay
         [SerializeField] private Light2D glow;
 
         private readonly HashSet<Rigidbody2D> _pushedThisStep = new();
+        private readonly List<Collider2D> _overlaps = new();
+        private Collider2D _column;
+        private ContactFilter2D _solidOnly;
         private bool _wasBlowing;
 
         public string HackLabel => Strings.HackTargets.Fan;
@@ -36,7 +42,9 @@ namespace RootAccess.Gameplay
 
         private void Awake()
         {
-            GetComponent<Collider2D>().isTrigger = true;
+            _column = GetComponent<Collider2D>();
+            _column.isTrigger = true;
+            _solidOnly = new ContactFilter2D { useTriggers = false };
             _wasBlowing = !IsBlowing;
             RefreshVisuals();
         }
@@ -56,7 +64,13 @@ namespace RootAccess.Gameplay
             if (rotor != null && running) rotor.localScale = new Vector3(Mathf.Sin(Time.time * (IsBlowing ? 38f : 9f)), 1f, 1f);
         }
 
-        private void FixedUpdate() => _pushedThisStep.Clear();
+        private void FixedUpdate()
+        {
+            if (!IsBlowing) return;
+            _pushedThisStep.Clear();
+            _column.Overlap(_solidOnly, _overlaps);
+            foreach (Collider2D other in _overlaps) Push(other.attachedRigidbody);
+        }
 
         private void RefreshVisuals()
         {
@@ -72,13 +86,12 @@ namespace RootAccess.Gameplay
             if (glow != null) glow.intensity = blowing ? 1.1f : 0.25f;
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        private void Push(Rigidbody2D body)
         {
-            if (!IsBlowing) return;
-            Rigidbody2D body = other.attachedRigidbody;
             // One push per body per physics step, however many colliders it has inside the column.
             if (body == null || body.bodyType != RigidbodyType2D.Dynamic || !_pushedThisStep.Add(body)) return;
 
+            body.WakeUp();
             float dt = Time.fixedDeltaTime;
             Vector2 velocity = body.linearVelocity;
             velocity.y -= Physics2D.gravity.y * body.gravityScale * dt;

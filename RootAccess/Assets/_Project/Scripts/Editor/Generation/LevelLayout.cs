@@ -762,7 +762,7 @@ namespace RootAccess.EditorTools
             const int width = 24;
             Block(0, width);
             if (spawnId != null) Spawn(spawnId, 1f);
-            if (hint != null) Hint(hint, 9f, 7.6f, 16f);
+            if (hint != null) Hint(hint, 4.5f, 4.6f, 12f);
             int wallTop = Indoor ? Ceiling : OutdoorHeadroom;
             Wall(21, 22, 3, wallTop);
             GameObject door = Put("Door", P(21.5f));

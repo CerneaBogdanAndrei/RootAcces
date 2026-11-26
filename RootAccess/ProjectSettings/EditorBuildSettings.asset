@@ -30,6 +30,9 @@ EditorBuildSettings:
     path: Assets/_Project/Scenes/Level05_HQ/Level05_HQ.unity
     guid: 776affe05adbeda4ab694d459ff02747
   - enabled: 1
+    path: Assets/_Project/Scenes/Level06_Spire/Level06_Spire.unity
+    guid: 84053cacddee87348b4be857e516abf5
+  - enabled: 1
     path: Assets/_Project/Scenes/RubricShowcase/RubricShowcase.unity
     guid: fca872c4b30bb2345a75dcb836f12e6b
   - enabled: 1

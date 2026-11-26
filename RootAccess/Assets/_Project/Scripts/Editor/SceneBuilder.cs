@@ -769,13 +769,13 @@ namespace RootAccess.EditorTools
             layout.Flat(8);
             layout.Checkpoint("l6_cp2", "l6_uplink");
 
-            layout.UplinkStand(SeedContent.Ids.TerminalLevel06Uplink, SeedContent.Ids.BroadcastDone, 3, SeedContent.Labels.L6Uplink, null, ctx.LoreLogs[17]);
+            layout.UplinkStand(SeedContent.Ids.TerminalLevel06Uplink, SeedContent.Ids.BroadcastDone, 3, SeedContent.Labels.L6Uplink, "l6_transmitter", ctx.LoreLogs[17]);
             layout.Exit(SeedContent.Ids.ExitLevel06, SeedContent.Ids.Level06, null, SceneNames.Finale);
             Rect rect = layout.Finish();
             PlaytimeReport.Add(Strings.Levels.Level06, layout);
 
             // High above the city: the skyline sits far below the decks and a bank of clouds drifts between.
-            Parallax(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -15f);
+            Parallax(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -19f);
             Clouds(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -5.5f);
             for (float x = rect.xMin + 20f; x < rect.xMax; x += 45f)
                 Place(ctx.VfxPrefabs[VfxId.Rain], new Vector3(x, 32f), layout.Props, "Rain");
@@ -791,7 +791,7 @@ namespace RootAccess.EditorTools
             {
                 GameObject piece = PrefabFactory.Go("Segment", group.transform, Layers.Default, new Vector3(x, 0f, 0f));
                 piece.transform.localScale = Vector3.one * 1.5f;
-                PrefabFactory.Sprite(piece, "cloud_bank", ctx.SpriteUnlit, SortingLayers.Parallax, 5, new Color(0.85f, 0.88f, 1f, 0.9f));
+                PrefabFactory.Sprite(piece, "cloud_bank", ctx.SpriteUnlit, SortingLayers.Parallax, 5, new Color(0.62f, 0.66f, 0.9f, 0.85f));
             }
 
             EditorAssetUtil.SetFields(group.AddComponent<ParallaxLayer>(), so => so.Require("factor").vector2Value = new Vector2(0.25f, 0.55f));

@@ -8,7 +8,7 @@ Joc 2D side-scrolling de tip **stealth-platformer** într-un oraș cyberpunk, re
 | **Gen** | stealth-platformer 2D cu hacking, single-player + co-op asimetric pentru doi jucători |
 | **Motor** | Unity 6000.3.29f1 (6.3 LTS), Universal Render Pipeline 2D, Input System, Cinemachine 3, Timeline, 2D Animation, Netcode for GameObjects |
 | **Platformă** | Windows x64; tastatură + mouse sau gamepad |
-| **Durată** | Ascunzătoarea + 5 niveluri + cutscene-uri, aproximativ 54 de minute la prima trecere (estimare, vezi §11), plus căutarea celor 15 jurnale de date |
+| **Durată** | Ascunzătoarea + 6 niveluri + cutscene-uri, aproximativ 66 de minute la prima trecere (estimare, vezi §11), plus căutarea celor 18 jurnale de date |
 | **Limbă** | interfața, dialogurile și documentația sunt în română |
 | **Autor** | Cernea Bogdan-Andrei |
 | **Cod sursă** | https://github.com/CerneaBogdanAndrei/RootAcces (tag `v1.0`) |
@@ -50,7 +50,9 @@ Povestea urmează un singur fir, misiune după misiune (fiecare deblochează niv
 3. **Ferma de servere**: seiful trimitea totul către ferma de servere a corporației, unde se află cheia de acces la
    sediu. Treci prin hale păzite de drone și spargi nucleul de servere.
 4. **Sub oraș**: sediul e sigilat. Singura intrare nesupravegheată trece prin canalizare, pe sub ziduri, prin apă.
-5. **Root Access**: ultimul pas, mainframe-ul din vârful sediului. Cu el, orașul întreg răspunde la comanda ta.
+5. **Root Access**: mainframe-ul din vârful sediului. Cu el, orașul întreg răspunde la comanda ta.
+6. **Transmisia**: Varga a cerut un singur lucru, ca datele să ajungă înapoi la oameni. Urci pe antena sediului și
+   pornești emițătorul, care preia fiecare ecran din oraș.
 
 Jocul începe cu o scenă cinematică (intro) și se încheie cu un final cinematic urmat de credite.
 
@@ -99,7 +101,7 @@ Tastele pentru Săritură și Interacțiune se pot schimba din **Setări → Con
 Meniu principal ──Joc nou──► Intro (Timeline) ──► Ascunzătoarea (Hub)
        │                                              │  briefing, magazin, abilități, contracte, călătorie
        ├─Continuă──► ultima salvare                   ▼
-       ├─Co-op──► Local / Găzduiește LAN / Alătură-te   Nivelul 1 ──► Nivelul 2 ──► … ──► Nivelul 5 ──► Final (Timeline) ──► Credite
+       ├─Co-op──► Local / Găzduiește LAN / Alătură-te   Nivelul 1 ──► Nivelul 2 ──► … ──► Nivelul 6 ──► Final (Timeline) ──► Credite
        └─Prezentare barem (14 camere)                 (fiecare ieșire: „Misiune îndeplinită”, deblocare, salvare)
 ```
 
@@ -110,7 +112,7 @@ Bază între misiuni, cu un briefing la intrare și cinci console:
 - **Panoul de contracte** (darknet): misiuni secundare, „Curier de date” și „Fantoma de pe acoperiș”.
 - **Magazinul**: grenadă EMP (60 credite), cheie USB (90), exploit zero-day (250).
 - **Terminalul de abilități**: singurul loc unde se cheltuie XP.
-- **Consola de călătorie**: tab-ul *Călătorie* listează nivelurile 1–5. Cele blocate apar gri; ieșirea dintr-un nivel îl
+- **Consola de călătorie**: tab-ul *Călătorie* listează nivelurile 1–6. Cele blocate apar gri; ieșirea dintr-un nivel îl
   deblochează pe următorul.
 - **Teleportul spre Prezentarea baremului.**
 
@@ -128,10 +130,10 @@ sau **Călătorie** când e deschis de la o consolă din Hub.
 
 ### Jurnale de date
 
-Fiecare nivel ascunde **3 jurnale de date** (15 în total), în locuri la care ajungi doar dacă ieși de pe drumul
+Fiecare nivel ascunde **3 jurnale de date** (18 în total), în locuri la care ajungi doar dacă ieși de pe drumul
 principal: în vârful zidului din hornul de wall-jump, pe capătul pasarelei de deasupra gardianului, pe stâlpul din arena
 dronelor, lângă tureta de pe margine, între ultimele două lasere, pe fundul bazinelor, pe treapta din puțul stavilei sau
-la jumătatea unui tub de ventilație. Împreună spun povestea Halden Systems: Proiectul OCHI (camerele din tot orașul),
+la jumătatea unui tub de ventilație, deasupra nacelei, pe un grilaj suspendat. Împreună spun povestea Halden Systems: Proiectul OCHI (camerele din tot orașul),
 inginerul L. Varga care a scos primul fragment și contul root lăsat ca ușă din spate.
 
 - Un jurnal găsit dă **25 de credite și 20 XP** și apare în tab-ul **Jurnale**, unde se poate citi. Jurnalele lipsă
@@ -173,6 +175,10 @@ de la stânga la dreapta. Fiecare segment își face propria podea, așa că ord
 | Bazin / scufundare | înot, lăzi care plutesc, ziduri coborâte în apă sub care treci pe dedesubt |
 | Puțul cu stavilă | spargi stavila, apa umple puțul și te ridică până la marginea care altfel e prea sus |
 | Tub de ventilație | o trecere înaltă de un singur tile: o traversezi doar ghemuit (Ctrl), fără zgomot |
+| Traversare cu nacela | o nacelă merge singură dintr-o parte în alta a golului; urci pe ea și te duce cu ea |
+| Curent de aer | ventilatorul din podea te ridică peste un zid prea înalt (unul pornește doar după hack, altul suflă în rafale) |
+| Pasarelă cu grilaje | grilajele ruginite cad la jumătate de secundă după ce calci pe ele și revin după 3 s |
+| Transmisia | spargi emițătorul și rămâi pe platformă 24 s, cât vin dronele; la 100% se deschide ușa spre ieșire |
 | Checkpoint / ieșire | salvare și reapariție / finalul nivelului |
 
 ### Nivelul 1: Acoperișuri și parc (tutorial, exterior)
@@ -214,14 +220,31 @@ fundația sediului. Apa folosește shaderul de refracție (§8).
 | ![Apă](screenshots/30-nivel4-apa.png) | ![Stavila](screenshots/31-nivel4-stavila.png) |
 |---|---|
 
-### Nivelul 5: Sediul corporației (finalul)
+### Nivelul 5: Sediul corporației
 
 Toate mecanicile în secvență: poartă de dificultate 3, gardian greu, patru lasere, liftul executiv, lunetist, trei drone,
-turele, lanțul de noduri și mainframe-ul (spargere de dificultate 4). Ieșirea de pe acoperiș pornește finalul cinematic,
-apoi creditele.
+turele, lanțul de noduri și mainframe-ul (spargere de dificultate 4). Ieșirea de pe acoperiș deblochează antena.
 
 | ![Sediul](screenshots/32-nivel5-sediu.png) | ![Liftul executiv](screenshots/33-nivel5-lift.png) |
 |---|---|
+
+### Nivelul 6: Antena Halden (finalul, exterior, la înălțime)
+
+Antena din vârful sediului, deasupra norilor; orașul se vede departe, dedesubt. Punțile de oțel stau pe o structură cu
+zăbrele prin care se vede cerul. Pe drum:
+
+- o **nacelă** de spălat geamuri care traversează singură golul (jurnalul atârnă deasupra ei, pentru o săritură din mers);
+- un **ventilator** oprit: îi spargi terminalul și curentul de aer te ridică peste un zid de 9 tile-uri;
+- o **pasarelă cu grilaje ruginite** care cad sub tine, **arcuri electrice** ciclice, un tub de ventilație și arena dronelor;
+- **două nacele** la rând, un lunetist și un al doilea ventilator care suflă în **rafale**, apoi sala cu turele;
+- **transmisia**: spargi emițătorul (Wire Connect, dificultate 3), alarma pornește și rămâi pe platformă 24 de secunde.
+  Bara „TRANSMISIE” din HUD urcă doar cât stai lângă emițător; dacă pleci, se oprește (nu se resetează). Trei drone vin
+  pe rând; două grenade EMP și o pasarelă te ajută. La 100% dronele cad, ușa se deschide și ieșirea pornește finalul.
+
+| ![Antena](screenshots/42-nivel6-antena.png) | ![Nacela](screenshots/43-nivel6-nacela.png) |
+|---|---|
+| ![Ventilatorul](screenshots/44-nivel6-ventilator.png) | ![Grilajele](screenshots/45-nivel6-grilaje.png) |
+| ![Transmisia](screenshots/46-nivel6-transmisie.png) | ![Finalul pe antenă](screenshots/36-cutscene-final.png) |
 
 ## 6. Mecanici
 
@@ -292,7 +315,9 @@ zero-day. Jocul nou pornește cu 150 de credite și 2 grenade EMP.
   audio subacvatic și **stavila** care ridică nivelul apei.
 - **Gropi**: −1 viață și revenire pe marginea dinainte (`FallZone`).
 - **Vânt**: rafale (`WindZone2D`), copaci cu oase care se leagănă și iarbă care se îndoaie în jurul jucătorului.
-- **Pericole**: lasere care pornesc și se opresc ciclic, podea electrică.
+- **Pericole**: lasere și arcuri electrice care pornesc și se opresc ciclic, podea electrică.
+- **Antena (nivelul 6)**: nacele care te poartă (`MovingPlatform`), curenți de aer (`Updraft`), grilaje care cad
+  (`CrumblingPlatform`) și emițătorul cu transmisia apărată (`UplinkStation`).
 - **Lift**, **uși**, **noduri de rețea** (teleport cu dizolvare și traseu de particule), **checkpoint-uri**.
 
 ## 7. Co-op asimetric
@@ -403,29 +428,33 @@ cu ×1,25 pentru morți și reîncercări.
 | Nivelul 3: Ferma de servere | 9,8 |
 | Nivelul 4: Canalizarea | 9,3 |
 | Nivelul 5: Sediul corporației | 11,6 |
-| Ascunzătoarea (5 vizite) | 3,3 |
-| Cutscene-uri și dialoguri | 1,8 |
-| **Total** | **≈ 54** |
+| Nivelul 6: Antena Halden | 11,1 |
+| Ascunzătoarea (6 vizite) | 4,0 |
+| Cutscene-uri și dialoguri | 2,1 |
+| **Total** | **≈ 66** |
 
-Căutarea celor 15 jurnale de date nu intră în estimare: e timp în plus pentru cine explorează.
+Căutarea celor 18 jurnale de date nu intră în estimare: e timp în plus pentru cine explorează.
 
 Ținta din cerințe e de cel puțin 30 de minute. Timpul real al fiecărui nivel apare pe ecranul „Misiune îndeplinită” și
 rămâne în salvare, așa că o trecere cronometrată confirmă estimarea.
 
 ## 12. Testare și calitate
 
-- **120 de teste EditMode**:
+- **124 de teste EditMode**:
   - A*, inventar, urmărire, portofel, magazin, abilități;
   - misiuni (inclusiv lanțul principal), salvare/încărcare cu migrări și timpii pe nivel;
   - minijocurile de hacking, regula de auz, modelul și codec-ul Operatorului, EventBus, ServiceLocator, FSM;
-  - arhiva de jurnale (găsire o singură dată, salvare, salvări vechi fără jurnale, contractul care numără retroactiv).
-- **40 de teste PlayMode**:
+  - arhiva de jurnale (găsire o singură dată, salvare, salvări vechi fără jurnale, contractul care numără retroactiv);
+  - transmisia de pe antenă (progres doar lângă emițător, pauză fără resetare, valurile de drone).
+- **46 de teste PlayMode**:
   - fiecare scenă pornește fără erori, cu jucătorul pe podea;
   - fluxul complet de acceptare: meniu → intro → Hub → Nivelul 1 → hack → ușă → teleport → dronă → pauză → volum → meniu → showcase;
   - toate cele trei minijocuri prin overlay-ul real, terminalul personal și magazinul;
-  - ieșirile nivelurilor 1–5 cu deblocare, tab-ul Călătorie;
+  - ieșirile nivelurilor 1–6 cu deblocare, tab-ul Călătorie;
   - gardianul care aude, patrulează și răspunde la alarmă;
   - stavila care inundă puțul;
+  - nivelul 6: nacela care te duce, ventilatorul spart care te ridică peste zid, grilajul care cade și revine,
+    transmisia care cheamă dronele și deschide ușa;
   - câte 3 jurnale distincte în fiecare nivel; un jurnal atins se înregistrează, apare în tab și nu mai apare la revenire;
   - cutscene-urile (track-uri și skip), copacii cu oase (deformarea mesh-ului);
   - co-op-ul local (ușă, cameră, gardian, ecran împărțit) și gazda LAN.
@@ -460,7 +489,7 @@ Pentru Google Drive se urcă cele două arhive din `dist/`:
 
 - **Grafica e generată din cod.** Pachetele de artă externe rămân opționale: se importă în `Assets/ThirdParty` și se
   leagă în generatoare (vezi ASSETS.md).
-- **Durata de joc e o estimare** (~54 de minute). O trecere completă cronometrată o confirmă; timpii se văd în joc.
+- **Durata de joc e o estimare** (~66 de minute). O trecere completă cronometrată o confirmă; timpii se văd în joc.
 - **Co-op-ul LAN** e testat automat pe același PC (127.0.0.1). Pe două PC-uri, firewall-ul Windows trebuie să permită
   `RootAccess.exe` (portul 7777) la prima pornire a gazdei. Nu există join prin internet (Relay).
 - **Echilibrarea** (dificultatea terminalelor, costurile Operatorului, numărul de gardieni) poate fi ajustată după
@@ -484,4 +513,5 @@ Toate capturile sunt în `Documentatie/screenshots` și se regenerează cu `./sc
 | `34`–`36` `cutscene-*` | intro și final |
 | `37-meniu-coop`, `38-coop-ecran-impartit`, `39-coop-lan-operator` | co-op |
 | `40-terminal-jurnale`, `41-nivel1-ventilatie` | tab-ul Jurnale, tubul de ventilație din nivelul 1 |
+| `42`–`46` `nivel6-*` | nivelul 6: antena, nacela, ventilatorul, grilajele, emițătorul |
 | `barem-camera-01`…`14` | camerele scenei Prezentare barem |

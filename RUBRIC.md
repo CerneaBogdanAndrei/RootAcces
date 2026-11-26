@@ -220,7 +220,7 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
 
 ## Bonus: cinematice ✅
 
-- **Scene:** `Intro` (după Joc nou, apoi ascunzătoarea) și `Finale` (după ieșirea din nivelul 5, apoi creditele).
+- **Scene:** `Intro` (după Joc nou, apoi ascunzătoarea) și `Finale` (după ieșirea din nivelul 6, apoi creditele).
 - **Asset-uri:** `Timelines/TL_Intro.playable`, `TL_Finale.playable`, clipurile `AC_*_Puppet.anim`, semnalele `SIG_*.signal`,
   generate de `Editor/Generation/CutsceneFactory.cs`.
 - **Track-uri:** Animation (păpușa hackerului merge pe acoperiș, cu cadrele de alergare), Cinemachine (cadru larg și cadru

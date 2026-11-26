@@ -119,7 +119,7 @@ namespace RootAccess.EditorTools
 
             Transform set = SceneBuilder.Group("--- Set ---");
             bool spire = biome == Biome.Spire;
-            SceneBuilder.Parallax(ctx, set, -40f, 60f, spire ? -13f : -2f);
+            SceneBuilder.Parallax(ctx, set, -40f, 60f, spire ? -17f : -2f);
             if (spire) SceneBuilder.Clouds(ctx, set, -40f, 60f, -5f);
             Transform grid = SceneBuilder.Group("Grid", set);
             grid.gameObject.AddComponent<Grid>();

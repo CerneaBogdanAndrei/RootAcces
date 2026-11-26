@@ -190,6 +190,21 @@ Drive și testul pe un PC curat rămân la dezvoltator.
   acceptare se numără (`QuestLog.ReportTo`).
 - Segmentul nou **Tub de ventilație**: o trecere de un tile, prin care treci doar ghemuit, în fiecare nivel.
 
+## P11: nivelul 6, antena Halden ✅ făcut (PR „P11”)
+
+- **Nivel nou** după sediu (`Level06_Spire`): urci pe antena din vârful sediului ca să transmiți datele Halden pe toate
+  ecranele din oraș (cererea lui Varga din ultimul jurnal). Ieșirea din nivelul 5 deblochează antena; ieșirea din antenă
+  pornește finalul cinematic, mutat și el pe antenă.
+- **Mecanici noi:** nacele de spălat geamuri care merg singure peste gol și te duc cu ele (`MovingPlatform` +
+  `ISurfaceCarrier`), ventilatoare în podea care te ridică peste ziduri prea înalte (`Updraft`, unul pornit prin hack,
+  altul în rafale), grilaje ruginite care cad sub tine și revin (`CrumblingPlatform`), arcuri electrice ciclice și
+  **transmisia**: spargi emițătorul și ții platforma 24 s cât vin trei drone; la 100% se deschide ușa spre ieșire
+  (`UplinkStation` + modelul `UplinkTransfer`, bara de progres din HUD).
+- **Grafică:** biomul antenei (punți de oțel peste o structură cu zăbrele prin care se vede cerul), nori sub punți,
+  orașul departe dedesubt, 4 piese de decor noi (mânecă de vânt, transformator, radar, catarg) și proiectorul.
+- **Conținut:** misiunea principală „Transmisia” (6 obiective), dialogul de intrare, 3 jurnale noi (18 în total).
+- Durata estimată crește la ≈ 66 de minute. Versiunea afișată e 1.2.
+
 ## Datorie tehnică urmărită
 
 - Regenerarea conținutului rescrie fileID-urile sub-asset-urilor (controllere, profile de volum), ceea ce produce diff-uri

@@ -18,11 +18,11 @@ namespace RootAccess.EditorTools
         /// <summary>Deaths, retried hacks and backtracking on a first run.</summary>
         public const float RetryFactor = 1.25f;
 
-        /// <summary>Hideout between missions: briefing, shop, skills, contracts, travel (5 visits).</summary>
-        public const float HubSeconds = 5 * 40f;
+        /// <summary>Hideout between missions: briefing, shop, skills, contracts, travel (6 visits).</summary>
+        public const float HubSeconds = 6 * 40f;
 
         /// <summary>Intro + finale cutscenes and each level's opening dialogue.</summary>
-        public const float CutsceneSeconds = 17f + 16f + 5 * 15f;
+        public const float CutsceneSeconds = 17f + 16f + 6 * 15f;
 
         private static readonly List<(string level, IReadOnlyList<(string segment, float seconds)> breakdown)> Levels = new();
 
@@ -42,7 +42,7 @@ namespace RootAccess.EditorTools
             md.AppendLine("| Nivel | Segmente | Estimare (min) |").AppendLine("|---|---|---|");
             foreach ((string level, IReadOnlyList<(string segment, float seconds)> breakdown) in Levels)
                 md.AppendLine($"| {level} | {breakdown.Count} | {breakdown.Sum(b => b.seconds) * RetryFactor / 60f:0.0} |");
-            md.AppendLine($"| Ascunzătoarea (5 vizite) | – | {HubSeconds / 60f:0.0} |");
+            md.AppendLine($"| Ascunzătoarea (6 vizite) | – | {HubSeconds / 60f:0.0} |");
             md.AppendLine($"| Cutscene-uri și dialoguri | – | {CutsceneSeconds / 60f:0.0} |");
             md.AppendLine($"| **Total** | | **{TotalSeconds / 60f:0.0}** |").AppendLine();
             foreach ((string level, IReadOnlyList<(string segment, float seconds)> breakdown) in Levels)

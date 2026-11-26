@@ -9,11 +9,11 @@ disciplina „Joc 2D de tip singleplayer/multiplayer în Unity cu C#”.
 
 - **Motor:** Unity 6000.3.29f1 (6.3 LTS), URP 2D, Input System, Cinemachine 3, Timeline, 2D Animation, Netcode for GameObjects.
 - **Platformă:** Windows x64 (tastatură + mouse sau gamepad).
-- **Conținut:** meniu, intro cinematic, ascunzătoarea (Hub), 5 niveluri, final cinematic, credite, co-op local + LAN,
-  scena „Prezentare barem”, 15 jurnale de date ascunse în niveluri. Estimarea pentru o primă trecere: ≈ 54 de minute.
-- **Stare:** `v1.1` (grafică pixel art pictată din cod, jurnale de date, tuburi de ventilație). Toate cele 12 puncte din
-  barem și ambele bonusuri (cinematice, multiplayer) trec în `RubricValidator`; 120 de teste EditMode și 40 PlayMode
-  sunt verzi.
+- **Conținut:** meniu, intro cinematic, ascunzătoarea (Hub), 6 niveluri, final cinematic, credite, co-op local + LAN,
+  scena „Prezentare barem”, 18 jurnale de date ascunse în niveluri. Estimarea pentru o primă trecere: ≈ 66 de minute.
+- **Stare:** `v1.2` (nivelul 6, antena Halden: nacele, ventilatoare, grilaje care cad, transmisia finală; grafică pixel
+  art pictată din cod, jurnale de date). Toate cele 12 puncte din barem și ambele bonusuri (cinematice, multiplayer)
+  trec în `RubricValidator`; 124 de teste EditMode și 46 PlayMode sunt verzi.
 
 **Documentația completă a jocului:** [Documentatie/DOCUMENTATIE.md](Documentatie/DOCUMENTATIE.md).
 
@@ -27,7 +27,7 @@ disciplina „Joc 2D de tip singleplayer/multiplayer în Unity cu C#”.
 | [Documentatie/DOCUMENTATIE.md](Documentatie/DOCUMENTATIE.md) | povestea, controalele, nivelurile, mecanicile, co-op-ul, arhitectura, baremul, testele, livrarea |
 | [RUBRIC.md](RUBRIC.md) | fiecare punct din barem: unde e, ce scripturi, cum se demonstrează în 30 s |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | module, asmdef-uri, fluxul de evenimente, formatul de salvare, pipeline-ul de conținut |
-| [ROADMAP.md](ROADMAP.md) | etapele P1–P8 și ce s-a făcut în fiecare |
+| [ROADMAP.md](ROADMAP.md) | etapele P1–P11 și ce s-a făcut în fiecare |
 | [RELEASE_REPORT.md](RELEASE_REPORT.md) | starea la livrare: teste, barem, build, arhive, limitări |
 | [ASSETS.md](ASSETS.md) | pachete de grafică/sunet recomandate și licențele lor |
 | [CLAUDE.md](CLAUDE.md) | reguli pentru sesiunile Claude Code |
