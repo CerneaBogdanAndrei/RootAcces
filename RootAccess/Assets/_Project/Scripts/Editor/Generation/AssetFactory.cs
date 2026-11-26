@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using RootAccess.AI;
 using RootAccess.Audio;
@@ -297,11 +298,24 @@ namespace RootAccess.EditorTools
 
         private static void BuildTiles(BuildContext ctx)
         {
-            ctx.TileMetal = Tile("tile_metal");
-            ctx.TileMetalTop = Tile("tile_metal_top");
-            ctx.TileConcrete = Tile("tile_concrete");
-            ctx.TileBrick = Tile("tile_brick");
+            var built = new HashSet<string>();
             ctx.TileGlass = Tile("tile_glass", UnityEngine.Tilemaps.Tile.ColliderType.None);
+            built.Add("tile_glass");
+            foreach (KeyValuePair<(Biome biome, string role), int> entry in TileArt.Counts())
+            for (int i = 0; i < entry.Value; i++)
+            {
+                string name = TileArt.Name(entry.Key.biome, entry.Key.role, i);
+                bool solid = entry.Key.role != "back";
+                ctx.ThemeTiles[name] = Tile(name, solid ? UnityEngine.Tilemaps.Tile.ColliderType.Grid : UnityEngine.Tilemaps.Tile.ColliderType.None);
+                built.Add(name);
+            }
+
+            // Retired tiles (e.g. the v1.0 tile_metal set) would otherwise linger with missing sprites.
+            foreach (string guid in AssetDatabase.FindAssets("t:Tile", new[] { $"{EditorPaths.Tilesets}/Tiles" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!built.Contains(System.IO.Path.GetFileNameWithoutExtension(path))) AssetDatabase.DeleteAsset(path);
+            }
         }
 
         private static TileBase Tile(string sprite, Tile.ColliderType collider = UnityEngine.Tilemaps.Tile.ColliderType.Grid)

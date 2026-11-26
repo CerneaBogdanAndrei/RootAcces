@@ -271,8 +271,8 @@ namespace RootAccess.EditorTools
             Variant(ctx, guardPrefab, "Guard_Heavy", EditorPaths.PrefabsEnemies, v =>
             {
                 EditorAssetUtil.SetField(v.GetComponent<Guard>(), "config", ctx.GuardHeavy);
-                v.transform.localScale = new Vector3(1.18f, 1.18f, 1f);
-                v.transform.Find("Visual").GetComponent<SpriteRenderer>().color = new Color(1f, 0.75f, 0.7f);
+                v.transform.localScale = new Vector3(1.1f, 1.1f, 1f);
+                Restyle(v, "heavy_idle_0", ctx.HeavyAnimator);
             });
             Variant(ctx, guardPrefab, "Guard_Sniper", EditorPaths.PrefabsEnemies, v =>
             {
@@ -283,7 +283,7 @@ namespace RootAccess.EditorTools
                     so.Require("muzzle").objectReferenceValue = rifle;
                 });
                 EditorAssetUtil.SetField(v.GetComponent<Guard>(), "config", ctx.GuardSniper);
-                v.transform.Find("Visual").GetComponent<SpriteRenderer>().color = new Color(0.75f, 0.85f, 1f);
+                Restyle(v, "sniper_idle_0", ctx.SniperAnimator);
             });
 
             GameObject camera = Go("SecurityCamera", null, Layers.Enemy);
@@ -339,6 +339,14 @@ namespace RootAccess.EditorTools
                 so.Require("projectilePrefab").objectReferenceValue = projectilePrefab.GetComponent<Projectile>();
             });
             Save(ctx, turret, EditorPaths.PrefabsEnemies);
+        }
+
+        /// <summary>Gives a guard variant its own frames and animator (heavy riot guard, sniper).</summary>
+        private static void Restyle(GameObject guard, string sprite, RuntimeAnimatorController animator)
+        {
+            Transform visual = guard.transform.Find("Visual");
+            visual.GetComponent<SpriteRenderer>().sprite = GeneratedArt.Sprite(sprite);
+            visual.GetComponent<Animator>().runtimeAnimatorController = animator;
         }
 
         // ---------------------------------------------------------------- interactables
@@ -639,12 +647,7 @@ namespace RootAccess.EditorTools
             });
             Save(ctx, neon, EditorPaths.PrefabsEnvironment);
 
-            GameObject lamp = Go("StreetLamp", null, Layers.Default);
-            Sprite(lamp, "antenna", ctx.SpriteLit, SortingLayers.Environment, 2, new Color(0.7f, 0.75f, 0.85f));
-            lamp.transform.localScale = new Vector3(1f, 1.2f, 1f);
-            Light2D spot = Light(lamp.transform, "SpotLight", Light2D.LightType.Point, new Color(1f, 0.85f, 0.55f), 1.4f, 7f, new Vector3(0f, 2.3f, 0f), true, 40f, 75f);
-            spot.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
-            Save(ctx, lamp, EditorPaths.PrefabsEnvironment);
+            BuildDecor(ctx);
 
             GameObject ac = Go("RooftopAC", null, Layers.Ground);
             Sprite(ac, "rooftop_ac", ctx.Metal, SortingLayers.Environment, 2);
@@ -668,6 +671,35 @@ namespace RootAccess.EditorTools
             spawn.tag = Tags.SpawnPoint;
             spawn.AddComponent<SpawnPoint>();
             Save(ctx, spawn, EditorPaths.PrefabsEnvironment);
+        }
+
+        /// <summary>
+        /// Background props and lamps (<see cref="PropArt.Decor"/>): no colliders, standing behind the tilemaps, wall pieces on
+        /// the backdrop layer, glows and down-pointing lamp spots as Light2D children. Plus the fixer NPC of the hideout.
+        /// </summary>
+        private static void BuildDecor(BuildContext ctx)
+        {
+            foreach (DecorSpec spec in PropArt.Decor)
+            {
+                GameObject go = Go(spec.Prefab, null, Layers.Default);
+                Material material = spec.Hologram ? ctx.Hologram : ctx.SpriteLit;
+                if (spec.Wall) Sprite(go, spec.Sprite, material, SortingLayers.Background, 5, new Color(0.82f, 0.82f, 0.88f));
+                else Sprite(go, spec.Sprite, material, SortingLayers.Environment, spec.Ceiling ? 2 : -2);
+                if (spec.Glow is Color glow)
+                {
+                    Light2D light = Light(go.transform, spec.Spot ? "Lamp" : "Glow", Light2D.LightType.Point, glow, spec.GlowIntensity, spec.GlowRadius,
+                        spec.GlowAt, spec.Spot, spec.Spot ? 38f : 360f, spec.Spot ? 78f : 360f);
+                    if (spec.Spot) light.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+                }
+
+                Save(ctx, go, EditorPaths.PrefabsEnvironment);
+            }
+
+            GameObject fixer = Go("Npc_Fixer", null, Layers.Default);
+            Sprite(fixer, "fixer_idle_0", ctx.SpriteLit, SortingLayers.Characters, 4);
+            fixer.AddComponent<Animator>().runtimeAnimatorController = ctx.FixerAnimator;
+            Light(fixer.transform, "Rim", Light2D.LightType.Point, new Color(1f, 0.5f, 0.85f), 0.45f, 1.8f, new Vector3(-0.4f, 1f, 0f));
+            Save(ctx, fixer, EditorPaths.PrefabsEnvironment);
         }
 
         /// <summary>

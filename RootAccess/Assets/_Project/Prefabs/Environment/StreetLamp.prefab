@@ -27,10 +27,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5310687746754872312}
+  - {fileID: 6953015947819863859}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3042287570411401376
@@ -80,19 +80,19 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 119823002
   m_SortingLayer: -1
-  m_SortingOrder: 2
+  m_SortingOrder: -2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: bab4f314861ad004fab1e20f06237fc2, type: 3}
-  m_Color: {r: 0.7, g: 0.75, b: 0.85, a: 1}
+  m_Sprite: {fileID: 21300000, guid: cdeeda6ecdc5d33418eebf121ed14710, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.5, y: 2}
+  m_Size: {x: 1.0625, y: 3.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!1 &8963772935443672375
+--- !u!1 &3834882903140302773
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,37 +100,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5310687746754872312}
-  - component: {fileID: 275726773557152146}
+  - component: {fileID: 6953015947819863859}
+  - component: {fileID: 237662998952642102}
   m_Layer: 0
-  m_Name: SpotLight
+  m_Name: Lamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5310687746754872312
+--- !u!4 &6953015947819863859
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8963772935443672375}
+  m_GameObject: {fileID: 3834882903140302773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 1, w: -0.00000004371139}
-  m_LocalPosition: {x: 0, y: 2.3, z: 0}
+  m_LocalPosition: {x: 0.31, y: 3.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7774522887141510600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &275726773557152146
+--- !u!114 &237662998952642102
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8963772935443672375}
+  m_GameObject: {fileID: 3834882903140302773}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
@@ -162,8 +162,8 @@ MonoBehaviour:
   m_LocalBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  m_PointLightInnerAngle: 40
-  m_PointLightOuterAngle: 75
+  m_PointLightInnerAngle: 38
+  m_PointLightOuterAngle: 78
   m_PointLightInnerRadius: 1.0500001
   m_PointLightOuterRadius: 7
   m_ShapeLightParametricSides: 5

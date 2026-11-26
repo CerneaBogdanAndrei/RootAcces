@@ -8,25 +8,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2069090988019046142, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
-      propertyPath: m_Color.b
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2069090988019046142, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
-      propertyPath: m_Color.g
-      value: 0.75
-      objectReference: {fileID: 0}
+    - target: {fileID: 1175291043043602756, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8790477a1aba29c43921fabf1e541aed, type: 2}
     - target: {fileID: 2532035613619223507, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
       propertyPath: m_Name
       value: Guard_Heavy
       objectReference: {fileID: 0}
     - target: {fileID: 8151328665275418958, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.18
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 8151328665275418958, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.18
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 8151328665275418958, guid: e5b84af10d9d2c049b0ccfe1860160a4, type: 3}
       propertyPath: m_LocalPosition.x

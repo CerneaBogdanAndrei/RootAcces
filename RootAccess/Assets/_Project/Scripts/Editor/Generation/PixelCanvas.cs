@@ -7,6 +7,7 @@ namespace RootAccess.EditorTools
     public sealed class PixelCanvas
     {
         private readonly Color32[] _pixels;
+        private Vector3[] _normals;
 
         public PixelCanvas(int width, int height)
         {
@@ -18,6 +19,38 @@ namespace RootAccess.EditorTools
         public int Width { get; }
         public int Height { get; }
         public Color32[] Pixels => _pixels;
+
+        /// <summary>True once a shaded primitive wrote real per-pixel normals (used instead of the alpha bevel).</summary>
+        public bool HasNormals => _normals != null;
+
+        /// <summary>Stores a tangent-space normal for a pixel (shaded primitives call this as they paint).</summary>
+        public void SetNormal(int x, int y, Vector3 normal)
+        {
+            if (!InBounds(x, y)) return;
+            if (_normals == null)
+            {
+                _normals = new Vector3[Width * Height];
+                for (int i = 0; i < _normals.Length; i++) _normals[i] = Vector3.forward;
+            }
+
+            _normals[y * Width + x] = normal;
+        }
+
+        public Vector3 GetNormal(int x, int y) => _normals != null && InBounds(x, y) ? _normals[y * Width + x] : Vector3.forward;
+
+        /// <summary>Normal map from the stored normals; transparent pixels face the camera.</summary>
+        public PixelCanvas PaintedNormalMap()
+        {
+            var map = new PixelCanvas(Width, Height);
+            for (int y = 0; y < Height; y++)
+            for (int x = 0; x < Width; x++)
+            {
+                Vector3 n = _pixels[y * Width + x].a == 0 ? Vector3.forward : GetNormal(x, y).normalized;
+                map.Set(x, y, new Color(n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f, 1f));
+            }
+
+            return map;
+        }
 
         public Color32 Get(int x, int y) => InBounds(x, y) ? _pixels[y * Width + x] : default;
 
@@ -172,15 +205,23 @@ namespace RootAccess.EditorTools
         {
             var copy = new PixelCanvas(Width, Height);
             Array.Copy(_pixels, copy._pixels, _pixels.Length);
+            if (_normals != null) copy._normals = (Vector3[])_normals.Clone();
             return copy;
         }
 
         public PixelCanvas FlipHorizontal()
         {
             var copy = (Color32[])_pixels.Clone();
+            Vector3[] normals = _normals != null ? (Vector3[])_normals.Clone() : null;
             for (int y = 0; y < Height; y++)
             for (int x = 0; x < Width; x++)
+            {
                 _pixels[y * Width + x] = copy[y * Width + (Width - 1 - x)];
+                if (normals == null) continue;
+                Vector3 n = normals[y * Width + (Width - 1 - x)];
+                _normals[y * Width + x] = new Vector3(-n.x, n.y, n.z);
+            }
+
             return this;
         }
 

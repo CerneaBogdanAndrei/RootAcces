@@ -17,7 +17,11 @@ namespace RootAccess.EditorTools
         public static void BuildAll(BuildContext ctx)
         {
             ctx.PlayerAnimator = BuildPlayer();
-            ctx.GuardAnimator = BuildGuard();
+            ctx.GuardAnimator = BuildGuard("Guard", "guard_");
+            ctx.HeavyAnimator = BuildGuard("GuardHeavy", "heavy_");
+            ctx.SniperAnimator = BuildGuard("GuardSniper", "sniper_");
+            ctx.FixerAnimator = BuildSimpleLoop("Fixer", "Idle", SpriteClip("Fixer", "Idle", 5f, true,
+                Seq("fixer_idle_", 4).Concat(Seq("fixer_idle_", 4)).Concat(Seq("fixer_talk_", 4)).ToArray()));
             ctx.DroneAnimator = BuildSimpleLoop("Drone", "Hover", SpriteClip("Drone", "Hover", 14f, true, "drone_0", "drone_1"));
             ctx.CameraAnimator = BuildToggle("SecurityCamera", "Pivot", new Color(1f, 1f, 1f), new Color(0.35f, 0.35f, 0.4f));
             ctx.DoorAnimator = BuildDoor();
@@ -44,6 +48,9 @@ namespace RootAccess.EditorTools
             AssetDatabase.CreateAsset(clip, path);
             return clip;
         }
+
+        /// <summary>Frame names <paramref name="prefix"/>0 … <paramref name="prefix"/>(count − 1).</summary>
+        private static string[] Seq(string prefix, int count) => Enumerable.Range(0, count).Select(i => prefix + i).ToArray();
 
         private static AnimationClip SpriteClip(string entity, string clipName, float fps, bool loop, params string[] sprites)
         {
@@ -92,18 +99,19 @@ namespace RootAccess.EditorTools
         private static AnimatorController BuildPlayer()
         {
             const string entity = "Player";
-            AnimationClip idle = SpriteClip(entity, "Idle", 3f, true, "player_idle_0", "player_idle_1");
-            AnimationClip run = SpriteClip(entity, "Run", PixelFps, true, "player_run_0", "player_run_1", "player_run_2", "player_run_3");
-            AddEvents(run, AnimationEventNames.Footstep, 0f, 2f / PixelFps);
+            const float runFps = 14f;
+            AnimationClip idle = SpriteClip(entity, "Idle", 5f, true, Seq("player_idle_", 4));
+            AnimationClip run = SpriteClip(entity, "Run", runFps, true, Seq("player_run_", 8));
+            AddEvents(run, AnimationEventNames.Footstep, 0f, 4f / runFps);
             AnimationClip jump = SpriteClip(entity, "Jump", PixelFps, true, "player_jump");
-            AnimationClip fall = SpriteClip(entity, "Fall", PixelFps, true, "player_fall");
+            AnimationClip fall = SpriteClip(entity, "Fall", 8f, true, Seq("player_fall_", 2));
             AnimationClip dash = SpriteClip(entity, "Dash", PixelFps, true, "player_dash");
             AnimationClip wall = SpriteClip(entity, "WallSlide", PixelFps, true, "player_wallslide");
-            AnimationClip crouch = SpriteClip(entity, "Crouch", PixelFps, true, "player_crouch");
-            AnimationClip swim = SpriteClip(entity, "Swim", 4f, true, "player_swim_0", "player_swim_1");
-            AnimationClip hack = SpriteClip(entity, "Hack", 4f, true, "player_hack_0", "player_hack_1");
+            AnimationClip crouch = SpriteClip(entity, "Crouch", 3f, true, Seq("player_crouch_", 2));
+            AnimationClip swim = SpriteClip(entity, "Swim", 6f, true, Seq("player_swim_", 4));
+            AnimationClip hack = SpriteClip(entity, "Hack", 6f, true, Seq("player_hack_", 4));
             AnimationClip hurt = SpriteClip(entity, "Hurt", 4f, false, "player_hurt");
-            AnimationClip death = SpriteClip(entity, "Death", 4f, false, "player_death_0", "player_death_1");
+            AnimationClip death = SpriteClip(entity, "Death", 5f, false, Seq("player_death_", 3));
 
             AnimatorController controller = NewController(entity);
             controller.AddParameter(AnimatorParams.SpeedName, AnimatorControllerParameterType.Float);
@@ -200,13 +208,14 @@ namespace RootAccess.EditorTools
 
         // ---------------------------------------------------------------- guard
 
-        private static AnimatorController BuildGuard()
+        /// <summary>Guard controller for one archetype; <paramref name="prefix"/> selects its frames (guard_, heavy_, sniper_).</summary>
+        private static AnimatorController BuildGuard(string entity, string prefix)
         {
-            const string entity = "Guard";
-            AnimationClip idle = SpriteClip(entity, "Idle", 3f, true, "guard_idle_0", "guard_idle_1");
-            AnimationClip walk = SpriteClip(entity, "Walk", 8f, true, "guard_walk_0", "guard_walk_1", "guard_walk_2", "guard_walk_3");
-            AddEvents(walk, AnimationEventNames.Footstep, 0f, 2f / 8f);
-            AnimationClip attack = SpriteClip(entity, "Attack", 10f, false, "guard_attack_0", "guard_attack_1", "guard_attack_2");
+            const float walkFps = 9f;
+            AnimationClip idle = SpriteClip(entity, "Idle", 4f, true, Seq(prefix + "idle_", 4));
+            AnimationClip walk = SpriteClip(entity, "Walk", walkFps, true, Seq(prefix + "walk_", 6));
+            AddEvents(walk, AnimationEventNames.Footstep, 0f, 3f / walkFps);
+            AnimationClip attack = SpriteClip(entity, "Attack", 10f, false, Seq(prefix + "attack_", 3));
             AddEvents(attack, AnimationEventNames.HitFrame, 1f / 10f);
 
             AnimatorController controller = NewController(entity);

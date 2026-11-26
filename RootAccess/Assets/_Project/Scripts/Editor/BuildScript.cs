@@ -18,6 +18,9 @@ namespace RootAccess.EditorTools
         public const string ExecutableName = "RootAccess.exe";
         private const string DevelopmentArg = "-ra-development";
 
+        /// <summary>Player version shown on the main menu (Application.version). 1.1 = painted art pass.</summary>
+        public const string GameVersion = "1.1";
+
         public static string OutputPath => $"{OutputDirectory}/{ExecutableName}";
 
         [MenuItem("Root Access/Build/Build Windows x64")]
@@ -32,6 +35,7 @@ namespace RootAccess.EditorTools
                 return;
             }
 
+            PlayerSettings.bundleVersion = GameVersion;
             bool development = Environment.GetCommandLineArgs().Contains(DevelopmentArg);
             Directory.CreateDirectory(OutputDirectory);
             var options = new BuildPlayerOptions

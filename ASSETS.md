@@ -1,7 +1,7 @@
 # Asset-uri externe: recomandări, licențe, import
 
 Disciplina permite asset-uri și pachete importate, dar **tot codul trebuie scris de noi**. Acum toată grafica și tot
-sunetul sunt placeholdere generate procedural (`PlaceholderArtGenerator`), deci proiectul nu are nicio dependență de
+sunetul sunt generate din cod (`PlaceholderArtGenerator` + `Editor/Generation/Art`), deci proiectul nu are nicio dependență de
 licență. Lista de mai jos e un punct de plecare: **verifică licența pe pagina fiecărui pachet înainte de import**
 (licențele se pot schimba) și trece-o în tabelul de la final.
 

@@ -488,7 +488,11 @@ namespace RootAccess.EditorTools
         {
             GameObject canvas = UIFactory.Canvas("MainMenuCanvas", 10);
             RectTransform host = UIFactory.Stretch(UIFactory.Rect("MainMenu", canvas.transform));
-            Image side = UIFactory.Image("SidePanel", host, new Color(0.03f, 0.02f, 0.08f, 0.78f));
+            Image keyArt = UIFactory.Image("KeyArt", host, Color.white);
+            keyArt.sprite = GeneratedArt.Sprite(GameplayArt.KeyArtSprite);
+            keyArt.raycastTarget = false;
+            UIFactory.Stretch(keyArt.rectTransform);
+            Image side = UIFactory.Image("SidePanel", host, new Color(0.03f, 0.02f, 0.08f, 0.72f));
             UIFactory.Place(side.rectTransform, new Vector2(0f, 0.5f), new Vector2(120f, 0f), new Vector2(620f, 1080f), new Vector2(0f, 0.5f));
             TextMeshProUGUI title = UIFactory.Text("Title", side.transform, Strings.GameTitle, 72f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
             title.textWrappingMode = TextWrappingModes.NoWrap;
