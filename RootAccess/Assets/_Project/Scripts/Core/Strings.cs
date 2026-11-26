@@ -65,6 +65,11 @@ namespace RootAccess.Core
             public const string EmpDetonated = "EMP: {0} sisteme dezactivate";
             public const string ExtraAttempt = "Încercare suplimentară (abilitate)";
             public const string SluiceOpened = "Stavila e deschisă: apa urcă";
+            public const string FanStarted = "Ventilatorul a pornit: curentul de aer te ridică";
+            public const string Uplink = "TRANSMISIE {0}%";
+            public const string UplinkPaused = "TRANSMISIE ÎNTRERUPTĂ {0}%: întoarce-te la emițător";
+            public const string UplinkStarted = "Transmisia a pornit: rămâi lângă emițător!";
+            public const string UplinkDone = "Transmisie completă: tot orașul vede datele Halden";
             public const string LevelTime = "Timp în nivel";
             public const string BestTime = "record";
             public const string TotalTime = "Timp total de joc";
@@ -179,6 +184,8 @@ namespace RootAccess.Core
             public const string Laser = "Laser";
             public const string MotionSensor = "Senzor de mișcare";
             public const string Sluice = "Stavilă";
+            public const string Fan = "Ventilator";
+            public const string Uplink = "Emițător";
         }
 
         public static class Hacking
@@ -222,6 +229,7 @@ namespace RootAccess.Core
             public const string Level03 = "Ferma de servere";
             public const string Level04 = "Canalizarea";
             public const string Level05 = "Sediul corporației";
+            public const string Level06 = "Antena Halden";
             public const string RubricShowcase = "Prezentare barem";
         }
 
@@ -278,8 +286,8 @@ namespace RootAccess.Core
             public const string Intro2 = "Corporațiile dețin serverele. Eu dețin cheile.";
             public const string Intro3 = "Un contract nou așteaptă în ascunzătoare. E timpul să intru.";
             public const string FinaleTitle = "ROOT ACCESS: CONFIRMAT";
-            public const string Finale1 = "Mainframe-ul Halden e al nostru. Fiecare ușă din oraș răspunde acum la comanda mea.";
-            public const string Finale2 = "Alarma sună degeaba. Până ajung gardienii pe acoperiș, eu sunt doar un semnal în rețea.";
+            public const string Finale1 = "Fiecare ecran din oraș arată acum datele Halden. Proiectul OCHI s-a terminat în direct.";
+            public const string Finale2 = "Alarma sună degeaba. Până ajung gardienii pe antenă, eu sunt doar un semnal în rețea.";
             public const string Finale3 = "Sfârșit. Mulțumim că ai jucat.";
         }
 

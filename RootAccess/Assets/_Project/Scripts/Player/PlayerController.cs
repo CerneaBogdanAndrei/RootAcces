@@ -201,6 +201,18 @@ namespace RootAccess.Player
             else ChangeState(Sensors.IsGrounded ? PlayerStateId.Grounded : PlayerStateId.Airborne);
         }
 
+        /// <summary>Velocity of the moving surface under the feet (a gondola); zero on static ground or in the air.</summary>
+        internal Vector2 GroundCarryVelocity
+        {
+            get
+            {
+                Collider2D ground = Sensors.GroundCollider;
+                if (ground == null || !Sensors.IsGrounded) return Vector2.zero;
+                Rigidbody2D body = ground.attachedRigidbody;
+                return body != null && body.TryGetComponent(out ISurfaceCarrier carrier) ? carrier.CarryVelocity : Vector2.zero;
+            }
+        }
+
         internal float JumpVelocity(float height) =>
             Mathf.Sqrt(2f * Mathf.Abs(Physics2D.gravity.y) * config.BaseGravityScale * height);
 

@@ -48,7 +48,7 @@ namespace RootAccess.EditorTools
             var skylines = new Dictionary<string, PixelCanvas>();
             foreach ((string name, PixelCanvas canvas, _) in GameplayArt.All())
             {
-                if (name.StartsWith("skyline")) skylines[name] = canvas;
+                if (name.StartsWith("skyline") || name.StartsWith("cloud")) skylines[name] = canvas;
                 else if (!name.StartsWith("player_") && !name.StartsWith("guard_") && !name.StartsWith("heavy_") && !name.StartsWith("sniper_") && !name.StartsWith("fixer_"))
                     gameplay[name] = canvas;
             }

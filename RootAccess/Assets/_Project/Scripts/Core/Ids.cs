@@ -67,7 +67,8 @@ namespace RootAccess.Core
         TeleportOut,
         TeleportIn,
         TeleportTrail,
-        PickupGlow
+        PickupGlow,
+        Updraft
     }
 
     public enum SurfaceType

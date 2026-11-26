@@ -93,6 +93,7 @@ namespace RootAccess.Core
         public const string Level03 = "Level03_ServerFarm";
         public const string Level04 = "Level04_Sewers";
         public const string Level05 = "Level05_HQ";
+        public const string Level06 = "Level06_Spire";
         public const string RubricShowcase = "RubricShowcase";
         public const string Credits = "Credits";
         public const string Intro = "Intro";
@@ -106,7 +107,7 @@ namespace RootAccess.Core
 
         public static bool IsGameplayScene(string sceneName) =>
             sceneName == Hub || sceneName == Level01 || sceneName == Level02 || sceneName == Level03 ||
-            sceneName == Level04 || sceneName == Level05 || sceneName == RubricShowcase;
+            sceneName == Level04 || sceneName == Level05 || sceneName == Level06 || sceneName == RubricShowcase;
     }
 
     public static class MixerParameters

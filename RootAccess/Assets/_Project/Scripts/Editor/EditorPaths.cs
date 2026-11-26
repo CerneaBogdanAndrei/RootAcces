@@ -68,7 +68,7 @@ namespace RootAccess.EditorTools
         public static readonly string[] SceneFolders =
         {
             "Bootstrap", "MainMenu", "Hub", "Level01_Rooftops", "Level02_Office", "Level03_ServerFarm",
-            "Level04_Sewers", "Level05_HQ", "RubricShowcase", "Credits"
+            "Level04_Sewers", "Level05_HQ", "Level06_Spire", "RubricShowcase", "Credits"
         };
 
         public static readonly string[] ScriptFolders =

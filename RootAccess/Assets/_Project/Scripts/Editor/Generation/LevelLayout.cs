@@ -148,7 +148,7 @@ namespace RootAccess.EditorTools
         {
             if (!Indoor)
             {
-                Put("StreetLamp", P(width - 1.5f));
+                Put(_theme.LampPrefab, P(width - 1.5f));
                 return;
             }
 
@@ -353,16 +353,16 @@ namespace RootAccess.EditorTools
         /// Low tunnel crossed by cycling lasers (too low to jump over them). Time the gaps or hack the control terminal
         /// at the entrance to switch every beam off.
         /// </summary>
-        public Terminal LaserCorridor(int lasers, string terminalId, float cycleOffset = 0.55f, LoreDefinition lore = null)
+        public Terminal LaserCorridor(int lasers, string terminalId, float cycleOffset = 0.55f, LoreDefinition lore = null, string beamPrefab = "Hazard_Laser")
         {
-            Estimate($"Coridor cu {lasers} lasere", 25f + lasers * 6f);
+            Estimate(beamPrefab == "Hazard_Laser" ? $"Coridor cu {lasers} lasere" : $"Coridor cu {lasers} arcuri electrice", 25f + lasers * 6f);
             int width = 5 + lasers * 3 + 2;
             Block(0, width);
             Wall(3, width - 1, 4, Indoor ? Ceiling : 8);
             var beams = new List<GameObject>();
             for (int i = 0; i < lasers; i++)
             {
-                GameObject laser = Put("Hazard_Laser", P(5.5f + i * 3f), Hazards, $"Laser_{i + 1}");
+                GameObject laser = Put(beamPrefab, P(5.5f + i * 3f), Hazards, $"{(beamPrefab == "Hazard_Laser" ? "Laser" : "Arc")}_{i + 1}");
                 SetCycle(laser, 1.6f, 1.3f, i * cycleOffset);
                 beams.Add(laser);
             }
@@ -625,6 +625,178 @@ namespace RootAccess.EditorTools
             LoreAt(lore, 3f + length * 0.5f, 0.5f);
             Advance(width);
             return this;
+        }
+
+        // ---------------------------------------------------------------- Level 6 (Halden antenna)
+
+        /// <summary>Height of the gondola rail above the deck (the hook at the top of the gondola sprite).</summary>
+        private const float GondolaRailHeight = 2.62f;
+
+        /// <summary>
+        /// Gondola crossing: a pit <paramref name="gap"/> tiles wide (twice with <paramref name="spans"/> = 2, with a pillar
+        /// between) under a rail, and a window-cleaning gondola shuttling from ledge to ledge. Step on, ride, step off; a
+        /// fall costs a health point and puts the player back on the near ledge. A data log hangs over the first span,
+        /// for a jump off the moving deck.
+        /// </summary>
+        public LevelLayout GondolaCrossing(int gap = 12, string hint = null, string spawnId = null, LoreDefinition lore = null, int spans = 1)
+        {
+            Estimate(spans > 1 ? "Traversare cu două nacele" : "Traversare cu nacela", (14f + gap * 0.9f) * spans);
+            Block(0, 4);
+            if (spawnId != null) Spawn(spawnId, 1f);
+            if (hint != null) Hint(hint, 2f, 4.6f, 9f);
+            Advance(4);
+            for (int span = 0; span < spans; span++)
+            {
+                Pit(0, gap, -2f, 0);
+                GameObject rail = Put("GondolaRail", P(gap * 0.5f, GondolaRailHeight + 0.125f), Props, "GondolaRail");
+                rail.GetComponent<SpriteRenderer>().size = new Vector2(gap + 2f, 0.25f);
+                foreach (float post in new[] { -1f, gap + 1f })
+                {
+                    GameObject pole = Put("GondolaRail", P(post, GondolaRailHeight * 0.5f + 0.1f), Props, "GondolaRail_Post");
+                    pole.transform.rotation = Quaternion.Euler(0f, 0f, 90f);
+                    pole.GetComponent<SpriteRenderer>().size = new Vector2(GondolaRailHeight + 0.4f, 0.25f);
+                }
+
+                GameObject gondola = Put("Gondola", new Vector3(X + 1.5f, Floor - 0.25f), Props, $"Gondola_{span + 1}");
+                Transform a = PrefabFactory.Go("Gondola_A", Props, Layers.Default, new Vector3(X + 1.5f, Floor - 0.25f)).transform;
+                Transform b = PrefabFactory.Go("Gondola_B", Props, Layers.Default, new Vector3(X + gap - 1.5f, Floor - 0.25f)).transform;
+                EditorAssetUtil.SetFields(gondola.GetComponent<MovingPlatform>(), so =>
+                {
+                    so.Require("pointA").objectReferenceValue = a;
+                    so.Require("pointB").objectReferenceValue = b;
+                    so.Require("speed").floatValue = 2.4f + span * 0.4f;
+                    so.Require("waitSeconds").floatValue = 1.1f;
+                    so.Require("startDelay").floatValue = span * 1.3f;
+                });
+                if (span == 0) LoreAt(lore, gap * 0.5f, 3.9f);
+                Advance(gap);
+                if (span == spans - 1) break;
+                Block(0, 3);
+                Put("Decor_Mast", P(1.5f));
+                Advance(3);
+            }
+
+            Block(0, 4);
+            Advance(4);
+            return this;
+        }
+
+        /// <summary>
+        /// Updraft: a cliff <paramref name="height"/> tiles high (above double-jump reach) with a fan sunk into the deck in
+        /// front of it. The fan lifts the player above the cliff edge; drift right to land. With a terminal id the fan starts
+        /// switched off (hack it); with <paramref name="pulse"/> it blows in cycles. A side ledge high over the approach
+        /// holds a data log for whoever drifts left on the way up.
+        /// </summary>
+        public Updraft UpdraftShaft(int height = 9, string terminalId = null, string hint = null, string spawnId = null, LoreDefinition lore = null,
+            float pulse = 0f)
+        {
+            Estimate(terminalId != null ? "Ventilator (spargere + urcare)" : "Curent de aer", terminalId != null ? 45f : 22f + pulse * 2f);
+            const int approach = 7;
+            Block(0, approach);
+            if (spawnId != null) Spawn(spawnId, 1f);
+            if (hint != null) Hint(hint, 3.5f, 4.8f, 10f);
+            GameObject terminal = terminalId != null ? HackTerminal("Terminal", 2.5f, terminalId, "Terminal_Fan") : null;
+            Platform(1, 3, height - 2);
+            LoreAt(lore, 2f, height - 2 + 0.7f);
+            Advance(approach);
+
+            // The fan sits in a one-tile recess: its grill is the floor.
+            Fill(_scene.Ground, X, X + 2, BaseY, Floor - 2, _theme.Ground);
+            GameObject fan = Put("Fan", P(1.5f), Props, "Fan");
+            BoxCollider2D column = fan.transform.Find("Column").GetComponent<BoxCollider2D>();
+            float columnHeight = height + 2.5f;
+            column.size = new Vector2(2.6f, columnHeight);
+            column.offset = new Vector2(0f, columnHeight * 0.5f);
+            var updraft = column.GetComponent<Updraft>();
+            EditorAssetUtil.SetFields(updraft, so =>
+            {
+                so.Require("running").boolValue = terminalId == null;
+                so.Require("pulseSeconds").floatValue = pulse;
+            });
+            if (terminal != null) SceneBuilder.ConfigureTerminal(terminal, terminalId, updraft);
+            Advance(3);
+
+            Floor += height;
+            Block(0, 6);
+            Put("Pickup_Credits", P(2.5f, 0.6f));
+            Advance(6);
+            return updraft;
+        }
+
+        /// <summary>
+        /// Rusty catwalk: <paramref name="grates"/> two-tile grates over a pit, a tile apart. Each gives way half a second
+        /// after the player lands on it and comes back three seconds later. A lone grate higher up carries a data log.
+        /// </summary>
+        public LevelLayout CrumbleBridge(int grates = 5, string hint = null, string spawnId = null, LoreDefinition lore = null)
+        {
+            Estimate($"Pasarelă cu {grates} grilaje", 16f + grates * 3f);
+            Block(0, 4);
+            if (spawnId != null) Spawn(spawnId, 1f);
+            if (hint != null) Hint(hint, 2f, 4.6f, 9f);
+            Advance(4);
+            int span = grates * 3 + 1;
+            Pit(0, span, -2f, 0);
+            for (int i = 0; i < grates; i++)
+                Put("Grate", new Vector3(X + 2f + i * 3f, Floor - 0.1875f), Props, $"Grate_{i + 1}");
+            if (!ReferenceEquals(lore, null))
+            {
+                Put("Grate", new Vector3(X + span * 0.5f, Floor + 3.1f), Props, "Grate_High");
+                LoreAt(lore, span * 0.5f, 3.95f);
+            }
+
+            Advance(span);
+            Block(0, 4);
+            Advance(4);
+            return this;
+        }
+
+        /// <summary>
+        /// The broadcast: the transmitter on an open deck, its terminal, a raised walkway for cover and two EMP charges.
+        /// Hacking the terminal arms the transmitter; while the player holds the deck the upload climbs (24 s) and the
+        /// <paramref name="drones"/> drones join in waves. At 100% the door in the wall on the right opens.
+        /// </summary>
+        public UplinkStation UplinkStand(string terminalId, string completedObjectiveId, int drones = 3, string hint = null, string spawnId = null,
+            LoreDefinition lore = null)
+        {
+            Estimate("Transmisia (apărare 24 s)", 75f);
+            const int width = 24;
+            Block(0, width);
+            if (spawnId != null) Spawn(spawnId, 1f);
+            if (hint != null) Hint(hint, 9f, 7.6f, 16f);
+            int wallTop = Indoor ? Ceiling : OutdoorHeadroom;
+            Wall(21, 22, 3, wallTop);
+            GameObject door = Put("Door", P(21.5f));
+            Platform(13, 17, 3);
+            Put("Pickup_Emp", P(2.5f));
+            Put("Pickup_Emp", P(15f, 3f));
+            Put("Crate", P(4.5f, 0.5f));
+            Put("NeonSign", P(17.5f, 6.5f));
+
+            GameObject station = Put("UplinkStation", P(10f), Props, "UplinkStation");
+            var uplink = station.GetComponent<UplinkStation>();
+            var waves = new GameObject[drones];
+            for (int i = 0; i < drones; i++)
+                waves[i] = Put("Drone", P(4f + i * 6.5f, 6.5f + (i % 2)), Enemies, $"Drone_Uplink_{i + 1}");
+            EditorAssetUtil.SetFields(uplink, so =>
+            {
+                so.Require("completedObjectiveId").stringValue = completedObjectiveId;
+                so.Require("zoneSize").vector2Value = new Vector2(18f, 7f);
+                so.SetArray("waves", waves);
+                so.SetArray("targets", new MonoBehaviour[] { door.GetComponent<Door>() });
+            });
+
+            GameObject terminal = HackTerminal("Terminal", 7f, terminalId, "Terminal_Uplink", uplink);
+            EditorAssetUtil.SetFields(terminal.GetComponent<Terminal>(), so =>
+            {
+                so.Require("minigame").enumValueIndex = (int)HackingMinigameType.WireConnect;
+                so.Require("actionOnSuccess").enumValueIndex = (int)HackAction.Activate;
+                so.Require("difficulty").intValue = 3;
+                so.Require("rewardCredits").intValue = 150;
+            });
+            LoreAt(lore, 16f, 3.7f);
+            PrefabFactory.Light(Lights, "UplinkGlow", Light2D.LightType.Point, new Color(0.3f, 0.9f, 1f), 0.9f, 7f, P(10f, 3f));
+            Advance(width);
+            return uplink;
         }
 
         /// <summary>Interior shell between explicit rows (used where neighbouring floors differ, e.g. the node towers).</summary>

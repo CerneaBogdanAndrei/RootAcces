@@ -51,11 +51,14 @@ namespace RootAccess.Player
                 return;
             }
 
+            // On a gondola the run speed is relative to the platform, so standing still rides along with it.
+            Vector2 carry = Owner.GroundCarryVelocity;
             float speed = Config.MaxRunSpeed * (Owner.IsCrouching ? Config.CrouchSpeedMultiplier : 1f);
-            Owner.ApplyHorizontal(Owner.MoveInput.x * speed, Config.GroundAcceleration, Config.GroundDeceleration, deltaTime);
+            Owner.ApplyHorizontal(Owner.MoveInput.x * speed + carry.x, Config.GroundAcceleration, Config.GroundDeceleration, deltaTime);
 
             Vector2 velocity = Owner.Body.linearVelocity;
-            if (velocity.y > 0f && !Owner.IsJumpRising) Owner.Body.linearVelocity = new Vector2(velocity.x, Mathf.Min(velocity.y, 0.5f));
+            if (velocity.y > 0f && !Owner.IsJumpRising) Owner.Body.linearVelocity = new Vector2(velocity.x, Mathf.Min(velocity.y, Mathf.Max(0.5f, carry.y)));
+            else if (carry.y < 0f && !Owner.IsJumpRising) Owner.Body.linearVelocity = new Vector2(velocity.x, Mathf.Min(velocity.y, carry.y));
         }
     }
 }

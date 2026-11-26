@@ -26,7 +26,7 @@ namespace RootAccess.EditorTools
         public static readonly string[] BuildOrder =
         {
             SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.Level03,
-            SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale,
+            SceneNames.Level04, SceneNames.Level05, SceneNames.Level06, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale,
             SceneNames.OperatorConsole
         };
 
@@ -65,6 +65,7 @@ namespace RootAccess.EditorTools
                 BuildLevel03(ctx);
                 BuildLevel04(ctx);
                 BuildLevel05(ctx);
+                BuildLevel06(ctx);
                 CutsceneFactory.BuildAll(ctx);
                 PlaytimeReport.Write();
                 BuildRubricShowcase(ctx);
@@ -615,7 +616,7 @@ namespace RootAccess.EditorTools
             Save(scene, SceneNames.Level02);
         }
 
-        // ---------------------------------------------------------------- Levels 03–05
+        // ---------------------------------------------------------------- Levels 03–06
 
         /// <summary>Lobby of an interior level: intro dialogue trigger, tutorial hint, decor.</summary>
         private static void IntroRoom(LevelLayout layout, DialogueDefinition dialogue, string hint, string decor, int width = 12)
@@ -697,8 +698,8 @@ namespace RootAccess.EditorTools
         }
 
         /// <summary>
-        /// Corporate HQ, the finale (7–8 min): every mechanic in sequence (gate, heavy guard, lasers, executive elevator,
-        /// sniper, drones, turrets, node chain, mainframe hack) and a rooftop exit that rolls the credits.
+        /// Corporate HQ (7–8 min): every mechanic in sequence (gate, heavy guard, lasers, executive elevator, sniper,
+        /// drones, turrets, node chain, mainframe hack) and a rooftop exit that unlocks the antenna (Level 6).
         /// </summary>
         private static void BuildLevel05(BuildContext ctx)
         {
@@ -726,10 +727,74 @@ namespace RootAccess.EditorTools
             layout.Hint(SeedContent.Labels.L5Mainframe, 6f, 5f, 12f);
             layout.DataVault(SeedContent.Ids.TerminalLevel05Mainframe, "Terminal_Mainframe", 4);
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
-            layout.Exit(SeedContent.Ids.ExitLevel05, SeedContent.Ids.Level05, null, SceneNames.Finale);
+            layout.Exit(SeedContent.Ids.ExitLevel05, SeedContent.Ids.Level05, ctx.Level06);
             layout.Finish();
             PlaytimeReport.Add(Strings.Levels.Level05, layout);
             Save(scene, SceneNames.Level05);
+        }
+
+        /// <summary>
+        /// Halden antenna (8–10 min), the climb after the mainframe: gondola crossings, a hacked fan that lifts you up the
+        /// mast, rusty grates that give way, electric arcs, drones, a sniper, a pulsing fan, turrets, then the broadcast at
+        /// the transmitter (hold the deck while the upload runs and the drones come) and the exit into the finale.
+        /// </summary>
+        private static void BuildLevel06(BuildContext ctx)
+        {
+            Scene scene = NewScene();
+            LevelTheme theme = LevelTheme.For(Biome.Spire, ctx);
+            GameplayScene level = Gameplay(ctx, SeedContent.Ids.Level06, ctx.Level06Profile, theme.Ambient, theme.AmbientIntensity,
+                new Rect(-8f, -6f, 40f, 20f), new Vector3(0f, 0f), "l6_start", true);
+            var layout = new LevelLayout(ctx, level, theme, "l6", -6);
+
+            GameObject dialogue = PrefabFactory.Go("DialogueZone_Intro", layout.Props, Layers.Trigger, layout.P(7f, 1f));
+            dialogue.AddComponent<BoxCollider2D>().size = new Vector2(1f, 3f);
+            EditorAssetUtil.SetField(dialogue.AddComponent<DialogueZone>(), "dialogue", BuildContext.Fresh(ctx.Level06Intro));
+            layout.Flat(12, SeedContent.Labels.L6Start);
+
+            layout.GondolaCrossing(12, SeedContent.Labels.L6Gondola, "l6_gondola", ctx.LoreLogs[15]);
+            layout.GuardPatrol("Guard", 18, catwalk: true);
+            layout.UpdraftShaft(9, SeedContent.Ids.TerminalLevel06Fan, SeedContent.Labels.L6Fan, "l6_fans", ctx.LoreLogs[16]);
+            layout.Flat(4);
+            layout.Checkpoint("l6_cp1");
+
+            layout.CrumbleBridge(5, SeedContent.Labels.L6Grates, "l6_grates");
+            layout.Hint(SeedContent.Labels.L6Arcs, 6f, 4.6f, 12f);
+            layout.LaserCorridor(3, "l6_arcs", 0.5f, beamPrefab: "Hazard_Arc");
+            layout.VentDuct(8);
+            layout.DroneArena(2, "l6_drones", "Pickup_Emp");
+            layout.GondolaCrossing(11, spans: 2);
+            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
+            layout.UpdraftShaft(10, hint: SeedContent.Labels.L6Pulse, pulse: 3.2f);
+            layout.TurretHall(2);
+            layout.Flat(8);
+            layout.Checkpoint("l6_cp2", "l6_uplink");
+
+            layout.UplinkStand(SeedContent.Ids.TerminalLevel06Uplink, SeedContent.Ids.BroadcastDone, 3, SeedContent.Labels.L6Uplink, null, ctx.LoreLogs[17]);
+            layout.Exit(SeedContent.Ids.ExitLevel06, SeedContent.Ids.Level06, null, SceneNames.Finale);
+            Rect rect = layout.Finish();
+            PlaytimeReport.Add(Strings.Levels.Level06, layout);
+
+            // High above the city: the skyline sits far below the decks and a bank of clouds drifts between.
+            Parallax(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -15f);
+            Clouds(ctx, level.Root, rect.xMin - 40f, rect.xMax + 40f, -5.5f);
+            for (float x = rect.xMin + 20f; x < rect.xMax; x += 45f)
+                Place(ctx.VfxPrefabs[VfxId.Rain], new Vector3(x, 32f), layout.Props, "Rain");
+            Save(scene, SceneNames.Level06);
+        }
+
+        /// <summary>Cloud tops between the decks and the city, drifting with the camera like a near parallax layer.</summary>
+        internal static void Clouds(BuildContext ctx, Transform parent, float fromX, float toX, float y)
+        {
+            GameObject group = PrefabFactory.Go("cloud_bank", Group("Clouds", parent));
+            group.transform.position = new Vector3(0f, y, 0f);
+            for (float x = fromX; x < toX; x += 16f * 1.5f)
+            {
+                GameObject piece = PrefabFactory.Go("Segment", group.transform, Layers.Default, new Vector3(x, 0f, 0f));
+                piece.transform.localScale = Vector3.one * 1.5f;
+                PrefabFactory.Sprite(piece, "cloud_bank", ctx.SpriteUnlit, SortingLayers.Parallax, 5, new Color(0.85f, 0.88f, 1f, 0.9f));
+            }
+
+            EditorAssetUtil.SetFields(group.AddComponent<ParallaxLayer>(), so => so.Require("factor").vector2Value = new Vector2(0.25f, 0.55f));
         }
 
         internal static void ConfigureTerminal(GameObject terminal, string id, params MonoBehaviour[] targets)

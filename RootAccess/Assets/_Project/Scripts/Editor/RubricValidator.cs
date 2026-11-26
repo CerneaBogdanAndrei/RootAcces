@@ -284,7 +284,7 @@ namespace RootAccess.EditorTools
             Add(item, "AI gardieni: auz (PlayerNoise → Investigate), răspuns la AlarmRaised, lunetist cu proiectile",
                 FindType("GuardInvestigateState") != null && FindType("Hearing") != null && sniperRifle,
                 "AI/Guard/GuardStates.cs, AI/Perception/Hearing.cs, Guard_Sniper.prefab");
-            string[] levels = { SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05 };
+            string[] levels = { SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05, SceneNames.Level06 };
             string[] missingLevels = levels.Where(l => !SceneInBuild(l)).ToArray();
             Add(item, "Hub + 5 niveluri construite din segmente (LevelLayout), toate în build", missingLevels.Length == 0,
                 missingLevels.Length == 0 ? string.Join(", ", levels) : "lipsesc: " + string.Join(", ", missingLevels));

@@ -67,7 +67,8 @@ namespace RootAccess.EditorTools
         private static void PaintGameplay()
         {
             foreach ((string name, PixelCanvas canvas, Vector2 pivot) in GameplayArt.All())
-                SaveSprite(name, canvas, pivot, withNormal: !name.StartsWith("skyline") && name != "alert_icon" && name != GameplayArt.KeyArtSprite);
+                SaveSprite(name, canvas, pivot, withNormal: !name.StartsWith("skyline") && !name.StartsWith("cloud") && name != "arc_bolt" &&
+                                                            name != "alert_icon" && name != GameplayArt.KeyArtSprite);
         }
 
         /// <summary>Background props and lamps of every biome (see <see cref="PropArt"/>).</summary>

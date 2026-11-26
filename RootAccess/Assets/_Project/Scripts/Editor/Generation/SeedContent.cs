@@ -52,6 +52,12 @@ namespace RootAccess.EditorTools
             public const string ExitLevel03 = "exit_l3";
             public const string ExitLevel04 = "exit_l4";
             public const string ExitLevel05 = "exit_l5";
+            public const string Level06 = "level06";
+            public const string MainQuestLevel06 = "main_broadcast";
+            public const string TerminalLevel06Fan = "l6_fan";
+            public const string TerminalLevel06Uplink = "l6_uplink";
+            public const string BroadcastDone = "l6_broadcast";
+            public const string ExitLevel06 = "exit_l6";
         }
 
         public static class Items
@@ -119,15 +125,22 @@ namespace RootAccess.EditorTools
             public const string SewersSluice = "Deschide stavila și urcă pe apă";
             public const string SewersExit = "Ajunge sub fundația sediului";
             public const string HqTitle = "Root Access";
-            public const string HqDesc = "Ultimul pas: mainframe-ul din vârful sediului. Cu el, orașul întreg e al tău.";
+            public const string HqDesc = "Mainframe-ul din vârful sediului. Cu el, orașul întreg e al tău.";
             public const string HqReach = "Pătrunde în sediul corporației";
             public const string HqElevator = "Pornește liftul executiv";
             public const string HqMainframe = "Obține root access pe mainframe";
             public const string HqExit = "Fugi pe acoperiș";
+            public const string SpireTitle = "Transmisia";
+            public const string SpireDesc = "Varga a cerut un singur lucru: datele înapoi la oameni. Antena din vârful sediului emite pe fiecare ecran din oraș.";
+            public const string SpireReach = "Urcă pe antena Halden";
+            public const string SpireFan = "Pornește ventilatorul de răcire";
+            public const string SpireUplink = "Sparge emițătorul de la vârf";
+            public const string SpireBroadcast = "Ține transmisia până la 100%";
+            public const string SpireExit = "Dispari în noapte";
         }
 
         /// <summary>
-        /// The 15 data logs (3 per level): who Halden Systems is, what "Proiectul OCHI" does with the city's cameras, the
+        /// The 18 data logs (3 per level): who Halden Systems is, what "Proiectul OCHI" does with the city's cameras, the
         /// engineer L. Varga who leaked the first fragment, and the root account the hacker keeps using.
         /// </summary>
         public static class Lore
@@ -171,7 +184,14 @@ namespace RootAccess.EditorTools
                 ("lore_l5_director", Ids.Level05, "Jurnal personal: directorul",
                     "Cineva umblă prin rețea cu contul root. Eu l-am creat, acum zece ani, ca ușă din spate pentru ziua în care consiliul m-ar fi dat afară. N-am crezut că-l va găsi altcineva. Acum el îmi deschide ușile mie."),
                 ("lore_l5_last", Ids.Level05, "Ultimul mesaj al lui L. Varga",
-                    "Dacă ai ajuns la mainframe, termină ce am început eu. Nu vinde datele, nu le șterge. Dă-le înapoi oamenilor cărora le aparțin. Și, te rog, schimbă cheia de sincronizare. Mi-e rușine de ea.")
+                    "Dacă ai ajuns la mainframe, termină ce am început eu. Nu vinde datele, nu le șterge. Dă-le înapoi oamenilor cărora le aparțin. Și, te rog, schimbă cheia de sincronizare. Mi-e rușine de ea."),
+
+                ("lore_l6_cleaners", Ids.Level06, "Jurnal: echipa de spălat geamuri",
+                    "Nacela 2 merge singură de la o vreme, dus-întors, fără să-i spună nimeni. Grilajele de pe pasarela de est sunt ruginite până la os. Halden a promis că le schimbă trimestrul viitor. Asta a fost acum trei ani."),
+                ("lore_l6_spec", Ids.Level06, "Specificație: emițătorul OCHI",
+                    "Emițătorul din vârful antenei preia orice ecran din oraș în mai puțin de o secundă: panouri, telefoane, televizoare. Oficial, pentru anunțuri de urgență. Neoficial, n-a fost folosit niciodată pentru o urgență."),
+                ("lore_l6_varga", Ids.Level06, "Mesaj programat: L. Varga",
+                    "Dacă emițătorul pornește, cineva a ajuns unde eu n-am mai putut. Am lăsat ventilatoarele pe manual și cheia de sincronizare în modul de transmisie. Restul depinde de tine. Ține-te bine și nu te uita în jos.")
             };
         }
 
@@ -195,6 +215,9 @@ namespace RootAccess.EditorTools
             public const string Hq1 = "Sediul. Gardieni grei, lunetiști, turele și lasere peste tot.";
             public const string Hq2 = "Liftul executiv duce la mainframe. După asta, fugi pe acoperiș.";
             public const string Hq3 = "Hai să terminăm ce am început.";
+            public const string Spire1 = "Ești pe antena sediului. De aici, emițătorul ajunge pe fiecare ecran din oraș.";
+            public const string Spire2 = "Vântul bate tare. Nacelele și ventilatoarele de răcire te duc până sus.";
+            public const string Spire3 = "Atunci urc. Varga ar fi vrut asta.";
         }
 
         public static class Rubric
@@ -211,7 +234,7 @@ namespace RootAccess.EditorTools
             public const string Animation = "Animator Controllers cu blend trees, Animation Events pentru pași și lovituri.";
             public const string Collisions = "Matrice de coliziuni, OnCollisionEnter2D (daune, aterizare), triggere, raycast-uri.";
             public const string Scripts = "Arhitectură pe asmdef-uri, EventBus, A* propriu pentru drone, teste EditMode/PlayMode.";
-            public const string Cinematics = "Cutscene-uri Timeline + Cinemachine (intro după Joc nou, final după nivelul 5), sărite cu Enter/Esc.";
+            public const string Cinematics = "Cutscene-uri Timeline + Cinemachine (intro după Joc nou, final după nivelul 6), sărite cu Enter/Esc.";
             public const string Multiplayer = "Co-op asimetric: Infiltrator + Operator (hartă, uși, camere, gardieni), split-screen sau LAN.";
         }
 
@@ -239,8 +262,15 @@ namespace RootAccess.EditorTools
             public const string L4Start = "Apa e caldă, dar adâncă: Space la suprafață te scoate afară";
             public const string L4Dive = "Zidul coboară în apă: scufundă-te (S) și treci pe dedesubt";
             public const string L4Sluice = "Sparge terminalul stavilei: apa umple puțul";
-            public const string L5Start = "Ultimul nivel: toate sistemele de securitate, deodată";
+            public const string L5Start = "Sediul: toate sistemele de securitate, deodată";
             public const string L5Mainframe = "Mainframe-ul: root access e la un hack distanță";
+            public const string L6Start = "Antena Halden: vântul bate puternic aici sus";
+            public const string L6Gondola = "Nacela merge singură dintr-o parte în alta: urcă și lasă-te dus";
+            public const string L6Fan = "Zidul e prea înalt: sparge terminalul ventilatorului și lasă aerul să te ridice";
+            public const string L6Grates = "Grilajele ruginite cad la scurt timp după ce calci pe ele: nu te opri";
+            public const string L6Arcs = "Arcurile electrice pornesc și se opresc: treci în pauză sau sparge terminalul";
+            public const string L6Pulse = "Ventilatorul suflă în rafale: intră în curent când pornește";
+            public const string L6Uplink = "Sparge emițătorul și rămâi pe platformă până la 100%";
         }
 
         public static class LevelInfo
@@ -249,7 +279,8 @@ namespace RootAccess.EditorTools
             public const string Level02 = "Turnul Halden Systems: holuri supravegheate, lasere, lift de serviciu, lunetist și seiful de date.";
             public const string Level03 = "Ferma de servere a corporației: roiuri de drone și lanțuri de noduri de rețea.";
             public const string Level04 = "Canalizarea de sub oraș: apă, curenți și o ecluză de deschis.";
-            public const string Level05 = "Sediul corporației: finalul. Toate sistemele de securitate, deodată.";
+            public const string Level05 = "Sediul corporației: toate sistemele de securitate, deodată, și mainframe-ul din vârf.";
+            public const string Level06 = "Antena Halden: nacele, ventilatoare, grilaje care cad și transmisia finală către tot orașul.";
         }
     }
 }
