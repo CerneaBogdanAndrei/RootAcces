@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b6a1081e0979304da9da54b13771512, type: 3}
+  m_Name: Level_level06
+  m_EditorClassIdentifier: RootAccess.Core::RootAccess.Core.LevelDefinition
+  levelId: level06
+  sceneName: Level06_Spire
+  displayName: Antena Halden
+  description: "Antena Halden: nacele, ventilatoare, grilaje care cad \u0219i transmisia
+    final\u0103 c\u0103tre tot ora\u0219ul."
+  unlockedByDefault: 0
+  order: 6

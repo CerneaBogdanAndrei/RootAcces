@@ -19,6 +19,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 79872d024a039f6488cf194a2fb21592, type: 2}
   - {fileID: 11400000, guid: bde6a4e62ff92f0408d949db3e303fd8, type: 2}
   - {fileID: 11400000, guid: 8b661e27199717f49b64ca3b7b53977a, type: 2}
+  - {fileID: 11400000, guid: 1ffa8be32bd24744ab95b390e0b8b016, type: 2}
   - {fileID: 11400000, guid: b346d65402767e94491a80ffc0a50a3b, type: 2}
   - {fileID: 11400000, guid: 839100f42cdbb0a4a8ab915121f41e12, type: 2}
   - {fileID: 11400000, guid: b6ee06d00d07fb845a898f0cf2647f1d, type: 2}
@@ -38,6 +39,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 868c5584824ae3048a29983fcc57050f, type: 2}
   - {fileID: 11400000, guid: ea0b5f5ba55e8b74eb46549c3b9334ab, type: 2}
   - {fileID: 11400000, guid: 74cb6ece65f8e8d40aedd87282537710, type: 2}
+  - {fileID: 11400000, guid: 2a0b2edff736f7e429884fff5b03ea79, type: 2}
   - {fileID: 11400000, guid: ea78b1db1ee40644198dc1497653f7e4, type: 2}
   startingQuest: {fileID: 11400000, guid: 24c6990f81dbec14ba927f736a2f99dc, type: 2}
   traceSettings:
@@ -66,3 +68,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d439516a84b3904a876a8b65fae4479, type: 2}
   - {fileID: 11400000, guid: ef2424f22e7b7834cac0844ceb4a89ab, type: 2}
   - {fileID: 11400000, guid: 3f3a345d3d0b91747a7d995f65213c3c, type: 2}
+  - {fileID: 11400000, guid: 33778dcb706dbf24f8675e2391644f67, type: 2}
+  - {fileID: 11400000, guid: cf248066a8fcb90438196ba6272f9965, type: 2}
+  - {fileID: 11400000, guid: 7ef3ff5dea573f345bb71f1597a5566b, type: 2}

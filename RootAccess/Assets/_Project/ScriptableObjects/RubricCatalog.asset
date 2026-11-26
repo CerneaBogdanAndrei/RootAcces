@@ -75,7 +75,7 @@ MonoBehaviour:
     spawnId: l1_drone
   - title: 'Bonus: Cinematice'
     summary: "Cutscene-uri Timeline + Cinemachine (intro dup\u0103 Joc nou, final
-      dup\u0103 nivelul 5), s\u0103rite cu Enter/Esc."
+      dup\u0103 nivelul 6), s\u0103rite cu Enter/Esc."
     sceneName: Intro
     spawnId: 
   - title: 'Bonus: Multiplayer co-op'

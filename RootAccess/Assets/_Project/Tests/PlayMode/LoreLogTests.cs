@@ -13,13 +13,13 @@ namespace RootAccess.Tests.PlayMode
 {
     /// <summary>
     /// Data logs in the real scenes: every level hides three distinct logs, touching one records it (and hides it on the
-    /// next visit), and the terminal's "Jurnale" tab lists all fifteen with the found one readable.
+    /// next visit), and the terminal's "Jurnale" tab lists all eighteen with the found one readable.
     /// </summary>
     public sealed class LoreLogTests
     {
         private static readonly string[] Levels =
         {
-            SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05
+            SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05, SceneNames.Level06
         };
 
         [SetUp]

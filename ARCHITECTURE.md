@@ -134,7 +134,7 @@ lasă să treacă 45% din rază) și trece în starea Investigate: merge la surs
 
 Exemplu, progresia: `LevelExit` raportează `ObjectiveReported(Reach, exitId)`, deblochează `unlocksLevel` și salvează.
 `QuestLog.TryComplete` pornește automat `QuestDefinition.followUpQuest` (misiunea principală a nivelului următor), iar
-consola de călătorie din Hub deschide tab-ul `TerminalTab.Travel` cu nivelurile 1–5 (cele blocate sau încă neconstruite
+consola de călătorie din Hub deschide tab-ul `TerminalTab.Travel` cu nivelurile 1–6 (cele blocate sau încă neconstruite
 nu pot fi alese).
 
 Exemplu, magazinul din Hub: `ShopTerminal.Interact` ─► `TerminalScreenRequested(Shop, oferte)` ─► `TerminalScreenView.Open`
@@ -220,7 +220,7 @@ SceneBuilder.BuildAll
   ├─ VfxFactory        prefab-urile ParticleSystem
   ├─ UIRootBuilder     UIRoot, canvas-urile din meniu și credite
   ├─ PrefabFactory     jucător, inamici + variante, interactive, mediu, CameraRig, SystemsRoot
-  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops … Level05_HQ, RubricShowcase, Credits + Build Settings
+  └─ scene             Bootstrap, MainMenu, Hub, Level01_Rooftops … Level06_Spire, RubricShowcase, Credits + Build Settings
                        (nivelurile se compun din segmentele lui LevelLayout: acoperișuri cu gropi, horn de wall-jump,
                        patrulă, poartă cu cameră, coridor cu lasere, salt prin noduri, lanț de turnuri cu noduri,
                        arenă de drone, lift, seif, sală cu turele, bazin cu apă, puț cu stavilă, checkpoint, ieșire;

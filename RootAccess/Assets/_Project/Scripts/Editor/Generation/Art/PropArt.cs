@@ -96,11 +96,17 @@ namespace RootAccess.EditorTools
             new() { Prefab = "Decor_Workbench", Sprite = "decor_workbench", Paint = Workbench, Glow = new Color(0.4f, 1f, 0.9f), GlowAt = new Vector2(0.4f, 1.2f), GlowRadius = 1.8f, GlowIntensity = 0.6f },
             new() { Prefab = "Decor_Rig", Sprite = "decor_rig", Paint = HackerRig, Glow = new Color(0.3f, 0.9f, 1f), GlowAt = new Vector2(0f, 1.4f), GlowRadius = 2.6f, GlowIntensity = 0.8f },
             new() { Prefab = "Decor_Graffiti", Sprite = "decor_graffiti", Paint = Graffiti, Wall = true, Pivot = new Vector2(0.5f, 0.5f) },
+            // Halden antenna
+            new() { Prefab = "Decor_Windsock", Sprite = "decor_windsock", Paint = Windsock, Glow = new Color(1f, 0.2f, 0.25f), GlowAt = new Vector2(-0.53f, 2.47f), GlowRadius = 1.3f },
+            new() { Prefab = "Decor_Transformer", Sprite = "decor_transformer", Paint = Transformer },
+            new() { Prefab = "Decor_Radar", Sprite = "decor_radar", Paint = Radar, Glow = new Color(1f, 0.2f, 0.25f), GlowAt = new Vector2(0f, 2.22f), GlowRadius = 1.2f },
+            new() { Prefab = "Decor_Mast", Sprite = "decor_mast", Paint = Mast, Glow = new Color(1f, 0.2f, 0.25f), GlowAt = new Vector2(0f, 5.47f), GlowRadius = 1.8f },
             // Lamps (light points down from the fixture)
             new() { Prefab = "StreetLamp", Sprite = "lamp_street", Paint = StreetLamp, Glow = new Color(1f, 0.85f, 0.55f), GlowAt = new Vector2(0.31f, 3.15f), GlowRadius = 7f, GlowIntensity = 1.4f, Spot = true },
             new() { Prefab = "Lamp_Office", Sprite = "lamp_office", Paint = OfficeLamp, Ceiling = true, Pivot = Hang, Glow = new Color(0.85f, 0.93f, 1f), GlowAt = new Vector2(0f, -0.3f), GlowRadius = 9f, GlowIntensity = 1.1f, Spot = true },
             new() { Prefab = "Lamp_Server", Sprite = "lamp_server", Paint = ServerLamp, Ceiling = true, Pivot = Hang, Glow = new Color(0.45f, 0.9f, 1f), GlowAt = new Vector2(0f, -0.35f), GlowRadius = 10f, GlowIntensity = 1.1f, Spot = true },
             new() { Prefab = "Lamp_Sewer", Sprite = "lamp_sewer", Paint = SewerLamp, Ceiling = true, Pivot = Hang, Glow = new Color(0.8f, 1f, 0.65f), GlowAt = new Vector2(0f, -0.65f), GlowRadius = 9f, GlowIntensity = 1.1f, Spot = true },
+            new() { Prefab = "Lamp_Beacon", Sprite = "lamp_beacon", Paint = BeaconLamp, Glow = new Color(1f, 0.93f, 0.8f), GlowAt = new Vector2(0.31f, 2.9f), GlowRadius = 7f, GlowIntensity = 1.3f, Spot = true },
             new() { Prefab = "Lamp_Hq", Sprite = "lamp_hq", Paint = HqLamp, Ceiling = true, Pivot = Hang, Glow = new Color(1f, 0.9f, 0.7f), GlowAt = new Vector2(0f, -0.85f), GlowRadius = 9f, GlowIntensity = 1.2f, Spot = true },
         };
 
@@ -773,6 +779,111 @@ namespace RootAccess.EditorTools
         }
 
         // ---------------------------------------------------------------- lamps
+
+        // ---------------------------------------------------------------- Halden antenna (Level 6)
+
+        private static PixelCanvas Windsock()
+        {
+            var c = new PixelCanvas(52, 84);
+            c.Bevel(3, 0, 12, 4, DarkSteel);
+            c.Cylinder(7, 4, 4, 72, DarkSteel);
+            c.Rect(5, 74, 8, 2, Steel.Base);
+            // The sock tapers from the ring to the tail, in red/white bands, blown out to the right.
+            for (int i = 0; i < 5; i++)
+            {
+                float f0 = i / 5f, f1 = (i + 1) / 5f;
+                float x0 = 12f + f0 * 38f, x1 = 12f + f1 * 38f;
+                float y0 = Mathf.Lerp(74f, 64f, f0), y1 = Mathf.Lerp(74f, 64f, f1);
+                float h0 = Mathf.Lerp(6f, 2.5f, f0), h1 = Mathf.Lerp(6f, 2.5f, f1);
+                Color32 band = i % 2 == 0 ? Red : Paint.Rgb(236, 236, 244);
+                c.Polygon(new List<Vector2> { new(x0, y0 - h0), new(x1, y1 - h1), new(x1, y1 + h1), new(x0, y0 + h0) }, band);
+                c.Line(Mathf.RoundToInt(x0), Mathf.RoundToInt(y0 - h0), Mathf.RoundToInt(x1), Mathf.RoundToInt(y1 - h1), Paint.Shade(band, 0.6f));
+            }
+
+            c.Rect(6, 78, 6, 3, Red);
+            c.Glow(9, 79, 6, new Color(1f, 0.2f, 0.25f, 0.55f));
+            return Done(c);
+        }
+
+        private static PixelCanvas Transformer()
+        {
+            var c = new PixelCanvas(60, 52);
+            Ramp body = Ramp.From(Paint.Rgb(72, 98, 92));
+            c.Bevel(4, 0, 52, 36, body);
+            for (int x = 8; x < 52; x += 4) c.Rect(x, 4, 1, 24, body.Dark);
+            c.Bevel(2, 36, 56, 3, DarkSteel);
+            foreach (int x in new[] { 12, 27, 42 })
+            {
+                c.Cylinder(x, 39, 5, 9, Ramp.From(Paint.Rgb(206, 196, 176)));
+                for (int y = 41; y < 48; y += 2) c.Rect(x, y, 5, 1, Paint.Rgb(150, 140, 126));
+                c.Rect(x + 1, 48, 3, 2, Steel.Light);
+            }
+
+            c.Line(14, 50, 29, 50, DarkSteel.Deep).Line(29, 50, 44, 50, DarkSteel.Deep);
+            c.Polygon(new List<Vector2> { new(22, 9), new(38, 9), new(30, 25) }, Amber);
+            c.Rect(29, 15, 2, 6, Ink).Rect(29, 11, 2, 2, Ink);
+            c.Text("PERICOL", 17, 29, Paint.Rgb(255, 230, 160));
+            c.Streaks(4, 0, 52, 36, Paint.Rgb(40, 50, 46), 61, 4);
+            return Done(c);
+        }
+
+        private static PixelCanvas Radar()
+        {
+            var c = new PixelCanvas(60, 76);
+            c.Bevel(20, 0, 20, 5, DarkSteel);
+            c.Cylinder(27, 5, 6, 40, DarkSteel);
+            c.Dome(30, 47, 9, 5, Steel);
+            c.Bevel(3, 52, 54, 11, Plastic);
+            for (int x = 6; x < 55; x += 4) c.Rect(x, 54, 1, 7, Plastic.Dark);
+            c.Rect(3, 63, 54, 2, DarkSteel.Base);
+            c.Rect(29, 65, 2, 5, DarkSteel.Base);
+            c.Rect(28, 70, 4, 3, Red);
+            c.Glow(30, 71, 5, new Color(1f, 0.2f, 0.25f, 0.5f));
+            return Done(c);
+        }
+
+        private static PixelCanvas Mast()
+        {
+            var c = new PixelCanvas(40, 180);
+            c.Bevel(7, 0, 26, 5, DarkSteel);
+            const int top = 168;
+            float Left(float y) => Mathf.Lerp(10f, 18f, (y - 5f) / (top - 5f));
+            float Right(float y) => Mathf.Lerp(30f, 22f, (y - 5f) / (top - 5f));
+            for (int y = 8; y < top - 6; y += 14)
+            {
+                int y1 = Mathf.Min(top, y + 14);
+                c.Line(Mathf.RoundToInt(Left(y)), y, Mathf.RoundToInt(Right(y1)), y1, DarkSteel.Dark);
+                c.Line(Mathf.RoundToInt(Right(y)), y, Mathf.RoundToInt(Left(y1)), y1, DarkSteel.Dark);
+                c.Line(Mathf.RoundToInt(Left(y)), y, Mathf.RoundToInt(Right(y)), y, DarkSteel.Base);
+            }
+
+            c.Line(10, 5, 18, top, DarkSteel.Base, 2).Line(30, 5, 22, top, DarkSteel.Base, 2);
+            c.Line(11, 5, 19, top, DarkSteel.Light);
+            c.Rect(19, top, 2, 8, DarkSteel.Base);
+            foreach (int y in new[] { 92, top + 7 })
+            {
+                c.Rect(18, y, 4, 3, Red);
+                c.Glow(20, y + 1, 6, new Color(1f, 0.2f, 0.25f, 0.55f));
+            }
+
+            return Done(c);
+        }
+
+        private static PixelCanvas BeaconLamp()
+        {
+            var c = new PixelCanvas(34, 116);
+            c.Bevel(10, 0, 12, 5, DarkSteel);
+            c.Cylinder(14, 5, 4, 96, DarkSteel);
+            c.Rect(12, 40, 8, 3, Paint.Rgb(236, 236, 244)).Rect(12, 46, 8, 3, Red);
+            c.Bevel(12, 99, 18, 3, DarkSteel);
+            // Two floodlight boxes tilted down towards the deck.
+            c.Polygon(new List<Vector2> { new(20, 92), new(32, 95), new(31, 102), new(19, 99) }, DarkSteel.Base);
+            c.Line(21, 92, 32, 95, Paint.Rgb(255, 240, 210), 2);
+            c.Glow(27, 93, 6, new Color(1f, 0.92f, 0.75f, 0.5f));
+            c.Rect(14, 108, 5, 4, Red);
+            c.Glow(16, 110, 6, new Color(1f, 0.2f, 0.25f, 0.6f));
+            return Done(c);
+        }
 
         private static PixelCanvas StreetLamp()
         {

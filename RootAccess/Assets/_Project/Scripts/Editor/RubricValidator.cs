@@ -284,9 +284,9 @@ namespace RootAccess.EditorTools
             Add(item, "AI gardieni: auz (PlayerNoise → Investigate), răspuns la AlarmRaised, lunetist cu proiectile",
                 FindType("GuardInvestigateState") != null && FindType("Hearing") != null && sniperRifle,
                 "AI/Guard/GuardStates.cs, AI/Perception/Hearing.cs, Guard_Sniper.prefab");
-            string[] levels = { SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05 };
+            string[] levels = { SceneNames.Level01, SceneNames.Level02, SceneNames.Level03, SceneNames.Level04, SceneNames.Level05, SceneNames.Level06 };
             string[] missingLevels = levels.Where(l => !SceneInBuild(l)).ToArray();
-            Add(item, "Hub + 5 niveluri construite din segmente (LevelLayout), toate în build", missingLevels.Length == 0,
+            Add(item, "Hub + 6 niveluri construite din segmente (LevelLayout), toate în build", missingLevels.Length == 0,
                 missingLevels.Length == 0 ? string.Join(", ", levels) : "lipsesc: " + string.Join(", ", missingLevels));
             (bool testsGreen, string testEvidence) = ReadTestResults();
             Add(item, "Ultima rulare a testelor: verde", testsGreen, testEvidence);
@@ -312,7 +312,7 @@ namespace RootAccess.EditorTools
 
             item = "Durată de joc (≥ 30 min)";
             (bool longEnough, string durationEvidence) = ReadPlaytimeEstimate();
-            Add(item, "Hub + 5 niveluri + cutscene-uri: estimarea primei treceri ≥ 30 min", longEnough, durationEvidence);
+            Add(item, "Hub + 6 niveluri + cutscene-uri: estimarea primei treceri ≥ 30 min", longEnough, durationEvidence);
 
             item = "Prezentare barem";
             Add(item, "Scena RubricShowcase cu o cameră per punct (14) + panoul F1", index.ShowcaseRooms >= 14 && uiRoot != null && HasAll(uiRoot, "DebugRubricPanel"),

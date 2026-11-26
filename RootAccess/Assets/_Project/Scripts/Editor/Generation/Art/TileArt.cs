@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RootAccess.EditorTools
 {
     /// <summary>Visual families of the levels: each one has its own tiles, backdrop, props and light mood.</summary>
-    public enum Biome { Rooftop, Office, Server, Sewer, Hq, Hideout, Lab }
+    public enum Biome { Rooftop, Office, Server, Sewer, Hq, Hideout, Lab, Spire }
 
     /// <summary>
     /// 32×32 tiles per <see cref="Biome"/>, in roles: <c>top</c> (walkable surface row), <c>body</c> (the mass under it),
@@ -49,6 +49,7 @@ namespace RootAccess.EditorTools
             foreach (var t in Hq()) yield return t;
             foreach (var t in Hideout()) yield return t;
             foreach (var t in Lab()) yield return t;
+            foreach (var t in Spire()) yield return t;
         }
 
         private static PixelCanvas New() => new(S, S);
@@ -301,6 +302,79 @@ namespace RootAccess.EditorTools
                 c.Line(Mathf.RoundToInt(cx + Mathf.Cos(a0) * r), Mathf.RoundToInt(cy + Mathf.Sin(a0) * r),
                     Mathf.RoundToInt(cx + Mathf.Cos(a1) * r), Mathf.RoundToInt(cy + Mathf.Sin(a1) * r), color);
             }
+        }
+
+        // ---------------------------------------------------------------- Halden antenna (Level 6)
+
+        private static readonly Ramp SpireSteel = Ramp.From(Paint.Rgb(98, 110, 138));
+        private static readonly Ramp SpireDark = Ramp.From(Paint.Rgb(50, 58, 82));
+        private static readonly Color32 AviationRed = Paint.Rgb(255, 54, 66);
+
+        /// <summary>
+        /// Open lattice of the antenna tower: a chord on the left edge (one per tile, so columns repeat every tile) and X
+        /// bracing with a gusset plate. The gaps stay transparent, so the sky and the city far below show through.
+        /// </summary>
+        private static PixelCanvas Truss(int seed, bool chord, bool light)
+        {
+            PixelCanvas c = New();
+            c.Line(2, 1, S - 1, S - 2, SpireDark.Dark, 2).Line(2, S - 2, S - 1, 1, SpireDark.Base, 2);
+            c.Line(3, 1, S - 1, S - 3, SpireDark.Light);
+            if (chord) c.Bevel(0, 14, S, 3, SpireDark);
+            c.Bevel(0, 0, 3, S, SpireDark);
+            c.Rect(14, 13, 5, 5, SpireDark.Base).Frame(14, 13, 5, 5, SpireDark.Deep);
+            c.Set(15, 16, SpireDark.Light);
+            c.Set(17, 14, SpireDark.Light);
+            c.Speckle(0, 0, S, S, Paint.Rgb(120, 70, 56), 0.025f, seed);
+            if (!light) return c;
+            c.Rect(5, 22, 4, 3, AviationRed);
+            c.Set(6, 24, Paint.Rgb(255, 200, 200));
+            c.Glow(7, 23, 5, new Color(1f, 0.2f, 0.25f, 0.55f));
+            return c;
+        }
+
+        private static IEnumerable<(Biome, string, int, PixelCanvas)> Spire()
+        {
+            const Biome b = Biome.Spire;
+            for (int i = 0; i < 2; i++)
+            {
+                // Diamond-plate deck on top of the lattice: the walkable row.
+                PixelCanvas top = Truss(300 + i, false, false);
+                top.Bevel(0, 21, S, 11, SpireSteel);
+                for (int y = 23; y < 30; y += 3)
+                for (int x = (y / 3) % 2 * 3; x < S; x += 6)
+                {
+                    top.Set(x, y, SpireSteel.Light);
+                    top.Set(x + 1, y + 1, SpireSteel.Dark);
+                }
+                top.Rect(0, 31, S, 1, Paint.Rgb(200, 214, 236));
+                top.Rect(0, 21, S, 1, SpireDark.Deep);
+                if (i == 1) top.Stripes(0, 21, S, 2, Paint.Rgb(255, 190, 60), Paint.Rgb(30, 30, 34), 6);
+                yield return (b, "top", i, top);
+            }
+
+            yield return (b, "body", 0, Truss(310, false, false));
+            yield return (b, "body", 1, Truss(311, true, false));
+            yield return (b, "body", 2, Truss(312, false, true));
+
+            // Box-girder columns; variant 1 carries the red/white aviation band.
+            for (int i = 0; i < 2; i++)
+            {
+                PixelCanvas wall = New().RivetPanel(0, 0, S, S, SpireSteel.Darker(0.8f));
+                wall.Rect(0, 0, 2, S, SpireDark.Deep).Rect(S - 2, 0, 2, S, SpireDark.Dark);
+                if (i == 1)
+                {
+                    wall.Rect(2, 8, S - 4, 16, Paint.Rgb(214, 220, 232));
+                    wall.Rect(2, 12, S - 4, 8, AviationRed);
+                    wall.Rect(2, 8, S - 4, 1, Paint.Rgb(250, 250, 255));
+                }
+
+                wall.Streaks(0, 0, S, S, Paint.Rgb(60, 44, 50), 320 + i, 3);
+                yield return (b, "wall", i, wall);
+            }
+
+            yield return (b, "ceil", 0, New().RivetPanel(0, 0, S, S, SpireDark).Rect(0, 2, S, 1, AviationRed));
+            yield return (b, "back", 0, Truss(330, true, false).Tint(new Color(0.6f, 0.62f, 0.75f)));
+            yield return (b, "plat", 0, Girder(SpireSteel, AviationRed));
         }
 
         // ---------------------------------------------------------------- hideout (Hub) and lab (showcase)

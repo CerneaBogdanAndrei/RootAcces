@@ -66,6 +66,13 @@ namespace RootAccess.EditorTools
             TextMeshProUGUI toast = UIFactory.Text("Toast", hud, string.Empty, 28f, TextAlignmentOptions.Center, UIFactory.Yellow);
             UIFactory.Place(toast.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1000f, 50f));
 
+            Image uplink = UIFactory.Image("UplinkPanel", hud, new Color(0.03f, 0.02f, 0.08f, 0.75f));
+            UIFactory.Place(uplink.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -100f), new Vector2(620f, 84f));
+            TextMeshProUGUI uplinkLabel = UIFactory.Text("UplinkLabel", uplink.transform, string.Empty, 24f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(uplinkLabel.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(600f, 32f));
+            Image uplinkFill = UIFactory.FillBar("UplinkBar", uplink.transform, new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(580f, 22f), new Color(0.3f, 1f, 0.75f));
+            uplinkFill.fillAmount = 0f;
+
             var gradient = new Gradient();
             gradient.SetKeys(new[] { new GradientColorKey(UIFactory.Cyan, 0f), new GradientColorKey(UIFactory.Yellow, 0.5f), new GradientColorKey(new Color(1f, 0.2f, 0.25f), 1f) },
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
@@ -86,6 +93,9 @@ namespace RootAccess.EditorTools
                 so.Require("gadgetLabel").objectReferenceValue = gadget;
                 so.Require("trackedGadget").objectReferenceValue = ctx.EmpGrenade;
                 so.Require("traceGradient").gradientValue = gradient;
+                so.Require("uplinkPanel").objectReferenceValue = uplink.gameObject;
+                so.Require("uplinkFill").objectReferenceValue = uplinkFill;
+                so.Require("uplinkLabel").objectReferenceValue = uplinkLabel;
             });
         }
 

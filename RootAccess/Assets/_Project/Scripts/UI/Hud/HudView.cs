@@ -24,6 +24,10 @@ namespace RootAccess.UI
         [SerializeField] private ItemDefinition trackedGadget;
         [SerializeField] private Gradient traceGradient;
         [SerializeField] private float toastSeconds = 2.2f;
+        [SerializeField, Tooltip("Level 6 broadcast progress (hidden unless a broadcast is running).")]
+        private GameObject uplinkPanel;
+        [SerializeField] private Image uplinkFill;
+        [SerializeField] private TMP_Text uplinkLabel;
 
         private int _credits;
         private int _xp;
@@ -38,6 +42,7 @@ namespace RootAccess.UI
             if (promptLabel != null) promptLabel.text = string.Empty;
             if (toastLabel != null) toastLabel.text = string.Empty;
             if (hiddenLabel != null) hiddenLabel.text = string.Empty;
+            if (uplinkPanel != null) uplinkPanel.SetActive(false);
         }
 
         private void OnEnable()
@@ -53,6 +58,8 @@ namespace RootAccess.UI
             EventBus<PlayerHiddenChanged>.Subscribe(OnHidden);
             EventBus<ToastRequested>.Subscribe(OnToast);
             EventBus<InventoryChanged>.Subscribe(OnInventory);
+            EventBus<UplinkProgressChanged>.Subscribe(OnUplink);
+            EventBus<SceneLoadStarted>.Subscribe(OnSceneLoad);
         }
 
         private void OnDisable()
@@ -68,6 +75,8 @@ namespace RootAccess.UI
             EventBus<PlayerHiddenChanged>.Unsubscribe(OnHidden);
             EventBus<ToastRequested>.Unsubscribe(OnToast);
             EventBus<InventoryChanged>.Unsubscribe(OnInventory);
+            EventBus<UplinkProgressChanged>.Unsubscribe(OnUplink);
+            EventBus<SceneLoadStarted>.Unsubscribe(OnSceneLoad);
         }
 
         private void Update()
@@ -167,6 +176,26 @@ namespace RootAccess.UI
         {
             if (gadgetLabel == null || trackedGadget == null || !ServiceLocator.TryGet(out SessionService session)) return;
             gadgetLabel.text = string.Format(Strings.Hud.EmpCount, session.Session.Inventory.Count(trackedGadget));
+        }
+
+        private void OnUplink(UplinkProgressChanged evt)
+        {
+            if (uplinkPanel == null) return;
+            uplinkPanel.SetActive(evt.Active);
+            if (!evt.Active) return;
+            int percent = Mathf.FloorToInt(evt.Progress * 100f);
+            if (uplinkFill != null)
+            {
+                uplinkFill.fillAmount = evt.Progress;
+                uplinkFill.color = evt.PlayerPresent ? new Color(0.3f, 1f, 0.75f) : new Color(1f, 0.3f, 0.35f);
+            }
+
+            if (uplinkLabel != null) uplinkLabel.text = string.Format(evt.PlayerPresent ? Strings.Hud.Uplink : Strings.Hud.UplinkPaused, percent);
+        }
+
+        private void OnSceneLoad(SceneLoadStarted _)
+        {
+            if (uplinkPanel != null) uplinkPanel.SetActive(false);
         }
 
         private void OnToast(ToastRequested evt)

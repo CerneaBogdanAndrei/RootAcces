@@ -56,6 +56,178 @@ namespace RootAccess.EditorTools
             yield return ("skyline_mid", Skyline(512, 232, 9, Paint.Rgb(22, 18, 46), Paint.Rgb(46, 30, 80), 0.18f, true), Feet);
             yield return ("skyline_near", Skyline(512, 168, 15, Paint.Rgb(10, 8, 22), Paint.Rgb(26, 18, 46), 0.24f, true), Feet);
             yield return (KeyArtSprite, KeyArt(), Centre);
+            yield return ("gondola", Gondola(), new Vector2(0.5f, 8f / 96f));
+            yield return ("gondola_rail", GondolaRail(), Centre);
+            yield return ("fan_housing", FanHousing(), new Vector2(0.5f, 1f));
+            yield return ("fan_rotor", FanRotor(), Centre);
+            yield return ("grate", Grate(), Centre);
+            yield return ("arc_coil", ArcCoil(), Centre);
+            yield return ("arc_bolt", ArcBolt(), Feet);
+            yield return ("uplink_station", UplinkStation(), Feet);
+            yield return ("cloud_bank", CloudBank(), Feet);
+        }
+
+        // ---------------------------------------------------------------- Halden antenna (Level 6)
+
+        private static readonly Color32 AviationRed = Paint.Rgb(255, 54, 66);
+
+        /// <summary>Window-cleaning gondola: the deck (rows 0–15, where the collider is), a railing and the hanger cables.</summary>
+        private static PixelCanvas Gondola()
+        {
+            var c = new PixelCanvas(96, 96);
+            c.Bevel(1, 2, 94, 12, Steel);
+            c.Stripes(1, 12, 94, 2, Amber, Paint.Rgb(30, 28, 30), 6);
+            c.Rect(1, 0, 94, 2, DarkSteel.Deep);
+            c.Bevel(2, 14, 92, 8, Ramp.From(Paint.Rgb(214, 220, 232), 0.7f));
+            c.Text("H-2", 42, 16, AviationRed);
+            foreach (int x in new[] { 3, 33, 61, 91 }) c.Rect(x, 22, 2, 20, DarkSteel.Base);
+            c.Rect(2, 30, 92, 1, Steel.Dark);
+            c.Bevel(2, 40, 92, 3, Steel);
+            c.Line(4, 43, 45, 84, DarkSteel.Dark).Line(91, 43, 50, 84, DarkSteel.Dark);
+            c.Bevel(41, 82, 14, 8, DarkSteel);
+            c.Dome(48, 86, 3, 3, Steel);
+            c.Rect(47, 90, 2, 6, DarkSteel.Base);
+            c.Set(44, 85, Amber);
+            return Done(c);
+        }
+
+        /// <summary>I-beam the gondolas hang from (tiled along the route).</summary>
+        private static PixelCanvas GondolaRail()
+        {
+            var c = new PixelCanvas(32, 8);
+            c.Bevel(0, 0, 32, 8, DarkSteel);
+            c.Rect(0, 3, 32, 2, DarkSteel.Deep);
+            c.Set(4, 6, DarkSteel.Light);
+            c.Set(20, 6, DarkSteel.Light);
+            return c;
+        }
+
+        /// <summary>Fan housing sunk into the deck: the grill on top is flush with the floor (pivot = top centre).</summary>
+        private static PixelCanvas FanHousing()
+        {
+            var c = new PixelCanvas(96, 32);
+            c.Bevel(0, 0, 96, 32, DarkSteel);
+            c.Rect(4, 4, 88, 21, Paint.Rgb(12, 14, 24));
+            c.DitherGradient(5, 5, 86, 19, Paint.Rgb(12, 14, 24), Paint.Rgb(30, 60, 80), 4);
+            c.Dome(48, 8, 8, 4, Steel);
+            c.Rect(46, 4, 4, 5, DarkSteel.Base);
+            c.Bevel(0, 25, 96, 7, Steel);
+            for (int x = 3; x < 94; x += 4) c.Rect(x, 26, 2, 4, Paint.Rgb(16, 18, 28));
+            c.Rect(0, 31, 96, 1, Paint.Rgb(200, 214, 236));
+            c.Set(8, 14, Cyan);
+            c.Set(87, 14, Cyan);
+            return Done(c);
+        }
+
+        private static PixelCanvas FanRotor()
+        {
+            var c = new PixelCanvas(84, 8);
+            c.Capsule(new Vector2(3, 4), new Vector2(80, 4), 2.6f, 2.6f, Steel);
+            c.Dome(42, 4, 4, 4, DarkSteel);
+            return Done(c);
+        }
+
+        /// <summary>Rusty see-through grate (two tiles wide) that gives way under the player.</summary>
+        private static PixelCanvas Grate()
+        {
+            var c = new PixelCanvas(64, 12);
+            Ramp rust = Ramp.From(Paint.Rgb(132, 84, 60));
+            c.Bevel(0, 0, 64, 12, rust);
+            for (int x = 4; x < 61; x += 4) c.Rect(x, 2, 2, 7, new Color32(0, 0, 0, 0));
+            c.Rect(0, 10, 64, 2, rust.Light);
+            c.Speckle(0, 0, 64, 12, rust.Deep, 0.12f, 77);
+            c.Line(22, 0, 27, 11, Paint.Rgb(40, 24, 22)).Line(44, 2, 41, 9, Paint.Rgb(40, 24, 22));
+            c.Rect(0, 0, 2, 12, DarkSteel.Base).Rect(62, 0, 2, 12, DarkSteel.Base);
+            return Done(c);
+        }
+
+        private static PixelCanvas ArcCoil()
+        {
+            var c = new PixelCanvas(16, 14);
+            Ramp copper = Ramp.From(Paint.Rgb(196, 112, 62));
+            c.Bevel(2, 0, 12, 4, DarkSteel);
+            c.Cylinder(4, 4, 8, 6, copper);
+            for (int y = 5; y < 10; y += 2) c.Rect(4, y, 8, 1, copper.Dark);
+            c.Dome(8, 11, 4, 2.5f, Steel);
+            return Done(c);
+        }
+
+        /// <summary>Jagged electric arc (white core, cyan glow), drawn by the cyan neon material between two coils.</summary>
+        private static PixelCanvas ArcBolt()
+        {
+            var c = new PixelCanvas(24, 96);
+            var random = new System.Random(19);
+            int x = 12;
+            for (int y = 0; y < 96; y += 4)
+            {
+                int next = Mathf.Clamp(x + random.Next(-4, 5), 5, 18);
+                c.Glow(x, y, 5, new Color(0.5f, 0.95f, 1f, 0.35f));
+                c.Line(x, y, next, Mathf.Min(95, y + 4), White, 2);
+                if (random.NextDouble() < 0.25)
+                    c.Line(next, Mathf.Min(95, y + 4), Mathf.Clamp(next + random.Next(-6, 7), 0, 23), Mathf.Min(95, y + 7), Paint.Rgb(180, 240, 255));
+                x = next;
+            }
+
+            return c;
+        }
+
+        /// <summary>The transmitter at the top of the antenna: console with the uplink screen, lattice mast and two dishes.</summary>
+        private static PixelCanvas UplinkStation()
+        {
+            var c = new PixelCanvas(96, 192);
+            c.Bevel(8, 0, 80, 40, DarkSteel);
+            c.Rect(15, 14, 30, 18, Paint.Rgb(14, 14, 24));
+            c.DitherGradient(16, 15, 28, 16, Paint.Rgb(10, 60, 70), Paint.Rgb(30, 200, 220), 4);
+            for (int y = 18; y < 30; y += 3) c.Rect(18, y, 6 + (y * 7) % 18, 1, Paint.Rgb(200, 255, 255));
+            c.Text("UPLINK", 50, 26, Cyan);
+            c.Rect(52, 10, 30, 3, AviationRed).Rect(52, 16, 30, 3, Paint.Rgb(236, 236, 244));
+            c.Bevel(4, 40, 88, 4, Steel);
+            const int top = 176;
+            float Left(float y) => Mathf.Lerp(30f, 44f, (y - 44f) / (top - 44f));
+            float Right(float y) => Mathf.Lerp(66f, 52f, (y - 44f) / (top - 44f));
+            for (int y = 46; y < top - 8; y += 12)
+            {
+                int y1 = y + 12;
+                c.Line(Mathf.RoundToInt(Left(y)), y, Mathf.RoundToInt(Right(y1)), y1, DarkSteel.Dark);
+                c.Line(Mathf.RoundToInt(Right(y)), y, Mathf.RoundToInt(Left(y1)), y1, DarkSteel.Dark);
+                c.Line(Mathf.RoundToInt(Left(y)), y, Mathf.RoundToInt(Right(y)), y, DarkSteel.Base);
+            }
+
+            c.Line(30, 44, 44, top, DarkSteel.Base, 2).Line(66, 44, 52, top, DarkSteel.Base, 2);
+            c.Line(31, 44, 45, top, DarkSteel.Light);
+            // Two dishes in side view: crescents facing out.
+            c.Ellipse(30, 112, 6, 15, Shell.Light);
+            c.Ellipse(33, 112, 5, 13, Shell.Dark);
+            c.Rect(33, 111, 6, 2, DarkSteel.Base);
+            c.Ellipse(68, 140, 6, 13, Shell.Light);
+            c.Ellipse(65, 140, 5, 11, Shell.Dark);
+            c.Rect(58, 139, 6, 2, DarkSteel.Base);
+            c.Dome(48, top + 4, 6, 6, Steel);
+            c.Rect(47, top + 10, 2, 5, DarkSteel.Base);
+            c.Rect(46, top + 13, 4, 3, AviationRed);
+            c.Glow(48, top + 14, 8, new Color(1f, 0.25f, 0.3f, 0.6f));
+            return Done(c);
+        }
+
+        /// <summary>A band of moonlit cloud tops seen from above the city; it wraps, so segments tile seamlessly.</summary>
+        private static PixelCanvas CloudBank()
+        {
+            const int width = 512, height = 96;
+            var c = new PixelCanvas(width, height);
+            var random = new System.Random(23);
+            Color32 shadow = Paint.Rgb(70, 74, 118, 170), body = Paint.Rgb(112, 118, 164, 190), crest = Paint.Rgb(170, 178, 220, 205);
+            var puffs = new List<(float x, float y, float rx, float ry)>();
+            for (int i = 0; i < 34; i++)
+                puffs.Add((random.Next(width), 26 + random.Next(30), 18 + random.Next(42), 8 + random.Next(14)));
+            foreach ((Color32 color, float lift, float grow) in new[] { (shadow, -4f, 1.08f), (body, 0f, 1f), (crest, 4f, 0.7f) })
+            foreach ((float x, float y, float rx, float ry) in puffs)
+            for (int wrap = -1; wrap <= 1; wrap++)
+                c.Ellipse(x + wrap * width, y + lift, rx * grow, ry * grow, color);
+            c.Rect(0, 0, width, 22, shadow);
+            for (int x = 0; x < width; x++)
+            for (int y = 22; y < 28; y++)
+                if (Paint.Dither(x, y) < (28 - y) / 6f && c.Get(x, y).a == 0) c.Set(x, y, shadow);
+            return c;
         }
 
         /// <summary>Full-screen title illustration behind the main menu (480×270, shown ×4 with point filtering).</summary>

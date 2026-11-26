@@ -8,7 +8,7 @@ the player-facing documentation is `Documentatie/DOCUMENTATIE.md`.
 
 Graded university project: **Root Access**, a 2D side-scrolling cyberpunk stealth-platformer in **Unity 6000.3.29f1
 (6.3 LTS)**, URP 2D, C#. The player is a hacker: platforming, stealth, hacking minigames, drones with our own A*.
-Target: ≥30 min of gameplay (Hub + 5 levels), all 12 rubric items + bonuses, Windows x64 build and project on Google Drive.
+Target: ≥30 min of gameplay (Hub + 6 levels), all 12 rubric items + bonuses, Windows x64 build and project on Google Drive.
 UI language is **Romanian**; every player-facing string lives in `Scripts/Core/Strings.cs`.
 The developer is an experienced full-stack dev who is new to Unity: explain Unity-specific decisions in docs, not chat.
 
@@ -79,8 +79,9 @@ Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-r
 must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses them to photograph every screen. Spawn ids: `hub_center`, `l1_start`,
 `l1_park`, `l1_movement`, `l1_security`, `l1_vent`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
 `l2_vault`, `l3_start`, `l3_drones`, `l3_nodes`, `l3_core`, `l4_start`, `l4_water`, `l4_sluice`, `l4_gate`, `l5_start`,
-`l5_security`, `l5_elevator`, `l5_drones`, `l5_nodes`, `showcase_start`, `room_01`..`room_14`. Cutscene scenes `Intro`
-(New Game → Intro → Hub) and `Finale` (Level 5 exit → Finale → Credits) are built by `Editor/Generation/CutsceneFactory.cs`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments; each level has a `LevelTheme`
+`l5_security`, `l5_elevator`, `l5_drones`, `l5_nodes`, `l6_start`, `l6_gondola`, `l6_fans`, `l6_grates`, `l6_drones`,
+`l6_uplink`, `l6_transmitter`, `showcase_start`, `room_01`..`room_14`. Cutscene scenes `Intro`
+(New Game → Intro → Hub) and `Finale` (Level 6 exit → Finale → Credits) are built by `Editor/Generation/CutsceneFactory.cs`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments; each level has a `LevelTheme`
 (biome tiles, lamp, ambient, decor scattered by `LevelLayout.Scatter`).
 
 ## Unity 6000.3 gotchas learned the hard way
@@ -113,9 +114,10 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 ## Testing
 
-- EditMode (`Tests/EditMode`, 120 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
-  SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet, LoreArchive.
-- PlayMode (`Tests/PlayMode`, 40 tests; `LoreLogTests` check 3 distinct data logs per level; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
+- EditMode (`Tests/EditMode`, 124 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
+  SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet, LoreArchive, UplinkTransfer.
+- PlayMode (`Tests/PlayMode`, 46 tests; `LoreLogTests` check 3 distinct data logs per level; `SpireTests` cover the Level 6
+  gondola, fan, crumbling grate and broadcast; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
   teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
   Wire Connect through the real overlay (camera disabled, data shard + credits awarded).

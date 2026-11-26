@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l6_cleaners
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l6_cleaners
+  title: "Jurnal: echipa de sp\u0103lat geamuri"
+  body: "Nacela 2 merge singur\u0103 de la o vreme, dus-\xEEntors, f\u0103r\u0103
+    s\u0103-i spun\u0103 nimeni. Grilajele de pe pasarela de est sunt ruginite p\xE2n\u0103
+    la os. Halden a promis c\u0103 le schimb\u0103 trimestrul viitor. Asta a fost
+    acum trei ani."
+  levelId: level06
+  order: 15

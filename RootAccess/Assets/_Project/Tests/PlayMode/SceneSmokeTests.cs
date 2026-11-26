@@ -39,7 +39,7 @@ namespace RootAccess.Tests.PlayMode
                 new[]
                 {
                     SceneNames.Bootstrap, SceneNames.MainMenu, SceneNames.Hub, SceneNames.Level01, SceneNames.Level02, SceneNames.Level03,
-                    SceneNames.Level04, SceneNames.Level05, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale,
+                    SceneNames.Level04, SceneNames.Level05, SceneNames.Level06, SceneNames.RubricShowcase, SceneNames.Credits, SceneNames.Intro, SceneNames.Finale,
                     SceneNames.OperatorConsole
                 },
                 new List<string>(BuildScenes()));

@@ -184,12 +184,20 @@ namespace RootAccess.EditorTools
                 new ObjectiveDefinition("hack_mainframe", SeedContent.Quests.HqMainframe, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel05Mainframe),
                 new ObjectiveDefinition("reach_exit_l5", SeedContent.Quests.HqExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel05),
                 new ObjectiveDefinition("stealth_l5", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
+            ctx.SpireQuest = Quest(SeedContent.Ids.MainQuestLevel06, SeedContent.Quests.SpireTitle, SeedContent.Quests.SpireDesc, true, 1200, 500,
+                new ObjectiveDefinition("reach_l6", SeedContent.Quests.SpireReach, ObjectiveType.Reach, SeedContent.Ids.Level06),
+                new ObjectiveDefinition("hack_fan", SeedContent.Quests.SpireFan, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel06Fan),
+                new ObjectiveDefinition("hack_uplink", SeedContent.Quests.SpireUplink, ObjectiveType.Hack, SeedContent.Ids.TerminalLevel06Uplink),
+                new ObjectiveDefinition("hold_broadcast", SeedContent.Quests.SpireBroadcast, ObjectiveType.Reach, SeedContent.Ids.BroadcastDone),
+                new ObjectiveDefinition("reach_exit_l6", SeedContent.Quests.SpireExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel06),
+                new ObjectiveDefinition("stealth_l6", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty, 1, true));
             ctx.MainQuest.SetFollowUp(ctx.OfficeQuest);
             ctx.OfficeQuest.SetFollowUp(ctx.FarmQuest);
             ctx.FarmQuest.SetFollowUp(ctx.SewersQuest);
             ctx.SewersQuest.SetFollowUp(ctx.HqQuest);
-            ctx.HqQuest.SetFollowUp(null);
-            foreach (QuestDefinition quest in new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest })
+            ctx.HqQuest.SetFollowUp(ctx.SpireQuest);
+            ctx.SpireQuest.SetFollowUp(null);
+            foreach (QuestDefinition quest in new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest, ctx.SpireQuest })
                 EditorUtility.SetDirty(quest);
             ctx.GhostQuest = Quest(SeedContent.Ids.GhostQuest, SeedContent.Quests.GhostTitle, SeedContent.Quests.GhostDesc, false, 200, 120,
                 new ObjectiveDefinition("ghost_exit", SeedContent.Quests.GhostExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel01),
@@ -212,8 +220,9 @@ namespace RootAccess.EditorTools
             ctx.Level03 = Level(SeedContent.Ids.Level03, SceneNames.Level03, Strings.Levels.Level03, false, 3, SeedContent.LevelInfo.Level03);
             ctx.Level04 = Level(SeedContent.Ids.Level04, SceneNames.Level04, Strings.Levels.Level04, false, 4, SeedContent.LevelInfo.Level04);
             ctx.Level05 = Level(SeedContent.Ids.Level05, SceneNames.Level05, Strings.Levels.Level05, false, 5, SeedContent.LevelInfo.Level05);
+            ctx.Level06 = Level(SeedContent.Ids.Level06, SceneNames.Level06, Strings.Levels.Level06, false, 6, SeedContent.LevelInfo.Level06);
             ctx.RubricLevel = Level("rubric", SceneNames.RubricShowcase, Strings.Levels.RubricShowcase, true, 99);
-            ctx.Levels = new[] { ctx.HubLevel, ctx.Level01, ctx.Level02, ctx.Level03, ctx.Level04, ctx.Level05, ctx.RubricLevel };
+            ctx.Levels = new[] { ctx.HubLevel, ctx.Level01, ctx.Level02, ctx.Level03, ctx.Level04, ctx.Level05, ctx.Level06, ctx.RubricLevel };
 
             ctx.Briefing = Dialogue("dlg_briefing",
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Briefing1),
@@ -237,12 +246,16 @@ namespace RootAccess.EditorTools
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq1),
                 new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq2),
                 new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Hq3));
+            ctx.Level06Intro = Dialogue("dlg_level06_intro",
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Spire1),
+                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Spire2),
+                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Spire3));
 
             ctx.Database = EditorAssetUtil.LoadOrCreateAsset<GameDatabase>(EditorPaths.ScriptableObjects + "/GameDatabase.asset");
             EditorAssetUtil.SetFields(ctx.Database, so =>
             {
                 so.Require("items").objectReferenceValue = itemDb;
-                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest, ctx.SideQuest, ctx.GhostQuest, ctx.ArchivistQuest });
+                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest, ctx.SpireQuest, ctx.SideQuest, ctx.GhostQuest, ctx.ArchivistQuest });
                 so.SetArray("lore", ctx.LoreLogs);
                 so.SetArray("skills", ctx.Skills);
                 so.SetArray("levels", ctx.Levels);
@@ -356,6 +369,7 @@ namespace RootAccess.EditorTools
             ctx.Level03Profile = Profile("VP_Level03_ServerFarm", new Color(0.75f, 0.92f, 1f), 1f);
             ctx.Level04Profile = Profile("VP_Level04_Sewers", new Color(0.78f, 1f, 0.85f), 0.7f);
             ctx.Level05Profile = Profile("VP_Level05_HQ", new Color(1f, 0.88f, 0.8f), 0.95f);
+            ctx.Level06Profile = Profile("VP_Level06_Spire", new Color(0.84f, 0.9f, 1f), 1.05f);
             ctx.ShowcaseProfile = Profile("VP_RubricShowcase", Color.white, 0.8f);
         }
 

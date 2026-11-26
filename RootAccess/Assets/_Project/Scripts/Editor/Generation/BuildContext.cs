@@ -28,13 +28,13 @@ namespace RootAccess.EditorTools
         public SkillDefinition[] Skills;
         public QuestDefinition GhostQuest, ArchivistQuest;
 
-        /// <summary>The 15 data logs in reading order (3 per level, see SeedContent.Lore).</summary>
+        /// <summary>The 18 data logs in reading order (3 per level, see SeedContent.Lore).</summary>
         public LoreDefinition[] LoreLogs;
         public SkillDefinition SilentSteps, Overclock, ServoLegs;
-        public QuestDefinition MainQuest, SideQuest, OfficeQuest, FarmQuest, SewersQuest, HqQuest;
-        public LevelDefinition HubLevel, Level01, Level02, Level03, Level04, Level05, RubricLevel;
+        public QuestDefinition MainQuest, SideQuest, OfficeQuest, FarmQuest, SewersQuest, HqQuest, SpireQuest;
+        public LevelDefinition HubLevel, Level01, Level02, Level03, Level04, Level05, Level06, RubricLevel;
         public LevelDefinition[] Levels;
-        public DialogueDefinition Briefing, Level01Intro, Level02Intro, Level03Intro, Level04Intro, Level05Intro;
+        public DialogueDefinition Briefing, Level01Intro, Level02Intro, Level03Intro, Level04Intro, Level05Intro, Level06Intro;
         public GameDatabase Database;
         public SfxLibrary Sfx;
         public VfxLibrary Vfx;
@@ -57,10 +57,10 @@ namespace RootAccess.EditorTools
             throw new KeyNotFoundException($"Theme tile '{name}' was not built (TileArt/AssetFactory.BuildTiles).");
         }
 
-        public VolumeProfile MenuProfile, HubProfile, Level01Profile, Level02Profile, Level03Profile, Level04Profile, Level05Profile, ShowcaseProfile;
+        public VolumeProfile MenuProfile, HubProfile, Level01Profile, Level02Profile, Level03Profile, Level04Profile, Level05Profile, Level06Profile, ShowcaseProfile;
 
-        /// <summary>Levels 1–5 in order: what the hideout's fast-travel console lists.</summary>
-        public LevelDefinition[] StoryLevels => new[] { Level01, Level02, Level03, Level04, Level05 };
+        /// <summary>Levels 1–6 in order: what the hideout's fast-travel console lists.</summary>
+        public LevelDefinition[] StoryLevels => new[] { Level01, Level02, Level03, Level04, Level05, Level06 };
 
         public readonly Dictionary<VfxId, GameObject> VfxPrefabs = new();
         public readonly Dictionary<string, GameObject> Prefabs = new();

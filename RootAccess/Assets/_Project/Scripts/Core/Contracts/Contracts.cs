@@ -49,6 +49,15 @@ namespace RootAccess.Core
         void RecoverFromFall(int damage, Vector3 safePosition);
     }
 
+    /// <summary>
+    /// A moving surface that carries whoever stands on it (the gondolas of Level 6). The player adds
+    /// <see cref="CarryVelocity"/> to its own run speed while grounded on it, so it rides along instead of sliding off.
+    /// </summary>
+    public interface ISurfaceCarrier
+    {
+        Vector2 CarryVelocity { get; }
+    }
+
     /// <summary>Anything a terminal (or EMP) can affect: doors, cameras, lights, elevators, network nodes.</summary>
     public interface IHackable
     {

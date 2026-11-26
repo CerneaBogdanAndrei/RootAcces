@@ -47,10 +47,10 @@ namespace RootAccess.Tests.PlayMode
             yield return SliceTestUtil.LoadScene(SceneNames.Hub);
             TerminalScreenView terminal = Object.FindFirstObjectByType<TerminalScreenView>(FindObjectsInactive.Include);
             Assert.IsNotNull(terminal, "TerminalScreenView missing from UIRoot.");
-            LevelDefinition[] levels = session.Database.Levels.Where(l => l != null && l.Order is >= 1 and <= 5).ToArray();
+            LevelDefinition[] levels = session.Database.Levels.Where(l => l != null && l.Order is >= 1 and <= 6).ToArray();
             Assert.IsTrue(terminal.Open(new TerminalScreenRequested(TerminalTab.Travel, destinations: levels)));
             Assert.AreEqual(TerminalTab.Travel, terminal.CurrentTab);
-            Assert.AreEqual(5, terminal.EntryCount, "The travel tab lists levels 1–5.");
+            Assert.AreEqual(6, terminal.EntryCount, "The travel tab lists levels 1–6.");
 
             int office = terminal.EntryData.ToList().FindIndex(d => d is LevelDefinition l && l.LevelId == Level02Id);
             int serverFarm = terminal.EntryData.ToList().FindIndex(d => d is LevelDefinition l && l.LevelId == Level03Id);
@@ -67,7 +67,8 @@ namespace RootAccess.Tests.PlayMode
         [TestCase(SceneNames.Level02, "level02", "level03", ExpectedResult = null)]
         [TestCase(SceneNames.Level03, "level03", "level04", ExpectedResult = null)]
         [TestCase(SceneNames.Level04, "level04", "level05", ExpectedResult = null)]
-        [TestCase(SceneNames.Level05, "level05", null, ExpectedResult = null)]
+        [TestCase(SceneNames.Level05, "level05", "level06", ExpectedResult = null)]
+        [TestCase(SceneNames.Level06, "level06", null, ExpectedResult = null)]
         public IEnumerator Level_ExitCompletesLevelAndUnlocksTheNext(string scene, string levelId, string unlocks)
         {
             SessionService session = FreshSession();

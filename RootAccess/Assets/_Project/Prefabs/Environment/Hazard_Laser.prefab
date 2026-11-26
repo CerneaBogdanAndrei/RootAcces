@@ -184,6 +184,7 @@ MonoBehaviour:
   knockback: 6
   hazardCollider: {fileID: 7765213327746863496}
   beam: {fileID: 8488927303448626967}
+  glow: {fileID: 8196063541298633}
   onSeconds: 2
   offSeconds: 1.4
   phaseOffset: 0

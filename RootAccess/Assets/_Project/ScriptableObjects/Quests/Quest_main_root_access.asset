@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
   questId: main_root_access
   title: Root Access
-  description: "Ultimul pas: mainframe-ul din v\xE2rful sediului. Cu el, ora\u0219ul
-    \xEEntreg e al t\u0103u."
+  description: "Mainframe-ul din v\xE2rful sediului. Cu el, ora\u0219ul \xEEntreg
+    e al t\u0103u."
   isMainStory: 1
   objectives:
   - objectiveId: reach_l5
@@ -50,4 +50,4 @@ MonoBehaviour:
     optional: 1
   rewardCredits: 1000
   rewardXp: 400
-  followUpQuest: {fileID: 0}
+  followUpQuest: {fileID: 11400000, guid: 1ffa8be32bd24744ab95b390e0b8b016, type: 2}

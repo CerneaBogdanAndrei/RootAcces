@@ -85,6 +85,21 @@ namespace RootAccess.Core
         }
     }
 
+    /// <summary>The antenna broadcast of Level 6 advanced, paused or ended (drives the HUD progress bar).</summary>
+    public readonly struct UplinkProgressChanged : IEvent
+    {
+        public readonly float Progress;
+        public readonly bool Active;
+        public readonly bool PlayerPresent;
+
+        public UplinkProgressChanged(float progress, bool active, bool playerPresent)
+        {
+            Progress = progress;
+            Active = active;
+            PlayerPresent = playerPresent;
+        }
+    }
+
     public readonly struct AlarmRaised : IEvent
     {
         public readonly Vector2 Position;

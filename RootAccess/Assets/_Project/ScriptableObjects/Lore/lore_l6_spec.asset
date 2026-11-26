@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l6_spec
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l6_spec
+  title: "Specifica\u021Bie: emi\u021B\u0103torul OCHI"
+  body: "Emi\u021B\u0103torul din v\xE2rful antenei preia orice ecran din ora\u0219
+    \xEEn mai pu\u021Bin de o secund\u0103: panouri, telefoane, televizoare. Oficial,
+    pentru anun\u021Buri de urgen\u021B\u0103. Neoficial, n-a fost folosit niciodat\u0103
+    pentru o urgen\u021B\u0103."
+  levelId: level06
+  order: 16

@@ -154,6 +154,25 @@ namespace RootAccess.EditorTools
                         return t.N("back", fromBottom == 0 ? 1 : 0);
                     };
                     break;
+                case Biome.Spire:
+                    t.Outdoor = true;
+                    t.Skyline = true;
+                    t.Ambient = new Color(0.58f, 0.66f, 1f);
+                    t.AmbientIntensity = 0.5f;
+                    t.Lamp = new Color(1f, 0.93f, 0.82f);
+                    t.GroundSurface = SurfaceType.Metal;
+                    t.WallSurface = SurfaceType.Metal;
+                    t.LampPrefab = "Lamp_Beacon";
+                    t.Decor = new[] { "Decor_Windsock", "Decor_Transformer", "Decor_Radar", "Decor_Mast", "Decor_SatDish", "Decor_Antennas" };
+                    // Deck on top, lattice below with a horizontal chord every fourth row and the odd aviation light.
+                    t.Ground = (x, y, fromTop, _) =>
+                    {
+                        if (fromTop == 0) return t.N("top", Hash(x, 7) % 6 == 0 ? 1 : 0);
+                        if (fromTop % 4 == 3) return t.N("body", 1);
+                        return t.N("body", Hash(x, y) % 29 == 0 ? 2 : 0);
+                    };
+                    t.Wall = (x, y, _, _) => t.N("wall", Mod(y, 6) == 0 ? 1 : 0);
+                    break;
                 case Biome.Hideout:
                     t.Ambient = new Color(0.75f, 0.6f, 0.9f);
                     t.AmbientIntensity = 0.5f;

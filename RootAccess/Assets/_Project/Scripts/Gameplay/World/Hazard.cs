@@ -14,6 +14,7 @@ namespace RootAccess.Gameplay
         [SerializeField] private float knockback = 6f;
         [SerializeField] private Collider2D hazardCollider;
         [SerializeField] private SpriteRenderer beam;
+        [SerializeField, Tooltip("Light of the beam (switched with it).")] private Behaviour glow;
         [SerializeField] private float onSeconds;
         [SerializeField] private float offSeconds;
         [SerializeField] private float phaseOffset;
@@ -37,6 +38,7 @@ namespace RootAccess.Gameplay
             _active = active;
             if (hazardCollider != null) hazardCollider.enabled = active;
             if (beam != null) beam.enabled = active;
+            if (glow != null) glow.enabled = active;
         }
 
         public void ApplyHack(HackAction action) => _disabled = true;

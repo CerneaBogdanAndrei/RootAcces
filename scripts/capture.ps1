@@ -71,6 +71,11 @@ $shots = @(
     @{ Name = '38-coop-ecran-impartit';    Scene = 'Level01_Rooftops'; Spawn = 'l1_security';  Interact = '';              Command = '';          Delay = 4; Coop = 'local' }
     @{ Name = '40-terminal-jurnale';       Scene = 'Hub';              Spawn = 'hub_center';   Interact = '';              Command = 'lore';      Delay = 2.5 }
     @{ Name = '41-nivel1-ventilatie';      Scene = 'Level01_Rooftops'; Spawn = 'l1_vent';      Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '42-nivel6-antena';          Scene = 'Level06_Spire';    Spawn = 'l6_start';     Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '43-nivel6-nacela';          Scene = 'Level06_Spire';    Spawn = 'l6_gondola';   Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '44-nivel6-ventilator';      Scene = 'Level06_Spire';    Spawn = 'l6_fans';      Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '45-nivel6-grilaje';         Scene = 'Level06_Spire';    Spawn = 'l6_grates';    Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '46-nivel6-transmisie';      Scene = 'Level06_Spire';    Spawn = 'l6_transmitter'; Interact = '';              Command = '';          Delay = 3 }
 )
 for ($i = 1; $i -le 14; $i++) {
     $room = 'room_{0:D2}' -f $i

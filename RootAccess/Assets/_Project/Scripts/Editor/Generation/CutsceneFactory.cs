@@ -18,8 +18,8 @@ using UnityEngine.Timeline;
 namespace RootAccess.EditorTools
 {
     /// <summary>
-    /// Builds the two Timeline cutscenes (bonus "cinematics"): the intro after New Game and the finale after Level 5.
-    /// Each is a small scene with a rooftop set, a puppet of the hacker, two Cinemachine cameras and a subtitle canvas,
+    /// Builds the two Timeline cutscenes (bonus "cinematics"): the intro after New Game and the finale after Level 6.
+    /// Each is a small scene with a rooftop set (the antenna deck for the finale), a puppet of the hacker, two Cinemachine cameras and a subtitle canvas,
     /// driven by a Timeline asset with Animation (puppet walk + sprite frames), Cinemachine (shots with blends),
     /// Activation (titles, subtitles, the puppet vanishing) and Signal tracks (shake, alarm, teleport VFX).
     /// <see cref="CutsceneController"/> plays it on start and loads the next scene; <see cref="SkipCutscene"/> skips it.
@@ -55,7 +55,7 @@ namespace RootAccess.EditorTools
         private static void BuildIntro(BuildContext ctx)
         {
             Scene scene = SceneBuilder.NewScene();
-            Stage stage = BuildStage(ctx, "TL_Intro", SceneNames.Hub, ctx.Level01Profile, -6f);
+            Stage stage = BuildStage(ctx, "TL_Intro", SceneNames.Hub, ctx.Level01Profile, -6f, Biome.Rooftop);
             const float duration = 17f;
 
             Shot(stage, stage.Wide, 0f, 6.5f);
@@ -75,7 +75,7 @@ namespace RootAccess.EditorTools
         private static void BuildFinale(BuildContext ctx)
         {
             Scene scene = SceneBuilder.NewScene();
-            Stage stage = BuildStage(ctx, "TL_Finale", SceneNames.Credits, ctx.Level05Profile, -4f);
+            Stage stage = BuildStage(ctx, "TL_Finale", SceneNames.Credits, ctx.Level06Profile, -4f, Biome.Spire);
             const float duration = 16f;
 
             Shot(stage, stage.Close, 0f, 7f);
@@ -96,7 +96,8 @@ namespace RootAccess.EditorTools
         // ---------------------------------------------------------------- set
 
         /// <summary>Rooftop set at night: lights, skyline, rain, the puppet, two cameras, subtitles and the director.</summary>
-        private static Stage BuildStage(BuildContext ctx, string timelineName, string nextScene, UnityEngine.Rendering.VolumeProfile profile, float puppetX)
+        private static Stage BuildStage(BuildContext ctx, string timelineName, string nextScene, UnityEngine.Rendering.VolumeProfile profile, float puppetX,
+            Biome biome)
         {
             var stage = new Stage();
             Transform setup = SceneBuilder.Group("--- Setup ---");
@@ -117,19 +118,21 @@ namespace RootAccess.EditorTools
             stage.Brain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.EaseInOut, 1.2f);
 
             Transform set = SceneBuilder.Group("--- Set ---");
-            SceneBuilder.Parallax(ctx, set, -40f, 60f, -2f);
+            bool spire = biome == Biome.Spire;
+            SceneBuilder.Parallax(ctx, set, -40f, 60f, spire ? -17f : -2f);
+            if (spire) SceneBuilder.Clouds(ctx, set, -40f, 60f, -5f);
             Transform grid = SceneBuilder.Group("Grid", set);
             grid.gameObject.AddComponent<Grid>();
             Tilemap roof = SceneBuilder.Tilemap(grid, "Roof", Layers.Default, ctx.Metal, SortingLayers.Environment, 0, false, SurfaceType.Metal, Color.white);
-            LevelTheme rooftop = LevelTheme.For(Biome.Rooftop, ctx);
-            SceneBuilder.FillTheme(roof, -14, 14, -6, -1, rooftop.Ground, rooftop);
-            SceneBuilder.Place(ctx, "Decor_WaterTower", new Vector3(-6f, 0f), set);
-            SceneBuilder.Place(ctx, "Decor_Antennas", new Vector3(3.5f, 0f), set);
+            LevelTheme theme = LevelTheme.For(biome, ctx);
+            SceneBuilder.FillTheme(roof, -14, 14, -6, -1, theme.Ground, theme);
+            SceneBuilder.Place(ctx, spire ? "Decor_Mast" : "Decor_WaterTower", new Vector3(-6f, 0f), set);
+            SceneBuilder.Place(ctx, spire ? "Decor_Radar" : "Decor_Antennas", new Vector3(3.5f, 0f), set);
             SceneBuilder.Place(ctx, "NeonSign", new Vector3(-8f, 5f), set);
             SceneBuilder.Place(ctx, "NeonSign", new Vector3(9f, 6f), set);
-            SceneBuilder.Place(ctx, "StreetLamp", new Vector3(-11f, 0f), set);
-            SceneBuilder.Place(ctx, "StreetLamp", new Vector3(11f, 0f), set);
-            SceneBuilder.Place(ctx, "RooftopAC", new Vector3(-2f, 0f), set);
+            SceneBuilder.Place(ctx, theme.LampPrefab, new Vector3(-11f, 0f), set);
+            SceneBuilder.Place(ctx, theme.LampPrefab, new Vector3(11f, 0f), set);
+            SceneBuilder.Place(ctx, spire ? "Decor_Windsock" : "RooftopAC", new Vector3(-2f, 0f), set);
             SceneBuilder.Place(ctx, "NetworkNode", new Vector3(7.5f, 0f), set, "Uplink");
             SceneBuilder.Place(ctx.VfxPrefabs[VfxId.Rain], new Vector3(0f, 18f), set, "Rain");
 

@@ -562,11 +562,14 @@ namespace RootAccess.EditorTools
             {
                 so.Require("hazardCollider").objectReferenceValue = laserCollider;
                 so.Require("beam").objectReferenceValue = beamSprite;
+                so.Require("glow").objectReferenceValue = freeform;
                 so.Require("onSeconds").floatValue = 2f;
                 so.Require("offSeconds").floatValue = 1.4f;
                 so.Require("damageType").enumValueIndex = (int)DamageType.Laser;
             });
             Save(ctx, laser, EditorPaths.PrefabsEnvironment);
+
+            BuildSpireObjects(ctx);
 
             GameObject floor = Go("Hazard_ElectricFloor", null, Layers.Ground);
             SpriteRenderer floorSprite = Sprite(floor, "white", ctx.NeonCyan, SortingLayers.Environment, 4, new Color(1f, 0.9f, 0.3f));
@@ -679,6 +682,101 @@ namespace RootAccess.EditorTools
             spawn.tag = Tags.SpawnPoint;
             spawn.AddComponent<SpawnPoint>();
             Save(ctx, spawn, EditorPaths.PrefabsEnvironment);
+        }
+
+        /// <summary>
+        /// Level 6 machinery: the electric arc (a laser-like cycling hazard), the window-cleaning gondola (moving platform),
+        /// its rail, the floor fan with its updraft column, the rusty grate that gives way and the uplink transmitter.
+        /// </summary>
+        private static void BuildSpireObjects(BuildContext ctx)
+        {
+            GameObject arc = Go("Hazard_Arc", null, Layers.Trigger);
+            Sprite(Go("CoilBottom", arc.transform, Layers.Trigger, new Vector3(0f, 0.2f, 0f)), "arc_coil", ctx.SpriteLit, SortingLayers.Interactables, 3);
+            GameObject coilTop = Go("CoilTop", arc.transform, Layers.Trigger, new Vector3(0f, 2.8f, 0f));
+            Sprite(coilTop, "arc_coil", ctx.SpriteLit, SortingLayers.Interactables, 3);
+            coilTop.transform.localScale = new Vector3(1f, -1f, 1f);
+            GameObject bolt = Go("Bolt", arc.transform, Layers.Trigger, new Vector3(0f, 0.35f, 0f));
+            SpriteRenderer boltSprite = Sprite(bolt, "arc_bolt", ctx.NeonCyan, SortingLayers.VFX, 1);
+            bolt.transform.localScale = new Vector3(1f, 2.3f / 3f, 1f);
+            var arcCollider = Box<BoxCollider2D>(arc, new Vector2(0.35f, 2.6f), new Vector2(0f, 1.5f), true);
+            Light2D arcLight = Light(arc.transform, "ArcLight", Light2D.LightType.Point, new Color(0.5f, 0.9f, 1f), 1.2f, 3.2f, new Vector3(0f, 1.5f, 0f));
+            EditorAssetUtil.SetFields(arcLight.gameObject.AddComponent<FlickerLight2D>(), so =>
+            {
+                so.Require("baseIntensity").floatValue = 1.2f;
+                so.Require("noiseAmount").floatValue = 0.6f;
+                so.Require("noiseSpeed").floatValue = 18f;
+                so.SetArray("neonSprites", new[] { boltSprite });
+            });
+            EditorAssetUtil.SetFields(arc.AddComponent<Hazard>(), so =>
+            {
+                so.Require("hazardCollider").objectReferenceValue = arcCollider;
+                so.Require("beam").objectReferenceValue = boltSprite;
+                so.Require("glow").objectReferenceValue = arcLight;
+                so.Require("onSeconds").floatValue = 1.4f;
+                so.Require("offSeconds").floatValue = 1.5f;
+                so.Require("damageType").enumValueIndex = (int)DamageType.Electric;
+                so.Require("knockback").floatValue = 7f;
+            });
+            Save(ctx, arc, EditorPaths.PrefabsEnvironment);
+
+            GameObject gondola = Go("Gondola", null, Layers.Ground);
+            var gondolaBody = gondola.AddComponent<Rigidbody2D>();
+            gondolaBody.bodyType = RigidbodyType2D.Kinematic;
+            Sprite(gondola, "gondola", ctx.Metal, SortingLayers.Environment, 3);
+            Box<BoxCollider2D>(gondola, new Vector2(3f, 0.5f), Vector2.zero, false);
+            gondola.AddComponent<SurfaceTag>().SetSurface(SurfaceType.Metal);
+            gondola.AddComponent<MovingPlatform>();
+            Light(gondola.transform, "WorkLight", Light2D.LightType.Point, new Color(1f, 0.82f, 0.45f), 0.7f, 2.4f, new Vector3(-0.1f, 2.4f, 0f));
+            Save(ctx, gondola, EditorPaths.PrefabsInteractables);
+
+            GameObject rail = Go("GondolaRail", null, Layers.Default);
+            SpriteRenderer railSprite = Sprite(rail, "gondola_rail", ctx.SpriteLit, SortingLayers.Environment, -1);
+            railSprite.drawMode = SpriteDrawMode.Tiled;
+            railSprite.size = new Vector2(8f, 0.25f);
+            Save(ctx, rail, EditorPaths.PrefabsEnvironment);
+
+            GameObject fan = Go("Fan", null, Layers.Ground);
+            Sprite(Go("Housing", fan.transform, Layers.Ground), "fan_housing", ctx.Metal, SortingLayers.Environment, 2);
+            Box<BoxCollider2D>(fan, new Vector2(3f, 0.3f), new Vector2(0f, -0.15f), false);
+            fan.AddComponent<SurfaceTag>().SetSurface(SurfaceType.Metal);
+            GameObject rotor = Go("Rotor", fan.transform, Layers.Ground, new Vector3(0f, -0.62f, 0f));
+            Sprite(rotor, "fan_rotor", ctx.SpriteLit, SortingLayers.Environment, 3);
+            GameObject column = Go("Column", fan.transform, Layers.Trigger);
+            Box<BoxCollider2D>(column, new Vector2(2.6f, 8f), new Vector2(0f, 4f), true);
+            var stream = (GameObject)PrefabUtility.InstantiatePrefab(ctx.VfxPrefabs[VfxId.Updraft], column.transform);
+            stream.transform.localPosition = new Vector3(0f, 0.1f, 0f);
+            Light2D fanGlow = Light(fan.transform, "Glow", Light2D.LightType.Point, new Color(0.5f, 0.9f, 1f), 1.1f, 3.2f, new Vector3(0f, 0.4f, 0f));
+            EditorAssetUtil.SetFields(column.AddComponent<Updraft>(), so =>
+            {
+                so.Require("stream").objectReferenceValue = stream.GetComponent<ParticleSystem>();
+                so.Require("rotor").objectReferenceValue = rotor.transform;
+                so.Require("glow").objectReferenceValue = fanGlow;
+            });
+            Save(ctx, fan, EditorPaths.PrefabsInteractables);
+
+            GameObject grate = Go("Grate", null, Layers.Ground);
+            var grateCollider = Box<BoxCollider2D>(grate, new Vector2(2f, 0.375f), Vector2.zero, false);
+            grate.AddComponent<SurfaceTag>().SetSurface(SurfaceType.Metal);
+            GameObject grateVisual = Go("Visual", grate.transform, Layers.Ground);
+            SpriteRenderer grateSprite = Sprite(grateVisual, "grate", ctx.SpriteLit, SortingLayers.Environment, 3);
+            EditorAssetUtil.SetFields(grate.AddComponent<CrumblingPlatform>(), so =>
+            {
+                so.Require("solid").objectReferenceValue = grateCollider;
+                so.Require("visual").objectReferenceValue = grateSprite;
+            });
+            Save(ctx, grate, EditorPaths.PrefabsInteractables);
+
+            GameObject uplink = Go("UplinkStation", null, Layers.Default);
+            Sprite(uplink, "uplink_station", ctx.SpriteLit, SortingLayers.Environment, -1);
+            GameObject emitter = Go("Emitter", uplink.transform, Layers.Default, new Vector3(0f, 5.75f, 0f));
+            Light2D beacon = Light(uplink.transform, "Beacon", Light2D.LightType.Point, new Color(1f, 0.3f, 0.35f), 0.4f, 4.5f, new Vector3(0f, 5.9f, 0f));
+            Light(uplink.transform, "ScreenGlow", Light2D.LightType.Point, new Color(0.3f, 0.9f, 1f), 0.8f, 2.4f, new Vector3(-0.6f, 0.75f, 0f));
+            EditorAssetUtil.SetFields(uplink.AddComponent<UplinkStation>(), so =>
+            {
+                so.Require("beacon").objectReferenceValue = beacon;
+                so.Require("emitter").objectReferenceValue = emitter.transform;
+            });
+            Save(ctx, uplink, EditorPaths.PrefabsInteractables);
         }
 
         /// <summary>
