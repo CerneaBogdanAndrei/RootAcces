@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l1_varga
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l1_varga
+  title: "Mesaj \u0219ters: L. Varga"
+  body: "Dac\u0103 cite\u0219ti asta, am reu\u0219it s\u0103 scot fragmentul din
+    cl\u0103dire. Halden nu stocheaz\u0103 date, le vinde. Fiecare camer\u0103 din
+    ora\u0219 trimite imagini c\u0103tre ferma lor de servere, iar fiecare imagine
+    are un pre\u021B."
+  levelId: level01
+  order: 1

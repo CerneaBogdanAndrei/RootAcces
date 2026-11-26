@@ -79,6 +79,7 @@ namespace RootAccess.Core
             public const string Shop = "MAGAZIN";
             public const string Contracts = "CONTRACTE";
             public const string Travel = "CĂLĂTORIE";
+            public const string Lore = "JURNALE";
             public const string Title = "TERMINAL PERSONAL";
             public const string InventoryHint = "[Tab] Închide";
             public const string CloseHint = "[Esc] Închide";
@@ -119,6 +120,16 @@ namespace RootAccess.Core
             public const string TravelReadyHint = "Gata de plecare. Progresul se salvează înainte de călătorie.";
             public const string TravelHereHint = "Te afli deja aici.";
             public const string TravelStarted = "Călătorie spre: {0}";
+        }
+
+        /// <summary>Data logs hidden in the levels (terminal "Jurnale" tab, pickup toast).</summary>
+        public static class Lore
+        {
+            public const string Found = "Jurnal găsit: {0}  ({1}/{2})";
+            public const string MissingEntry = "??? · {0}";
+            public const string MissingTitle = "Jurnal negăsit";
+            public const string MissingHint = "Jurnalul e ascuns undeva în „{0}”. Caută pe pasarele, pe ziduri înalte, în tuburi de ventilație și sub apă.";
+            public const string Progress = "Jurnale găsite: {0}/{1}";
         }
 
         public static class Branches

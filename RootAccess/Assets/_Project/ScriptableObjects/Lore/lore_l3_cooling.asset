@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l3_cooling
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l3_cooling
+  title: "Jurnal tehnician: r\u0103cire"
+  body: "Unitatea CRAC-2 cade iar. Peste 40 de grade, dronele trec singure \xEEn
+    patrulare agresiv\u0103. Nu te pune \xEEntre ele \u0219i rafturi, nu discuta
+    cu ele \u0219i, mai ales, nu le ar\u0103ta ecusonul: \xEEl scaneaz\u0103."
+  levelId: level03
+  order: 6

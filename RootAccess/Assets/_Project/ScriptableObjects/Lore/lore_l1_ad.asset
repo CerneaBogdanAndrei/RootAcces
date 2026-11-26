@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l1_ad
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l1_ad
+  title: "Reclam\u0103 interceptat\u0103"
+  body: "HALDEN CLOUD: via\u021Ba ta, salvat\u0103 pentru totdeauna. Abonamentul
+    gratuit include, implicit, consim\u021B\u0103m\xE2ntul pentru analiza comportamental\u0103.
+    Dezabonarea se face personal, la sediul central, \xEEntre orele 03:00 \u0219i
+    03:05."
+  levelId: level01
+  order: 2

@@ -108,23 +108,39 @@ namespace RootAccess.Systems
             if (type == ObjectiveType.AvoidDetection || amount <= 0) return false;
             var changed = new List<QuestProgress>();
             foreach (QuestProgress quest in _quests.Values)
-            {
-                if (quest.Status != QuestStatus.Active) continue;
-                bool questChanged = false;
-                foreach (ObjectiveProgress objective in quest.Objectives)
-                {
-                    if (objective.Definition.Type != type || objective.IsComplete) continue;
-                    if (!string.Equals(objective.Definition.TargetId, targetId, StringComparison.Ordinal)) continue;
-                    objective.Count = Math.Min(objective.Definition.RequiredCount, objective.Count + amount);
-                    questChanged = true;
-                }
-
-                if (questChanged) changed.Add(quest);
-            }
+                if (quest.Status == QuestStatus.Active && Advance(quest, type, targetId, amount))
+                    changed.Add(quest);
 
             // Listeners may complete a quest and start its follow-up, so notify after the iteration.
             foreach (QuestProgress quest in changed) QuestUpdated?.Invoke(quest);
             return changed.Count > 0;
+        }
+
+        /// <summary>
+        /// Like <see cref="Report"/> but for one active quest only, e.g. counting data logs found before a contract was
+        /// accepted without inflating other quests that track the same target.
+        /// </summary>
+        public bool ReportTo(string questId, ObjectiveType type, string targetId, int amount = 1)
+        {
+            QuestProgress quest = Get(questId);
+            if (quest == null || quest.Status != QuestStatus.Active || type == ObjectiveType.AvoidDetection || amount <= 0) return false;
+            if (!Advance(quest, type, targetId, amount)) return false;
+            QuestUpdated?.Invoke(quest);
+            return true;
+        }
+
+        private static bool Advance(QuestProgress quest, ObjectiveType type, string targetId, int amount)
+        {
+            bool changed = false;
+            foreach (ObjectiveProgress objective in quest.Objectives)
+            {
+                if (objective.Definition.Type != type || objective.IsComplete) continue;
+                if (!string.Equals(objective.Definition.TargetId, targetId, StringComparison.Ordinal)) continue;
+                objective.Count = Math.Min(objective.Definition.RequiredCount, objective.Count + amount);
+                changed = true;
+            }
+
+            return changed;
         }
 
         /// <summary>Marks "avoid detection" objectives of active quests as failed.</summary>

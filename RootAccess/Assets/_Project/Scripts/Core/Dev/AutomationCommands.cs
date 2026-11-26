@@ -7,6 +7,7 @@ namespace RootAccess.Core
         public const string Inventory = "inventory";
         public const string Skills = "skills";
         public const string Quests = "quests";
+        public const string Lore = "lore";
         public const string RubricPanel = "rubric";
         public const string Settings = "settings";
         public const string GameOver = "gameover";

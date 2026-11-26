@@ -10,9 +10,10 @@ disciplina „Joc 2D de tip singleplayer/multiplayer în Unity cu C#”.
 - **Motor:** Unity 6000.3.29f1 (6.3 LTS), URP 2D, Input System, Cinemachine 3, Timeline, 2D Animation, Netcode for GameObjects.
 - **Platformă:** Windows x64 (tastatură + mouse sau gamepad).
 - **Conținut:** meniu, intro cinematic, ascunzătoarea (Hub), 5 niveluri, final cinematic, credite, co-op local + LAN,
-  scena „Prezentare barem”. Estimarea pentru o primă trecere: ≈ 52 de minute.
-- **Stare:** `v1.0`. Toate cele 12 puncte din barem și ambele bonusuri (cinematice, multiplayer) trec în
-  `RubricValidator`; 114 teste EditMode și 38 PlayMode sunt verzi.
+  scena „Prezentare barem”, 15 jurnale de date ascunse în niveluri. Estimarea pentru o primă trecere: ≈ 54 de minute.
+- **Stare:** `v1.1` (grafică pixel art pictată din cod, jurnale de date, tuburi de ventilație). Toate cele 12 puncte din
+  barem și ambele bonusuri (cinematice, multiplayer) trec în `RubricValidator`; 120 de teste EditMode și 40 PlayMode
+  sunt verzi.
 
 **Documentația completă a jocului:** [Documentatie/DOCUMENTATIE.md](Documentatie/DOCUMENTATIE.md).
 

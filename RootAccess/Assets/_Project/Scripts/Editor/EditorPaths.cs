@@ -40,6 +40,7 @@ namespace RootAccess.EditorTools
         public const string SoLevels = ScriptableObjects + "/Levels";
         public const string SoAudio = ScriptableObjects + "/Audio";
         public const string SoDialogue = ScriptableObjects + "/Dialogue";
+        public const string SoLore = ScriptableObjects + "/Lore";
         public const string SoStrings = ScriptableObjects + "/Strings";
 
         public const string Settings = Root + "/Settings";

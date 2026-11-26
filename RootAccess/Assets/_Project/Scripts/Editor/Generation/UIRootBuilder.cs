@@ -102,9 +102,10 @@ namespace RootAccess.EditorTools
             RectTransform tabs = UIFactory.Rect("Tabs", panel.transform);
             UIFactory.Place(tabs, new Vector2(0f, 1f), new Vector2(40f, -100f), new Vector2(size.x - 80f, 58f));
             UIFactory.Horizontal(tabs.gameObject, 14f);
-            string[] tabTitles = { Strings.Panels.Inventory, Strings.Panels.Skills, Strings.Panels.Quests, Strings.Panels.Shop, Strings.Panels.Contracts, Strings.Panels.Travel };
+            // Same order as the TerminalTab enum (the view maps button i to tab i).
+            string[] tabTitles = { Strings.Panels.Inventory, Strings.Panels.Skills, Strings.Panels.Quests, Strings.Panels.Shop, Strings.Panels.Contracts, Strings.Panels.Travel, Strings.Panels.Lore };
             var tabButtons = new Button[tabTitles.Length];
-            for (int i = 0; i < tabTitles.Length; i++) tabButtons[i] = UIFactory.Button($"Tab_{i}", tabs, tabTitles[i], 232f, 54f);
+            for (int i = 0; i < tabTitles.Length; i++) tabButtons[i] = UIFactory.Button($"Tab_{i}", tabs, tabTitles[i], 196f, 54f);
 
             RectTransform list = UIFactory.Rect("List", panel.transform);
             UIFactory.Place(list, new Vector2(0f, 1f), new Vector2(40f, -180f), new Vector2(900f, 580f));

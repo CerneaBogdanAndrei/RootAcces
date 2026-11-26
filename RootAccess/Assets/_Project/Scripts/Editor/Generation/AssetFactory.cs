@@ -195,6 +195,17 @@ namespace RootAccess.EditorTools
                 new ObjectiveDefinition("ghost_exit", SeedContent.Quests.GhostExit, ObjectiveType.Reach, SeedContent.Ids.ExitLevel01),
                 new ObjectiveDefinition("ghost_stealth", SeedContent.Quests.Stealth, ObjectiveType.AvoidDetection, string.Empty));
 
+            EditorAssetUtil.EnsureFolder(EditorPaths.SoLore);
+            ctx.LoreLogs = new LoreDefinition[SeedContent.Lore.Entries.Length];
+            for (int i = 0; i < ctx.LoreLogs.Length; i++)
+            {
+                (string id, string level, string title, string body) = SeedContent.Lore.Entries[i];
+                ctx.LoreLogs[i] = Lore(id, title, body, level, i);
+            }
+
+            ctx.ArchivistQuest = Quest(SeedContent.Ids.ArchivistQuest, SeedContent.Lore.ArchivistTitle, SeedContent.Lore.ArchivistDesc, false, 500, 250,
+                new ObjectiveDefinition("find_logs", SeedContent.Lore.ArchivistObjective, ObjectiveType.Collect, LoreTargets.AnyLog, 10));
+
             ctx.HubLevel = Level(SeedContent.Ids.Hub, SceneNames.Hub, Strings.Levels.Hub, true, 0);
             ctx.Level01 = Level(SeedContent.Ids.Level01, SceneNames.Level01, Strings.Levels.Level01, true, 1, SeedContent.LevelInfo.Level01);
             ctx.Level02 = Level(SeedContent.Ids.Level02, SceneNames.Level02, Strings.Levels.Level02, false, 2, SeedContent.LevelInfo.Level02);
@@ -231,7 +242,8 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetFields(ctx.Database, so =>
             {
                 so.Require("items").objectReferenceValue = itemDb;
-                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest, ctx.SideQuest, ctx.GhostQuest });
+                so.SetArray("quests", new[] { ctx.MainQuest, ctx.OfficeQuest, ctx.FarmQuest, ctx.SewersQuest, ctx.HqQuest, ctx.SideQuest, ctx.GhostQuest, ctx.ArchivistQuest });
+                so.SetArray("lore", ctx.LoreLogs);
                 so.SetArray("skills", ctx.Skills);
                 so.SetArray("levels", ctx.Levels);
                 so.Require("startingQuest").objectReferenceValue = ctx.MainQuest;
@@ -284,6 +296,14 @@ namespace RootAccess.EditorTools
             level.SetDescription(description);
             EditorUtility.SetDirty(level);
             return level;
+        }
+
+        private static LoreDefinition Lore(string id, string title, string body, string levelId, int order)
+        {
+            var log = EditorAssetUtil.LoadOrCreateAsset<LoreDefinition>($"{EditorPaths.SoLore}/{id}.asset");
+            log.Configure(id, title, body, levelId, order);
+            EditorUtility.SetDirty(log);
+            return log;
         }
 
         private static DialogueDefinition Dialogue(string id, params DialogueLine[] lines)

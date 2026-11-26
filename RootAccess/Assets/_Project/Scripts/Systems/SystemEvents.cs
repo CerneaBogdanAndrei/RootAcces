@@ -74,6 +74,21 @@ namespace RootAccess.Systems
 
     public readonly struct DialogueEnded : IEvent { }
 
+    /// <summary>A data log was found for the first time (terminal refresh, HUD).</summary>
+    public readonly struct LoreCollected : IEvent
+    {
+        public readonly LoreDefinition Log;
+        public readonly int Found;
+        public readonly int Total;
+
+        public LoreCollected(LoreDefinition log, int found, int total)
+        {
+            Log = log;
+            Found = found;
+            Total = total;
+        }
+    }
+
     public readonly struct ToastRequested : IEvent
     {
         public readonly string Message;
@@ -90,7 +105,8 @@ namespace RootAccess.Systems
         Quests,
         Shop,
         Contracts,
-        Travel
+        Travel,
+        Lore
     }
 
     /// <summary>

@@ -531,18 +531,20 @@ namespace RootAccess.EditorTools
 
             layout.Spawn("l1_movement", 1f);
             layout.Rooftops(4, SeedContent.Labels.L1Gaps);
-            layout.WallJumpChimney(10, SeedContent.Labels.L1WallJump);
+            layout.WallJumpChimney(10, SeedContent.Labels.L1WallJump, ctx.LoreLogs[0]);
             layout.Flat(4);
             layout.Checkpoint("l1_cp1");
 
             // Security block: guard, catwalk, camera gate with the story door, laser tunnel.
             layout.Spawn("l1_security", 1f);
             layout.Hint(SeedContent.Labels.L1Stealth, 9f, 7f, 18f);
-            layout.GuardPatrol("Guard", 18, catwalk: true);
+            layout.GuardPatrol("Guard", 18, catwalk: true, lore: ctx.LoreLogs[1]);
             layout.Hint(SeedContent.Labels.L1Gate, 6f, 4.2f, 12f);
             layout.CameraGate(SeedContent.Ids.TerminalLevel01Camera, SeedContent.Ids.TerminalLevel01Door, "Terminal_Camera", "Terminal_Door");
             layout.Hint(SeedContent.Labels.L1Lasers, 6f, 9f, 14f);
             layout.LaserCorridor(2, SeedContent.Ids.TerminalLevel01Lasers);
+            layout.Spawn("l1_vent", 0.5f);
+            layout.VentDuct(8, SeedContent.Labels.Vent);
 
             // Network nodes: the street is blocked by a tower; the node carries you onto its roof (data shard).
             GameObject dataTerminal = Place(ctx, "Terminal_Data", layout.P(3f), layout.Props, "Terminal_Data");
@@ -554,7 +556,7 @@ namespace RootAccess.EditorTools
 
             // Drone arena with A* pathfinding around pillars.
             layout.Hint(SeedContent.Labels.L1Drones, 12f, 9.5f, 20f);
-            layout.DroneArena(2, "l1_drone", "Pickup_UsbKey");
+            layout.DroneArena(2, "l1_drone", "Pickup_UsbKey", ctx.LoreLogs[2]);
             layout.Rooftops(2);
             layout.Exit(SeedContent.Ids.ExitLevel01, SeedContent.Ids.Level01, ctx.Level02);
             Rect rect = layout.Finish();
@@ -590,7 +592,7 @@ namespace RootAccess.EditorTools
             layout.Spawn("l2_security", 1f);
             layout.GuardPatrol("Guard", 18, catwalk: true);
             layout.CameraGate(SeedContent.Ids.TerminalLevel02Camera, SeedContent.Ids.TerminalLevel02Door, doorDifficulty: 2);
-            layout.LaserCorridor(3, SeedContent.Ids.TerminalLevel02Lasers);
+            layout.LaserCorridor(3, SeedContent.Ids.TerminalLevel02Lasers, lore: ctx.LoreLogs[5]);
             layout.Checkpoint("l2_cp1");
 
             layout.Hint(SeedContent.Labels.L2Elevator, 4f, 4.5f, 12f);
@@ -598,13 +600,14 @@ namespace RootAccess.EditorTools
 
             layout.Spawn("l2_upper", 1f);
             layout.Hint(SeedContent.Labels.L2Sniper, 10f, 7.5f, 16f);
-            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
+            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true, lore: ctx.LoreLogs[3]);
             layout.Hint(SeedContent.Labels.L2Turrets, 11f, 7.5f, 16f);
-            layout.TurretHall(2);
+            layout.TurretHall(2, ctx.LoreLogs[4]);
             layout.Flat(8);
             layout.Checkpoint("l2_cp2", "l2_vault");
             layout.DataVault(SeedContent.Ids.TerminalLevel02Vault);
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);
+            layout.VentDuct(9, SeedContent.Labels.Vent);
             layout.DroneArena(1);
             layout.Exit(SeedContent.Ids.ExitLevel02, SeedContent.Ids.Level02, ctx.Level03);
             layout.Finish();
@@ -640,12 +643,13 @@ namespace RootAccess.EditorTools
             layout.Dress("ServerRack", 2, 22, 4);
             layout.DroneArena(2, "l3_drones");
             layout.LaserCorridor(4, "l3_lasers");
+            layout.VentDuct(10, null, ctx.LoreLogs[6]);
             layout.Checkpoint("l3_cp1");
             layout.Hint(SeedContent.Labels.L3Chain, 6f, 5f, 14f);
-            layout.NodeChain(3, "l3_nodes");
+            layout.NodeChain(3, "l3_nodes", ctx.LoreLogs[7]);
             layout.CameraGate("l3_gate_camera", "l3_gate_door", doorDifficulty: 3);
             layout.Dress("ServerRack", 1, 17, 5);
-            layout.GuardPatrol("Guard_Heavy", 18, catwalk: true);
+            layout.GuardPatrol("Guard_Heavy", 18, catwalk: true, lore: ctx.LoreLogs[8]);
             layout.Dress("ServerRack", 2, 22, 4);
             layout.DroneArena(3);
             layout.Checkpoint("l3_cp2", "l3_core");
@@ -674,13 +678,14 @@ namespace RootAccess.EditorTools
             layout.WaterPool(12, 4, dive: false, crates: 3);
             layout.GuardPatrol("Guard", 16, catwalk: true);
             layout.Hint(SeedContent.Labels.L4Dive, 8f, 6f, 14f);
-            layout.WaterPool(16, 5, dive: true, crates: 1);
+            layout.WaterPool(16, 5, dive: true, crates: 1, lore: ctx.LoreLogs[10]);
             layout.Checkpoint("l4_cp1");
             layout.Hint(SeedContent.Labels.L4Sluice, 3f, 4.5f, 12f);
-            layout.FloodShaft(SeedContent.Ids.TerminalLevel04Sluice, "l4_sluice");
+            layout.FloodShaft(SeedContent.Ids.TerminalLevel04Sluice, "l4_sluice", lore: ctx.LoreLogs[9]);
+            layout.VentDuct(8);
             layout.Dress("SewerPipe", 0, 20, 8, 6.5f);
             layout.LaserCorridor(3, "l4_lasers");
-            layout.DroneArena(2);
+            layout.DroneArena(2, lore: ctx.LoreLogs[11]);
             layout.WaterPool(14, 4, dive: true, crates: 2);
             layout.Checkpoint("l4_cp2", "l4_gate");
             layout.CameraGate("l4_gate_camera", "l4_gate_door", doorDifficulty: 3);
@@ -708,15 +713,16 @@ namespace RootAccess.EditorTools
             layout.Spawn("l5_security", 1f);
             layout.GuardPatrol("Guard_Heavy", 18, catwalk: true);
             layout.LaserCorridor(4, "l5_lasers", 0.45f);
+            layout.VentDuct(10);
             layout.Checkpoint("l5_cp1");
             layout.ElevatorUp(SeedContent.Ids.TerminalLevel05Elevator, 10, "l5_elevator");
-            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true);
+            layout.GuardPatrol("Guard_Sniper", 20, catwalk: true, lore: ctx.LoreLogs[14]);
             layout.DroneArena(3, "l5_drones");
-            layout.TurretHall(2);
+            layout.TurretHall(2, ctx.LoreLogs[12]);
             layout.Flat(8);
             layout.Checkpoint("l5_cp2");
             layout.Dress("ServerRack", 1, 6, 4);
-            layout.NodeChain(2, "l5_nodes");
+            layout.NodeChain(2, "l5_nodes", ctx.LoreLogs[13]);
             layout.Hint(SeedContent.Labels.L5Mainframe, 6f, 5f, 12f);
             layout.DataVault(SeedContent.Ids.TerminalLevel05Mainframe, "Terminal_Mainframe", 4);
             layout.GuardPatrol("Guard_Heavy", 16, catwalk: false);

@@ -11,8 +11,9 @@ using UnityEngine.UI;
 namespace RootAccess.UI
 {
     /// <summary>
-    /// Full-screen personal terminal with tabs: inventory, skill tree (three branches), quest log and, when opened from a
-    /// hub console, the shop, the darknet contracts or fast travel (levels unlocked by finishing the previous one). Time stops while it is open (<see cref="GameState.Terminal"/>).
+    /// Full-screen personal terminal with tabs: inventory, skill tree (three branches), quest log, the data logs found in
+    /// the levels and, when opened from a hub console, the shop, the darknet contracts or fast travel (levels unlocked by
+    /// finishing the previous one). Time stops while it is open (<see cref="GameState.Terminal"/>).
     /// Lists are rebuilt from a button template; the right-hand panel shows details and the tab's action.
     /// </summary>
     public sealed class TerminalScreenView : UIPanel
@@ -74,6 +75,7 @@ namespace RootAccess.UI
             EventBus<CreditsChanged>.Subscribe(OnDataChanged);
             EventBus<XpChanged>.Subscribe(OnDataChanged);
             EventBus<QuestChanged>.Subscribe(OnDataChanged);
+            EventBus<LoreCollected>.Subscribe(OnDataChanged);
             CommandLineAutomation.CommandRequested += OnAutomationCommand;
             if (input == null) return;
             input.InventoryEvent += OnInventoryKey;
@@ -88,6 +90,7 @@ namespace RootAccess.UI
             EventBus<CreditsChanged>.Unsubscribe(OnDataChanged);
             EventBus<XpChanged>.Unsubscribe(OnDataChanged);
             EventBus<QuestChanged>.Unsubscribe(OnDataChanged);
+            EventBus<LoreCollected>.Unsubscribe(OnDataChanged);
             CommandLineAutomation.CommandRequested -= OnAutomationCommand;
             if (input == null) return;
             input.InventoryEvent -= OnInventoryKey;
@@ -194,6 +197,7 @@ namespace RootAccess.UI
             if (command == AutomationCommands.Inventory) Open(new TerminalScreenRequested(TerminalTab.Inventory));
             else if (command == AutomationCommands.Skills) Open(new TerminalScreenRequested(TerminalTab.Skills));
             else if (command == AutomationCommands.Quests) Open(new TerminalScreenRequested(TerminalTab.Quests));
+            else if (command == AutomationCommands.Lore) Open(new TerminalScreenRequested(TerminalTab.Lore));
         }
 
         private void OnCancel()
@@ -235,6 +239,15 @@ namespace RootAccess.UI
                     foreach (QuestProgress quest in game.Quests.All)
                         AddEntry(quest, $"{quest.Definition.Title} ({QuestStatusText(quest.Status)})",
                             quest.Status == QuestStatus.Completed ? unlockedColor : normalTextColor);
+                    break;
+                case TerminalTab.Lore:
+                    foreach (LoreDefinition log in SortedLore(session.Database.Lore))
+                    {
+                        bool known = game.Lore.Has(log.LoreId);
+                        AddEntry(log, known ? log.Title : string.Format(Strings.Lore.MissingEntry, LevelName(session.Database, log.LevelId)),
+                            known ? availableColor : lockedColor);
+                    }
+
                     break;
                 case TerminalTab.Shop:
                     foreach (ShopOffer offer in _offers ?? new ShopOffer[0])
@@ -344,6 +357,13 @@ namespace RootAccess.UI
                     AppendQuest(contract, progress);
                     SetAction(true, Strings.Panels.Accept, progress == null);
                     break;
+                case LoreDefinition log:
+                    bool found = game.Lore.Has(log.LoreId);
+                    title = found ? log.Title : Strings.Lore.MissingTitle;
+                    _text.AppendLine(found ? log.Body : string.Format(Strings.Lore.MissingHint, LevelName(session.Database, log.LevelId))).AppendLine()
+                        .Append(string.Format(Strings.Lore.Progress, game.Lore.Count, session.Database.Lore.Length));
+                    SetAction(false, string.Empty, false);
+                    break;
                 case LevelDefinition level:
                     title = level.DisplayName;
                     if (!string.IsNullOrEmpty(level.Description)) _text.AppendLine(level.Description).AppendLine();
@@ -423,6 +443,18 @@ namespace RootAccess.UI
 
         private static string LevelStateText(GameSession game, LevelDefinition level) =>
             IsCurrentScene(level) ? Strings.Panels.LevelHere : IsUnlocked(game, level) ? Strings.Panels.LevelOpen : Strings.Panels.LevelLocked;
+
+        private static string LevelName(GameDatabase database, string levelId) =>
+            database.FindLevel(levelId) is { } level ? level.DisplayName : levelId;
+
+        private static List<LoreDefinition> SortedLore(LoreDefinition[] logs)
+        {
+            var sorted = new List<LoreDefinition>();
+            foreach (LoreDefinition log in logs ?? new LoreDefinition[0])
+                if (log != null) sorted.Add(log);
+            sorted.Sort((a, b) => a.Order.CompareTo(b.Order));
+            return sorted;
+        }
 
         private static List<LevelDefinition> SortedLevels(LevelDefinition[] levels)
         {

@@ -15,6 +15,8 @@ namespace RootAccess.Systems
         [SerializeField] private TraceSettings traceSettings = TraceSettings.Default;
         [SerializeField, Min(0)] private int startingCredits = 150;
         [SerializeField] private ItemGrant[] startingItems = new ItemGrant[0];
+        [SerializeField, Tooltip("Data logs hidden in the levels, in reading order.")]
+        private LoreDefinition[] lore = new LoreDefinition[0];
 
         public ItemDatabase Items => items;
         public QuestDefinition[] Quests => quests;
@@ -24,6 +26,7 @@ namespace RootAccess.Systems
         public TraceSettings TraceSettings => traceSettings;
         public int StartingCredits => startingCredits;
         public ItemGrant[] StartingItems => startingItems;
+        public LoreDefinition[] Lore => lore;
 
         public ItemDefinition FindItem(string id) => items != null ? items.Find(id) : null;
 
@@ -38,6 +41,20 @@ namespace RootAccess.Systems
         {
             foreach (SkillDefinition skill in skills)
                 if (skill != null && skill.SkillId == id) return skill;
+            return null;
+        }
+
+        public LoreDefinition FindLore(string id)
+        {
+            foreach (LoreDefinition log in lore)
+                if (log != null && log.LoreId == id) return log;
+            return null;
+        }
+
+        public LevelDefinition FindLevel(string levelId)
+        {
+            foreach (LevelDefinition level in levels)
+                if (level != null && level.LevelId == levelId) return level;
             return null;
         }
 

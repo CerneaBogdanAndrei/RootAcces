@@ -25,6 +25,8 @@ namespace RootAccess.Systems
         public List<string> unlockedLevels = new();
         public List<string> hackedTerminals = new();
         public List<LevelTimeData> levelTimes = new();
+        /// <summary>Ids of the data logs found (v1.1; older saves load with none).</summary>
+        public List<string> loreLogs = new();
     }
 
     /// <summary>Best completion time of one level (play time, pauses excluded).</summary>

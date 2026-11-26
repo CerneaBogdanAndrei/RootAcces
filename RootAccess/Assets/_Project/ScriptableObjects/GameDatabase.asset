@@ -21,6 +21,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b661e27199717f49b64ca3b7b53977a, type: 2}
   - {fileID: 11400000, guid: b346d65402767e94491a80ffc0a50a3b, type: 2}
   - {fileID: 11400000, guid: 839100f42cdbb0a4a8ab915121f41e12, type: 2}
+  - {fileID: 11400000, guid: b6ee06d00d07fb845a898f0cf2647f1d, type: 2}
   skills:
   - {fileID: 11400000, guid: 3c31fecc1c257264e83debea85c43529, type: 2}
   - {fileID: 11400000, guid: 82b5120f1326e704ab506aab31166b48, type: 2}
@@ -49,3 +50,19 @@ MonoBehaviour:
   startingItems:
   - item: {fileID: 11400000, guid: 5d390fbdee2acaa43be750fb53c148be, type: 2}
     quantity: 2
+  lore:
+  - {fileID: 11400000, guid: fec1a1fe9a376b743afbddfab4cfddde, type: 2}
+  - {fileID: 11400000, guid: f4ed2f3115364d542b33d624a8abe0aa, type: 2}
+  - {fileID: 11400000, guid: 54fcf1bef7a9d514bad16bcbb4a9c085, type: 2}
+  - {fileID: 11400000, guid: 3791c8ec578d3d94394f80381ca16248, type: 2}
+  - {fileID: 11400000, guid: 58d4c7f690d4fd84e9f8de7831b32d4c, type: 2}
+  - {fileID: 11400000, guid: 59b87b862fcbffb4d8a1f337f1c318df, type: 2}
+  - {fileID: 11400000, guid: 9589c41607ba80043932bc68181a5ea6, type: 2}
+  - {fileID: 11400000, guid: 03a24a9cfc8803948be9504fd9f55b8a, type: 2}
+  - {fileID: 11400000, guid: 21fa3fbdd1d36bc40a4ce83801e0dfcd, type: 2}
+  - {fileID: 11400000, guid: ab66832ecd6f3a24d9661865dd4e0971, type: 2}
+  - {fileID: 11400000, guid: 259e44be21294ea43874bcdb6a51d1dc, type: 2}
+  - {fileID: 11400000, guid: fc9215a57d40c054ea10d71f81c94254, type: 2}
+  - {fileID: 11400000, guid: 3d439516a84b3904a876a8b65fae4479, type: 2}
+  - {fileID: 11400000, guid: ef2424f22e7b7834cac0844ceb4a89ab, type: 2}
+  - {fileID: 11400000, guid: 3f3a345d3d0b91747a7d995f65213c3c, type: 2}

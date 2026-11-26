@@ -40,6 +40,7 @@ namespace RootAccess.EditorTools
             yield return ("pickup_shard", Shard(), Centre);
             yield return ("pickup_emp", Emp(), Centre);
             yield return ("pickup_credit", Credit(), Centre);
+            yield return ("pickup_lore", LoreChip(), Centre);
             yield return ("alert_icon", AlertIcon(), Feet);
             for (int i = 0; i < 2; i++) yield return ($"drone_{i}", Drone(i), Centre);
             yield return ("camera_body", CameraBody(), new Vector2(0.05f, 0.5f));
@@ -285,6 +286,19 @@ namespace RootAccess.EditorTools
             c.Circle(8, 8, 4f, Paint.Rgb(200, 140, 30));
             c.Text("C", 7, 6, Paint.Rgb(255, 236, 150));
             c.Set(5, 11, White);
+            return Done(c);
+        }
+
+        /// <summary>Data log: a small datapad with glowing text lines and an amber status LED.</summary>
+        private static PixelCanvas LoreChip()
+        {
+            var c = new PixelCanvas(16, 16);
+            c.Bevel(2, 2, 12, 11, Ramp.From(Paint.Rgb(40, 60, 72)));
+            c.Rect(4, 4, 8, 7, Paint.Rgb(14, 36, 34));
+            Color32 text = Paint.Rgb(120, 255, 190);
+            c.Rect(5, 9, 6, 1, text).Rect(5, 7, 4, 1, text).Rect(5, 5, 5, 1, Paint.Shade(text, 0.7f));
+            c.Rect(6, 13, 4, 2, Steel.Base);
+            c.Set(12, 3, Amber);
             return Done(c);
         }
 

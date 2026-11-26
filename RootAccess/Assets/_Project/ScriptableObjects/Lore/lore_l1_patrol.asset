@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l1_patrol
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l1_patrol
+  title: "Jurnal de patrul\u0103 #114"
+  body: "Acoperi\u0219urile din Sectorul 7 sunt ale noastre dup\u0103 miezul nop\u021Bii.
+    Halden pl\u0103te\u0219te dublu pentru tura de noapte \u0219i nimeni nu \xEEntreab\u0103
+    de ce. Regula e simpl\u0103: dac\u0103 vezi pe cineva cu glug\u0103, raportezi
+    \xEEnt\xE2i, g\xE2nde\u0219ti dup\u0103."
+  levelId: level01
+  order: 0
