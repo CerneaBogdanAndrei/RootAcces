@@ -220,6 +220,20 @@ Drive și testul pe un PC curat rămân la dezvoltator.
   reflecție; testele verifică că fiecare are o variantă engleză, fără diacritice românești și cu aceleași `{0}`.
 - `-ra-language en` pornește build-ul în engleză (capturile 47–50). Versiunea afișată e 1.3.
 
+## P13: co-op pe ecran împărțit curat și lista de obiective ✅ făcut (PR „P13”)
+
+- **Ecranul împărțit:** consola Operatorului acoperea jumătatea dreaptă a tuturor ferestrelor Infiltratorului (pauza și
+  setările apăreau pe jumătate, caseta de dialog trecea sub consolă). Acum consola e desenată imediat peste HUD, sub
+  toate meniurile, deci pauza, setările, terminalul, game over și nivel complet se văd întregi. Caseta de dialog și
+  minijocul de hacking rămân în jumătatea Infiltratorului, micșorate cât să încapă (`UI/Common/SplitScreenRegion.cs`),
+  ca Operatorul să poată lucra în continuare. Cât timp pauza sau terminalul oprește timpul, consola nu primește comenzi.
+- **Lista de obiective în HUD** (dreapta sus): toate obiectivele contractului activ, cu pasul curent evidențiat, pașii
+  făcuți bifați și tăiați, bonusul de stealth separat (roșu dacă alarma a pornit), contor pentru pașii multipli, indiciul
+  „mergi la terminalul de călătorie și alege nivelul X” în ascunzătoare și contractele secundare active. Logica e în
+  modelul `Systems/Quests/ObjectiveChecklist.cs` (testat în EditMode), vederea doar colorează.
+- Bara transmisiei din nivelul 6 s-a mutat sub panoul de viață, ca să nu se suprapună cu lista în ecranul împărțit.
+- Capturi noi: `51-coop-pauza`, `52-coop-hacking`. Versiunea afișată e 1.4.
+
 ## Datorie tehnică urmărită
 
 - Regenerarea conținutului rescrie fileID-urile sub-asset-urilor (controllere, profile de volum), ceea ce produce diff-uri

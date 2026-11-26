@@ -111,11 +111,18 @@ namespace RootAccess.UI
             UpdateVisibility(split, full);
             if (!IsVisible) return;
 
-            if (split) PollLocalOperatorInput();
+            if (split && !IsTimeStopped()) PollLocalOperatorInput();
             if (!_dirty) return;
             _dirty = false;
             Render();
         }
+
+        /// <summary>
+        /// Pause and the personal terminal stop time: the console stays visible under the Infiltrator's menu (drawn above
+        /// it), but the Operator cannot act until play resumes.
+        /// </summary>
+        private static bool IsTimeStopped() =>
+            ServiceLocator.TryGet(out GameManager gameManager) && gameManager.State is GameState.Paused or GameState.Terminal;
 
         private static bool IsGameplayOnScreen() =>
             ServiceLocator.TryGet(out GameManager gameManager) && gameManager.State is GameState.Playing or GameState.Hacking or GameState.Dialogue

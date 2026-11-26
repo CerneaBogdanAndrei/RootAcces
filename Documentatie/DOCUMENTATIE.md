@@ -116,6 +116,20 @@ Meniu principal ──Joc nou──► Intro (Timeline) ──► Ascunzătoarea
        └─Prezentare barem (14 camere)                 (fiecare ieșire: „Misiune îndeplinită”, deblocare, salvare)
 ```
 
+### Ce ai de făcut (lista de obiective)
+
+În dreapta sus, HUD-ul arată contractul activ și **toate obiectivele lui**, în ordine:
+
+- pasul de făcut acum e evidențiat (cyan, cu `>` în față);
+- pașii terminați sunt bifați `[x]` și tăiați;
+- bonusul opțional („nu declanșa alarma”) e galben și devine roșu `[!]` dacă alarma pornește;
+- pașii care cer mai multe lucruri arată un contor (de exemplu *Găsește jurnale de date (3/10)*);
+- în ascunzătoare, dacă următorul pas e un nivel, apare și unde mergi: *Mergi la terminalul de călătorie [E] și alege
+  „Acoperișuri și parc”*;
+- contractele secundare active apar dedesubt, câte un rând cu pasul următor.
+
+Lista se actualizează imediat ce termini un pas și urmează limba aleasă.
+
 ### Ascunzătoarea (Hub)
 
 Bază între misiuni, cu un briefing la intrare și cinci console:
@@ -344,15 +358,18 @@ Două moduri, cu același cod de Operator:
 
 | Mod | Cum pornește | Detalii |
 |---|---|---|
-| **Local, ecran împărțit** | Meniu → Co-op → Local | Infiltratorul folosește jumătatea stângă (tastatură + mouse), consola Operatorului e pe jumătatea dreaptă (gamepad sau numpad). |
+| **Local, ecran împărțit** | Meniu → Co-op → Local | Infiltratorul folosește jumătatea stângă (tastatură + mouse), consola Operatorului e pe jumătatea dreaptă (gamepad sau numpad). HUD-ul, dialogurile și minijocurile de hacking ale Infiltratorului rămân în jumătatea lui (micșorate cât să încapă), deci Operatorul poate lucra și în timpul unei spargeri. Pauza, setările și terminalul personal se deschid întregi, deasupra consolei; cât timp sunt deschise, timpul e oprit și Operatorul nu poate acționa. |
 | **LAN** | PC 1: Co-op → Găzduiește în LAN · PC 2: scrie IP-ul gazdei → Alătură-te | Gazda joacă și e autoritară (port 7777). Clientul rulează doar consola Operatorului; harta, pozițiile și comenzile circulă prin Netcode for GameObjects. |
 
 | ![Meniul Co-op](screenshots/37-meniu-coop.png) | ![Ecran împărțit](screenshots/38-coop-ecran-impartit.png) |
 |---|---|
+| ![Pauza în co-op](screenshots/51-coop-pauza.png) | ![Hacking în co-op](screenshots/52-coop-hacking.png) |
 
 ![Consola Operatorului în LAN](screenshots/39-coop-lan-operator.png)
 
-Tehnic: țintele implementează `IOperatorTarget` (Core) și se înscriu în `OperatorRegistry`. `CoopSession` trimite
+Tehnic: țintele implementează `IOperatorTarget` (Core) și se înscriu în `OperatorRegistry`. Împărțirea ecranului:
+`SplitViewport` pune camera de joc pe jumătatea stângă, `SplitScreenRegion` (UI) mută HUD-ul, caseta de dialog și
+minijocul de hacking în aceeași jumătate, iar în `UIRoot` consola e desenată imediat peste HUD și sub toate meniurile. `CoopSession` trimite
 ~10 snapshot-uri pe secundă prin `IOperatorLink` (`LocalOperatorLink` în același proces, `NetworkOperatorLink` prin
 mesaje numite Netcode, cu payload binar `OperatorWire`) și aplică comenzile în bugetul `OperatorModel`.
 
@@ -451,15 +468,16 @@ rămâne în salvare, așa că o trecere cronometrată confirmă estimarea.
 
 ## 12. Testare și calitate
 
-- **132 de teste EditMode**:
+- **136 de teste EditMode**:
   - A*, inventar, urmărire, portofel, magazin, abilități;
   - misiuni (inclusiv lanțul principal), salvare/încărcare cu migrări și timpii pe nivel;
   - minijocurile de hacking, regula de auz, modelul și codec-ul Operatorului, EventBus, ServiceLocator, FSM;
   - arhiva de jurnale (găsire o singură dată, salvare, salvări vechi fără jurnale, contractul care numără retroactiv);
   - transmisia de pe antenă (progres doar lângă emițător, pauză fără resetare, valurile de drone);
   - limba: alegerea textului după limbă, salvarea ei în setări și faptul că fiecare din cele peste 400 de texte are o
-    variantă engleză reală (fără diacritice românești, cu aceleași `{0}`).
-- **49 de teste PlayMode**:
+    variantă engleză reală (fără diacritice românești, cu aceleași `{0}`);
+  - lista de obiective din HUD (pasul curent, pașii bifați, contorul, bonusul ratat la alarmă).
+- **51 de teste PlayMode**:
   - fiecare scenă pornește fără erori, cu jucătorul pe podea;
   - fluxul complet de acceptare: meniu → intro → Hub → Nivelul 1 → hack → ușă → teleport → dronă → pauză → volum → meniu → showcase;
   - toate cele trei minijocuri prin overlay-ul real, terminalul personal și magazinul;
@@ -472,7 +490,9 @@ rămâne în salvare, așa că o trecere cronometrată confirmă estimarea.
   - cutscene-urile (track-uri și skip), copacii cu oase (deformarea mesh-ului);
   - co-op-ul local (ușă, cameră, gardian, ecran împărțit) și gazda LAN;
   - limba: butonul din meniu și lista din Setări schimbă pe loc toate textele; un nivel pornit în engleză are indiciile,
-    misiunea și itemele în engleză.
+    misiunea și itemele în engleză;
+  - ecranul împărțit: dialogul și hacking-ul rămân în jumătatea Infiltratorului, meniurile se desenează deasupra consolei;
+    HUD-ul listează toate obiectivele, bifează pasul terminat și arată drumul spre terminalul de călătorie.
 
   Framework-ul de test pică orice test care produce o eroare în log.
 - **Scripturi de verificare**:
@@ -530,4 +550,5 @@ Toate capturile sunt în `Documentatie/screenshots` și se regenerează cu `./sc
 | `40-terminal-jurnale`, `41-nivel1-ventilatie` | tab-ul Jurnale, tubul de ventilație din nivelul 1 |
 | `42`–`46` `nivel6-*` | nivelul 6: antena, nacela, ventilatorul, grilajele, emițătorul |
 | `47`–`50` `en-*` | versiunea în engleză: meniul, setările, nivelul 1, misiunile |
+| `51-coop-pauza`, `52-coop-hacking` | co-op pe ecran împărțit: pauza deasupra consolei, minijocul în jumătatea Infiltratorului |
 | `barem-camera-01`…`14` | camerele scenei Prezentare barem |

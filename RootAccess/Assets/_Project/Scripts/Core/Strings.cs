@@ -79,6 +79,9 @@ namespace RootAccess.Core
             public static string BestTime => T("record", "best");
             public static string TotalTime => T("Timp total de joc", "Total play time");
             public static string CreditsAndXp => T("{0} Credite  ·  {1} XP", "{0} Credits  ·  {1} XP");
+            public static string ObjectiveCurrent => T("> ", "> ");
+            public static string TravelHint => T("Mergi la terminalul de călătorie [E] și alege „{0}”", "Go to the travel terminal [E] and pick “{0}”");
+            public static string SideContract => T("+ {0}: {1}", "+ {0}: {1}");
         }
 
         public static class Panels
