@@ -9,12 +9,13 @@ using UnityEngine.UI;
 namespace RootAccess.UI
 {
     /// <summary>
-    /// Shared settings screen (main menu and pause menu): mixer volumes, resolution, fullscreen, VSync and
+    /// Shared settings screen (main menu and pause menu): language, mixer volumes, resolution, fullscreen, VSync and
     /// key rebinding. Changes apply immediately and are persisted when the screen closes.
     /// </summary>
     public sealed class SettingsMenuView : UIPanel
     {
         [SerializeField] private InputReader input;
+        [SerializeField] private TMP_Dropdown languageDropdown;
         [SerializeField] private Slider masterSlider;
         [SerializeField] private Slider musicSlider;
         [SerializeField] private Slider sfxSlider;
@@ -40,6 +41,7 @@ namespace RootAccess.UI
             sfxSlider.onValueChanged.AddListener(v => SetVolume(AudioChannel.Sfx, v));
             uiSlider.onValueChanged.AddListener(v => SetVolume(AudioChannel.UI, v));
             resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
+            if (languageDropdown != null) languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
             fullscreenToggle.onValueChanged.AddListener(v => { if (!_refreshing) _service?.SetFullscreen(v); });
             vsyncToggle.onValueChanged.AddListener(v => { if (!_refreshing) _service?.SetVSync(v); });
             resetBindingsButton.onClick.AddListener(OnResetBindings);
@@ -97,10 +99,29 @@ namespace RootAccess.UI
             uiSlider.SetValueWithoutNotify(s.uiVolume);
             fullscreenToggle.SetIsOnWithoutNotify(s.fullscreen);
             vsyncToggle.SetIsOnWithoutNotify(s.vSync);
+            BuildLanguages(s);
             BuildResolutions(s);
             foreach (RebindActionButton button in rebindButtons)
                 if (button != null) button.Bind(input);
             _refreshing = false;
+        }
+
+        /// <summary>Each language is listed under its own name, so it can be found whichever one is active.</summary>
+        private void BuildLanguages(GameSettings settings)
+        {
+            if (languageDropdown == null) return;
+            var labels = new List<string>();
+            foreach (Language language in (Language[])Enum.GetValues(typeof(Language)))
+                labels.Add(Loc.NativeName(language));
+            languageDropdown.ClearOptions();
+            languageDropdown.AddOptions(labels);
+            languageDropdown.SetValueWithoutNotify((int)settings.Language);
+        }
+
+        private void OnLanguageChanged(int index)
+        {
+            if (_refreshing || _service == null || !Enum.IsDefined(typeof(Language), index)) return;
+            _service.SetLanguage((Language)index);
         }
 
         private void BuildResolutions(GameSettings settings)

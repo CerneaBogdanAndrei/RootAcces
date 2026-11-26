@@ -1,3 +1,4 @@
+using RootAccess.Core;
 using UnityEngine;
 
 namespace RootAccess.Systems
@@ -30,14 +31,16 @@ namespace RootAccess.Systems
         [SerializeField] private string skillId;
         [SerializeField] private string displayName;
         [SerializeField, TextArea] private string description;
+        [SerializeField] private string displayNameEn;
+        [SerializeField, TextArea] private string descriptionEn;
         [SerializeField] private SkillBranch branch;
         [SerializeField, Min(0)] private int xpCost = 100;
         [SerializeField] private SkillEffect effect;
         [SerializeField] private SkillDefinition[] prerequisites = new SkillDefinition[0];
 
         public string SkillId => skillId;
-        public string DisplayName => displayName;
-        public string Description => description;
+        public string DisplayName => Loc.T(displayName, displayNameEn);
+        public string Description => Loc.T(description, descriptionEn);
         public SkillBranch Branch => branch;
         public int XpCost => xpCost;
         public SkillEffect Effect => effect;
@@ -53,6 +56,13 @@ namespace RootAccess.Systems
             xpCost = Mathf.Max(0, cost);
             effect = skillEffect;
             prerequisites = requires ?? new SkillDefinition[0];
+        }
+
+        /// <summary>English name and description, shown when the game language is English.</summary>
+        public void SetEnglish(string display, string desc)
+        {
+            displayNameEn = display;
+            descriptionEn = desc;
         }
     }
 }

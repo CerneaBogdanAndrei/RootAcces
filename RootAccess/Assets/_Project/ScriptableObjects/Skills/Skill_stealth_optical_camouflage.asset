@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: Camuflaj optic
   description: "C\xE2nd e\u0219ti v\u0103zut, nivelul de urm\u0103rire cre\u0219te
     cu 30% mai \xEEncet."
+  displayNameEn: Optical Camouflage
+  descriptionEn: When you are seen, the trace level rises 30% slower.
   branch: 0
   xpCost: 180
   effect: 3

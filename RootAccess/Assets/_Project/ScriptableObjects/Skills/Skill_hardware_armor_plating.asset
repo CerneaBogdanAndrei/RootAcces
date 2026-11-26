@@ -15,6 +15,8 @@ MonoBehaviour:
   skillId: hardware_armor_plating
   displayName: Blindaj subdermal
   description: "+1 punct de via\u021B\u0103 maxim."
+  displayNameEn: Subdermal Armour
+  descriptionEn: +1 maximum health.
   branch: 2
   xpCost: 180
   effect: 9

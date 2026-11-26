@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "Parola de la nucleu e numele c\xE2inelui directorului. C\xE2inele a murit
     acum trei ani. Parola a r\u0103mas. Dac\u0103 tot cite\u0219ti bilete lipite
     pe rafturi, m\u0103car pune-l la loc."
+  titleEn: Note stuck to a rack
+  bodyEn: The core password is the director's dog's name. The dog died three years
+    ago. The password stayed. If you're going to read notes stuck to racks, at least
+    put this one back.
   levelId: level03
   order: 8

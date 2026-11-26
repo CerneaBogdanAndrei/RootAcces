@@ -17,5 +17,8 @@ MonoBehaviour:
   displayName: "Sediul corpora\u021Biei"
   description: "Sediul corpora\u021Biei: toate sistemele de securitate, deodat\u0103,
     \u0219i mainframe-ul din v\xE2rf."
+  displayNameEn: Corporate Headquarters
+  descriptionEn: 'Corporate headquarters: every security system at once, and the
+    mainframe at the top.'
   unlockedByDefault: 0
   order: 5

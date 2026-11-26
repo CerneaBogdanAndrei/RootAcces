@@ -16,5 +16,7 @@ MonoBehaviour:
   sceneName: RubricShowcase
   displayName: Prezentare barem
   description: 
+  displayNameEn: Rubric showcase
+  descriptionEn: 
   unlockedByDefault: 1
   order: 99

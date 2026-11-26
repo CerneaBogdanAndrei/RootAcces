@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "Am fost ingineri la Halden. Acum dormim l\xE2ng\u0103 conducte. Ei au scos
     oamenii din ora\u0219 \u0219i au p\u0103strat doar datele lor. Dac\u0103 treci
     pe aici, las\u0103 o lantern\u0103. \u0218i \xEEnchide stavila \xEEn urma ta."
+  titleEn: Writing on the wall
+  bodyEn: We were engineers at Halden. Now we sleep next to the pipes. They pushed
+    the people out of the city and kept only their data. If you pass through, leave
+    a torch. And close the sluice behind you.
   levelId: level04
   order: 11

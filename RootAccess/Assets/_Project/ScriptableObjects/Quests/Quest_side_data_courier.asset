@@ -15,16 +15,20 @@ MonoBehaviour:
   questId: side_data_courier
   title: Curier de date
   description: "Adu o cheie USB \u0219i dezactiveaz\u0103 camera de pe fa\u021Bad\u0103."
+  titleEn: Data Courier
+  descriptionEn: Bring a USB key and disable the camera on the facade.
   isMainStory: 0
   objectives:
   - objectiveId: collect_usb
     description: "G\u0103se\u0219te o cheie USB"
+    descriptionEn: Find a USB key
     type: 2
     targetId: usb_key
     requiredCount: 1
     optional: 0
   - objectiveId: hack_camera
     description: "Dezactiveaz\u0103 camera de securitate"
+    descriptionEn: Disable the security camera
     type: 1
     targetId: terminal_l1_camera
     requiredCount: 1

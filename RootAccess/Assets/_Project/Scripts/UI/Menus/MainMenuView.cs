@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace RootAccess.UI
 {
-    /// <summary>Main menu: Continue, New Game, Co-op, Settings, Rubric Showcase, Credits, Quit.</summary>
+    /// <summary>Main menu: Continue, New Game, Co-op, Settings, Language, Rubric Showcase, Credits, Quit.</summary>
     public sealed class MainMenuView : UIPanel
     {
         [SerializeField] private Button continueButton;
@@ -13,6 +13,8 @@ namespace RootAccess.UI
         [SerializeField] private Button coopButton;
         [SerializeField] private CoopMenuView coopMenu;
         [SerializeField] private Button settingsButton;
+        [SerializeField, Tooltip("Switches between Romanian and English; the choice is saved with the settings.")]
+        private Button languageButton;
         [SerializeField] private Button rubricButton;
         [SerializeField] private Button creditsButton;
         [SerializeField] private Button quitButton;
@@ -30,12 +32,46 @@ namespace RootAccess.UI
             rubricButton.onClick.AddListener(() => Load(SceneNames.RubricShowcase));
             creditsButton.onClick.AddListener(() => Load(SceneNames.Credits));
             quitButton.onClick.AddListener(() => { if (ServiceLocator.TryGet(out GameManager gm)) gm.QuitGame(); });
-            if (versionLabel != null) versionLabel.text = $"{Strings.Menu.Version} · {Application.version}";
+            if (languageButton != null) languageButton.onClick.AddListener(OnLanguage);
+            RenderTexts();
         }
 
-        private void OnEnable() => CommandLineAutomation.CommandRequested += OnAutomationCommand;
+        private void OnEnable()
+        {
+            CommandLineAutomation.CommandRequested += OnAutomationCommand;
+            EventBus<LanguageChanged>.Subscribe(OnLanguageChanged);
+            RenderTexts();
+        }
 
-        private void OnDisable() => CommandLineAutomation.CommandRequested -= OnAutomationCommand;
+        private void OnDisable()
+        {
+            CommandLineAutomation.CommandRequested -= OnAutomationCommand;
+            EventBus<LanguageChanged>.Unsubscribe(OnLanguageChanged);
+        }
+
+        private void OnLanguageChanged(LanguageChanged _) => RenderTexts();
+
+        /// <summary>Texts the view composes itself; the fixed button captions follow the language on their own.</summary>
+        private void RenderTexts()
+        {
+            if (versionLabel != null) versionLabel.text = $"{Strings.Menu.Version} · {Application.version}";
+            if (languageButton == null) return;
+            TMP_Text caption = languageButton.GetComponentInChildren<TMP_Text>(true);
+            if (caption != null) caption.text = string.Format(Strings.Menu.Language, Loc.NativeName(Loc.Current));
+        }
+
+        /// <summary>Toggles Romanian ↔ English and saves the choice right away.</summary>
+        private void OnLanguage()
+        {
+            if (!ServiceLocator.TryGet(out SettingsService settings))
+            {
+                Loc.Set(Loc.Next(Loc.Current));
+                return;
+            }
+
+            settings.SetLanguage(Loc.Next(Loc.Current));
+            settings.Save();
+        }
 
         private void OnAutomationCommand(string command)
         {

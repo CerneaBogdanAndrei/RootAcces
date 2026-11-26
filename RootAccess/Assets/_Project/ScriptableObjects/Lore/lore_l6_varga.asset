@@ -18,5 +18,9 @@ MonoBehaviour:
     mai putut. Am l\u0103sat ventilatoarele pe manual \u0219i cheia de sincronizare
     \xEEn modul de transmisie. Restul depinde de tine. \u021Aine-te bine \u0219i
     nu te uita \xEEn jos."
+  titleEn: 'Scheduled message: L. Varga'
+  bodyEn: If the transmitter starts, someone got where I never could. I left the
+    fans on manual and the sync key in broadcast mode. The rest is up to you. Hold
+    on tight and don't look down.
   levelId: level06
   order: 17

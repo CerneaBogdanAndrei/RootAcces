@@ -16,34 +16,42 @@ MonoBehaviour:
   title: Root Access
   description: "Mainframe-ul din v\xE2rful sediului. Cu el, ora\u0219ul \xEEntreg
     e al t\u0103u."
+  titleEn: Root Access
+  descriptionEn: The mainframe at the top of the headquarters. With it, the whole
+    city is yours.
   isMainStory: 1
   objectives:
   - objectiveId: reach_l5
     description: "P\u0103trunde \xEEn sediul corpora\u021Biei"
+    descriptionEn: Break into the corporate headquarters
     type: 0
     targetId: level05
     requiredCount: 1
     optional: 0
   - objectiveId: hack_exec_elevator
     description: "Porne\u0219te liftul executiv"
+    descriptionEn: Start the executive elevator
     type: 1
     targetId: l5_elevator
     requiredCount: 1
     optional: 0
   - objectiveId: hack_mainframe
     description: "Ob\u021Bine root access pe mainframe"
+    descriptionEn: Get root access on the mainframe
     type: 1
     targetId: l5_mainframe
     requiredCount: 1
     optional: 0
   - objectiveId: reach_exit_l5
     description: "Fugi pe acoperi\u0219"
+    descriptionEn: Escape to the roof
     type: 0
     targetId: exit_l5
     requiredCount: 1
     optional: 0
   - objectiveId: stealth_l5
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

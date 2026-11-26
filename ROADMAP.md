@@ -205,6 +205,21 @@ Drive și testul pe un PC curat rămân la dezvoltator.
 - **Conținut:** misiunea principală „Transmisia” (6 obiective), dialogul de intrare, 3 jurnale noi (18 în total).
 - Durata estimată crește la ≈ 66 de minute. Versiunea afișată e 1.2.
 
+## P12: limba română / engleză din meniu ✅ făcut (PR „P12”)
+
+- **Alegerea limbii:** buton „Limba: Română / Language: English” în meniul principal și listă „Limbă” în Setări (și din
+  pauză). Schimbarea se vede pe loc, fără reîncărcare, și se salvează cu setările (`GameSettings.language`; setările
+  vechi se citesc ca română).
+- **Cum funcționează:** fiecare text are versiunea română și cea engleză una lângă alta. `Strings` (interfața) și
+  `SeedContent` (iteme, abilități, misiuni, jurnale, dialoguri, indicii din niveluri, barem) întorc textul pentru limba
+  curentă (`Core/Localization/Loc.cs`). Generatoarele scriu ambele variante în ScriptableObject-uri (`displayNameEn`,
+  `titleEn`...) și pun un `LocalizedLabel` pe fiecare text fix din prefab-uri și scene (butoane, titluri, indicii,
+  subtitrări), care urmează evenimentul `LanguageChanged`. Ecranele care compun text singure (HUD, meniu, panoul F1) îl
+  redesenează la schimbare.
+- **Traducerea:** peste 400 de texte, inclusiv cele 18 jurnale, dialogurile și creditele. `TextCatalog` le adună prin
+  reflecție; testele verifică că fiecare are o variantă engleză, fără diacritice românești și cu aceleași `{0}`.
+- `-ra-language en` pornește build-ul în engleză (capturile 47–50). Versiunea afișată e 1.3.
+
 ## Datorie tehnică urmărită
 
 - Regenerarea conținutului rescrie fileID-urile sub-asset-urilor (controllere, profile de volum), ceea ce produce diff-uri

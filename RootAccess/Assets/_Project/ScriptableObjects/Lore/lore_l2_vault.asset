@@ -18,5 +18,9 @@ MonoBehaviour:
     fiecare or\u0103. Cheia de sincronizare n-a mai fost schimbat\u0103 din ziua
     instal\u0103rii. Cineva a fost lene\u0219, iar acel cineva semneaz\u0103 cu ini\u021Bialele
     L.V."
+  titleEn: 'Vault: sync index'
+  bodyEn: The vault sends a backup to the server farm every hour. The sync key hasn't
+    been changed since the day it was installed. Someone was lazy, and that someone
+    signs with the initials L.V.
   levelId: level02
   order: 5

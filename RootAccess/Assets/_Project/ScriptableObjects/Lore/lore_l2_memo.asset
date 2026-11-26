@@ -18,5 +18,9 @@ MonoBehaviour:
     noi ale gardienilor aud pa\u0219ii de la cinci metri, deci personalul e rugat
     s\u0103 nu mai alerge dup\u0103 cafea. Departamentul juridic a aprobat. Departamentul
     juridic aprob\u0103 orice."
+  titleEn: 'Internal memo: Project EYE'
+  bodyEn: Every hallway gets new cameras by Friday. The guards' new headsets pick
+    up footsteps from five metres away, so staff are asked to stop running for coffee.
+    Legal has approved it. Legal approves anything.
   levelId: level02
   order: 3

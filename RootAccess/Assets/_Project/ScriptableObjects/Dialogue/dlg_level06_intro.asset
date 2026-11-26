@@ -17,8 +17,16 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "E\u0219ti pe antena sediului. De aici, emi\u021B\u0103torul ajunge pe
       fiecare ecran din ora\u0219."
+    speakerEn: OPERATOR
+    textEn: You're on the headquarters antenna. From here, the transmitter reaches
+      every screen in the city.
   - speaker: OPERATOR
     text: "V\xE2ntul bate tare. Nacelele \u0219i ventilatoarele de r\u0103cire te
       duc p\xE2n\u0103 sus."
+    speakerEn: OPERATOR
+    textEn: The wind is strong up here. The gondolas and cooling fans will carry
+      you to the top.
   - speaker: TU
     text: Atunci urc. Varga ar fi vrut asta.
+    speakerEn: YOU
+    textEn: Then I'm going up. Varga would have wanted this.

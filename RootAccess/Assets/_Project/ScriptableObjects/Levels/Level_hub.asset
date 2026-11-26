@@ -16,5 +16,7 @@ MonoBehaviour:
   sceneName: Hub
   displayName: "Ascunz\u0103toarea"
   description: 
+  displayNameEn: The Hideout
+  descriptionEn: 
   unlockedByDefault: 1
   order: 0

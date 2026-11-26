@@ -16,16 +16,21 @@ MonoBehaviour:
   title: "Fantoma de pe acoperi\u0219"
   description: "Clientul vrea o opera\u021Biune curat\u0103: ajunge la extrac\u021Bie
     f\u0103r\u0103 s\u0103 declan\u0219ezi alarma."
+  titleEn: Rooftop Ghost
+  descriptionEn: 'The client wants a clean job: reach the extraction point without
+    triggering the alarm.'
   isMainStory: 0
   objectives:
   - objectiveId: ghost_exit
     description: "Ajunge la punctul de extrac\u021Bie din Sectorul 7"
+    descriptionEn: Reach the extraction point in Sector 7
     type: 0
     targetId: exit_l1
     requiredCount: 1
     optional: 0
   - objectiveId: ghost_stealth
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

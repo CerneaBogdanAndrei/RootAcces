@@ -221,6 +221,10 @@ namespace RootAccess.EditorTools
             Add(item, "Meniu principal (Continuă, Joc nou, Setări, Barem, Credite, Ieșire)", index.InScene("MainMenuView", SceneNames.MainMenu), "MainMenuView în MainMenu");
             Add(item, "Rebind taste (Input System) pentru Jump/Interact", uiRoot != null && uiRoot.GetComponentsInChildren<Component>(true).Count(c => c != null && c.GetType().Name == "RebindActionButton") >= 2,
                 "RebindActionButton în SettingsMenu");
+            int localized = index.Any("LocalizedLabel");
+            Add(item, "Limbă română / engleză din meniu (buton în meniul principal + listă în Setări), schimbată pe loc",
+                localized >= 50 && index.Prefab("SettingsMenuView") > 0 && index.InScene("MainMenuView", SceneNames.MainMenu),
+                $"{localized} LocalizedLabel (texte fixe din UI și nivele), conținut bilingv în ScriptableObjects, Core/Localization/Loc.cs");
 
             // 9. Sound
             item = Strings.Rubric.Sound;

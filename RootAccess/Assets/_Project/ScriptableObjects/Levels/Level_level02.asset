@@ -17,5 +17,8 @@ MonoBehaviour:
   displayName: Turnul de birouri
   description: "Turnul Halden Systems: holuri supravegheate, lasere, lift de serviciu,
     lunetist \u0219i seiful de date."
+  displayNameEn: The Office Tower
+  descriptionEn: 'The Halden Systems tower: watched hallways, lasers, a service elevator,
+    a sniper and the data vault.'
   unlockedByDefault: 0
   order: 2

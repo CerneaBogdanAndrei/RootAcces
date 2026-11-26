@@ -18,5 +18,9 @@ MonoBehaviour:
     ani, ca u\u0219\u0103 din spate pentru ziua \xEEn care consiliul m-ar fi dat
     afar\u0103. N-am crezut c\u0103-l va g\u0103si altcineva. Acum el \xEEmi deschide
     u\u0219ile mie."
+  titleEn: 'Personal log: the director'
+  bodyEn: Someone is walking around the network with the root account. I created
+    it ten years ago, as a back door for the day the board would fire me. I never
+    thought anyone else would find it. Now it opens my own doors.
   levelId: level05
   order: 13

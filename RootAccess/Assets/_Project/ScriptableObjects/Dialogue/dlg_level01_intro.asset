@@ -17,9 +17,17 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "Te v\u0103d pe camer\u0103. Mi\u0219c\u0103-te cu A/D, sari cu Space,
       dash cu Shift."
+    speakerEn: OPERATOR
+    textEn: I've got you on camera. Move with A/D, jump with Space, dash with Shift.
   - speaker: OPERATOR
     text: "Gardienii v\u0103d doar ce e \xEEn conul lor de lumin\u0103. Stai ghemuit
       \xEEn umbr\u0103."
+    speakerEn: OPERATOR
+    textEn: Guards only see what is inside their cone of light. Stay crouched in
+      the shadows.
   - speaker: OPERATOR
     text: "\u0218i ai grij\u0103 la zgomot: pa\u0219ii pe metal se aud. Ghemuit nu
       faci niciun zgomot."
+    speakerEn: OPERATOR
+    textEn: 'And watch the noise: footsteps on metal carry. Crouched, you make no
+      sound at all.'

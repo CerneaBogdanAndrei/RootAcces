@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "Dac\u0103 ai ajuns \xEEn canale, ferma a picat \u0219i ei \u0219tiu. Te
     urm\u0103resc acum pe trei re\u021Bele diferite. Nu te opri, nu r\u0103spunde
     la apeluri \u0219i nu bea apa, oric\xE2t de cald\u0103 ar fi."
+  titleEn: Message from the fixer
+  bodyEn: If you made it to the sewers, the farm went down and they know it. They
+    are tracking you on three different networks now. Don't stop, don't answer calls
+    and don't drink the water, however warm it is.
   levelId: level04
   order: 10

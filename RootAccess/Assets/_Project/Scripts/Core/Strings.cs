@@ -1,306 +1,322 @@
 namespace RootAccess.Core
 {
     /// <summary>
-    /// Every player-facing string, in Romanian. Swap this class (or back it with a localization table)
-    /// to translate the game; gameplay code must never inline UI text.
+    /// Every player-facing UI string, in Romanian and English side by side. Each property returns the text for the
+    /// current <see cref="Loc"/> language, so code reads <c>Strings.Menu.NewGame</c> and never inlines UI text.
+    /// Generators bake the Romanian text and its English twin into prefabs and scenes (see <see cref="TextCatalog"/>).
     /// </summary>
     public static class Strings
     {
-        public const string GameTitle = "ROOT ACCESS";
-        public const string GameSubtitle = "infiltrare · hacking · evadare";
+        private static string T(string romanian, string english) => Loc.T(romanian, english);
+
+        public static string GameTitle => T("ROOT ACCESS", "ROOT ACCESS");
+        public static string GameSubtitle => T("infiltrare · hacking · evadare", "infiltration · hacking · escape");
 
         public static class Menu
         {
-            public const string Continue = "Continuă";
-            public const string NewGame = "Joc nou";
-            public const string Settings = "Setări";
-            public const string RubricShowcase = "Prezentare barem";
-            public const string Credits = "Credite";
-            public const string Quit = "Ieșire";
-            public const string Back = "Înapoi";
-            public const string Resume = "Reia";
-            public const string MainMenu = "Meniu principal";
-            public const string Paused = "PAUZĂ";
-            public const string Retry = "Reîncearcă";
-            public const string NextLevel = "Continuă";
-            public const string GameOver = "CONEXIUNE PIERDUTĂ";
-            public const string GameOverHint = "Ai fost prins. Reia de la ultimul checkpoint.";
-            public const string LevelComplete = "MISIUNE ÎNDEPLINITĂ";
-            public const string Loading = "Se încarcă...";
-            public const string Version = "versiunea";
+            public static string Continue => T("Continuă", "Continue");
+            public static string NewGame => T("Joc nou", "New game");
+            public static string Settings => T("Setări", "Settings");
+            public static string RubricShowcase => T("Prezentare barem", "Rubric showcase");
+            public static string Credits => T("Credite", "Credits");
+            public static string Quit => T("Ieșire", "Quit");
+            public static string Back => T("Înapoi", "Back");
+            public static string Resume => T("Reia", "Resume");
+            public static string MainMenu => T("Meniu principal", "Main menu");
+            public static string Paused => T("PAUZĂ", "PAUSED");
+            public static string Retry => T("Reîncearcă", "Retry");
+            public static string NextLevel => T("Continuă", "Continue");
+            public static string GameOver => T("CONEXIUNE PIERDUTĂ", "CONNECTION LOST");
+            public static string GameOverHint => T("Ai fost prins. Reia de la ultimul checkpoint.", "You got caught. Resume from the last checkpoint.");
+            public static string LevelComplete => T("MISIUNE ÎNDEPLINITĂ", "MISSION COMPLETE");
+            public static string Loading => T("Se încarcă...", "Loading...");
+            public static string Version => T("versiunea", "version");
+            public static string Language => T("Limba: {0}", "Language: {0}");
         }
 
         public static class Settings
         {
-            public const string Title = "SETĂRI";
-            public const string Audio = "Audio";
-            public const string Video = "Video";
-            public const string Controls = "Controale";
-            public const string MasterVolume = "Volum general";
-            public const string MusicVolume = "Muzică";
-            public const string SfxVolume = "Efecte sonore";
-            public const string UiVolume = "Interfață";
-            public const string Resolution = "Rezoluție";
-            public const string Fullscreen = "Ecran complet";
-            public const string VSync = "VSync";
-            public const string Rebind = "Apasă o tastă...";
-            public const string Jump = "Săritură";
-            public const string Interact = "Interacțiune";
-            public const string ResetBindings = "Resetează tastele";
+            public static string Title => T("SETĂRI", "SETTINGS");
+            public static string Audio => T("Audio", "Audio");
+            public static string Video => T("Video", "Video");
+            public static string Controls => T("Controale", "Controls");
+            public static string MasterVolume => T("Volum general", "Master volume");
+            public static string MusicVolume => T("Muzică", "Music");
+            public static string SfxVolume => T("Efecte sonore", "Sound effects");
+            public static string UiVolume => T("Interfață", "Interface");
+            public static string Resolution => T("Rezoluție", "Resolution");
+            public static string Fullscreen => T("Ecran complet", "Fullscreen");
+            public static string VSync => T("VSync", "VSync");
+            public static string Language => T("Limbă", "Language");
+            public static string Rebind => T("Apasă o tastă...", "Press a key...");
+            public static string Jump => T("Săritură", "Jump");
+            public static string Interact => T("Interacțiune", "Interact");
+            public static string ResetBindings => T("Resetează tastele", "Reset key bindings");
         }
 
         public static class Hud
         {
-            public const string Health = "Viață";
-            public const string Trace = "Urmărire";
-            public const string Credits = "Credite";
-            public const string NoActiveQuest = "Niciun contract activ";
-            public const string Hidden = "ASCUNS";
-            public const string Lockdown = "BLOCARE TOTALĂ";
-            public const string CheckpointSaved = "Checkpoint salvat";
-            public const string ItemPickedUp = "Ai obținut: {0}";
-            public const string InventoryFull = "Inventar plin";
-            public const string EmpCount = "EMP ×{0}";
-            public const string NoEmp = "Nu ai grenade EMP";
-            public const string EmpDetonated = "EMP: {0} sisteme dezactivate";
-            public const string ExtraAttempt = "Încercare suplimentară (abilitate)";
-            public const string SluiceOpened = "Stavila e deschisă: apa urcă";
-            public const string FanStarted = "Ventilatorul a pornit: curentul de aer te ridică";
-            public const string Uplink = "TRANSMISIE {0}%";
-            public const string UplinkPaused = "TRANSMISIE ÎNTRERUPTĂ {0}%: întoarce-te la emițător";
-            public const string UplinkStarted = "Transmisia a pornit: rămâi lângă emițător!";
-            public const string UplinkDone = "Transmisie completă: tot orașul vede datele Halden";
-            public const string LevelTime = "Timp în nivel";
-            public const string BestTime = "record";
-            public const string TotalTime = "Timp total de joc";
-            public const string CreditsAndXp = "{0} Credite  ·  {1} XP";
+            public static string Health => T("Viață", "Health");
+            public static string Trace => T("Urmărire", "Trace");
+            public static string Credits => T("Credite", "Credits");
+            public static string NoActiveQuest => T("Niciun contract activ", "No active contract");
+            public static string Hidden => T("ASCUNS", "HIDDEN");
+            public static string Lockdown => T("BLOCARE TOTALĂ", "FULL LOCKDOWN");
+            public static string CheckpointSaved => T("Checkpoint salvat", "Checkpoint saved");
+            public static string ItemPickedUp => T("Ai obținut: {0}", "Picked up: {0}");
+            public static string InventoryFull => T("Inventar plin", "Inventory full");
+            public static string EmpCount => T("EMP ×{0}", "EMP ×{0}");
+            public static string NoEmp => T("Nu ai grenade EMP", "No EMP grenades left");
+            public static string EmpDetonated => T("EMP: {0} sisteme dezactivate", "EMP: {0} systems disabled");
+            public static string ExtraAttempt => T("Încercare suplimentară (abilitate)", "Extra attempt (skill)");
+            public static string SluiceOpened => T("Stavila e deschisă: apa urcă", "The sluice is open: the water is rising");
+            public static string FanStarted => T("Ventilatorul a pornit: curentul de aer te ridică", "The fan is running: the updraft lifts you up");
+            public static string Uplink => T("TRANSMISIE {0}%", "BROADCAST {0}%");
+            public static string UplinkPaused => T("TRANSMISIE ÎNTRERUPTĂ {0}%: întoarce-te la emițător", "BROADCAST PAUSED {0}%: get back to the transmitter");
+            public static string UplinkStarted => T("Transmisia a pornit: rămâi lângă emițător!", "The broadcast has started: stay by the transmitter!");
+            public static string UplinkDone => T("Transmisie completă: tot orașul vede datele Halden", "Broadcast complete: the whole city sees the Halden data");
+            public static string LevelTime => T("Timp în nivel", "Level time");
+            public static string BestTime => T("record", "best");
+            public static string TotalTime => T("Timp total de joc", "Total play time");
+            public static string CreditsAndXp => T("{0} Credite  ·  {1} XP", "{0} Credits  ·  {1} XP");
         }
 
         public static class Panels
         {
-            public const string Inventory = "INVENTAR";
-            public const string Quests = "MISIUNI";
-            public const string Skills = "ABILITĂȚI";
-            public const string Shop = "MAGAZIN";
-            public const string Contracts = "CONTRACTE";
-            public const string Travel = "CĂLĂTORIE";
-            public const string Lore = "JURNALE";
-            public const string Title = "TERMINAL PERSONAL";
-            public const string InventoryHint = "[Tab] Închide";
-            public const string CloseHint = "[Esc] Închide";
-            public const string Continue = "[Enter] Continuă";
-            public const string Header = "{0} credite   ·   {1} XP";
-            public const string Empty = "Nimic aici încă.";
-            public const string Close = "Închide";
-            public const string Buy = "Cumpără";
-            public const string Unlock = "Deblochează";
-            public const string Accept = "Acceptă";
-            public const string Quantity = "Cantitate: {0}";
-            public const string Value = "Valoare: {0} credite";
-            public const string Price = "Preț: {0} credite";
-            public const string Owned = "Deții: {0}";
-            public const string Cost = "Cost: {0} XP";
-            public const string Requires = "Necesită: {0}";
-            public const string Rewards = "Recompensă: {0} credite, {1} XP";
-            public const string SkillUnlocked = "DEBLOCATĂ";
-            public const string SkillAvailable = "Disponibilă";
-            public const string SkillMissingPrerequisite = "Blocată: lipsește o abilitate anterioară";
-            public const string SkillNotEnoughXp = "XP insuficient";
-            public const string SkillOnlyAtTerminal = "Deblocarea se face la terminalul de abilități din ascunzătoare.";
-            public const string QuestActive = "în desfășurare";
-            public const string QuestCompleted = "finalizată";
-            public const string QuestFailed = "eșuată";
-            public const string ContractAvailable = "disponibil";
-            public const string ObjectiveDone = "[x] ";
-            public const string ObjectiveOpen = "[ ] ";
-            public const string ObjectiveFailed = "[!] ";
-            public const string Optional = " (opțional)";
-            public const string Stealth = "Rămâi nedetectat";
-            public const string NotEnoughCredits = "Credite insuficiente";
-            public const string TravelAction = "Călătorește";
-            public const string LevelOpen = "deblocat";
-            public const string LevelLocked = "blocat";
-            public const string LevelHere = "ești aici";
-            public const string TravelLockedHint = "Termină nivelul anterior ca să deblochezi această destinație.";
-            public const string TravelReadyHint = "Gata de plecare. Progresul se salvează înainte de călătorie.";
-            public const string TravelHereHint = "Te afli deja aici.";
-            public const string TravelStarted = "Călătorie spre: {0}";
+            public static string Inventory => T("INVENTAR", "INVENTORY");
+            public static string Quests => T("MISIUNI", "MISSIONS");
+            public static string Skills => T("ABILITĂȚI", "SKILLS");
+            public static string Shop => T("MAGAZIN", "SHOP");
+            public static string Contracts => T("CONTRACTE", "CONTRACTS");
+            public static string Travel => T("CĂLĂTORIE", "TRAVEL");
+            public static string Lore => T("JURNALE", "DATA LOGS");
+            public static string Title => T("TERMINAL PERSONAL", "PERSONAL TERMINAL");
+            public static string InventoryHint => T("[Tab] Închide", "[Tab] Close");
+            public static string CloseHint => T("[Esc] Închide", "[Esc] Close");
+            public static string Continue => T("[Enter] Continuă", "[Enter] Continue");
+            public static string Header => T("{0} credite   ·   {1} XP", "{0} credits   ·   {1} XP");
+            public static string Empty => T("Nimic aici încă.", "Nothing here yet.");
+            public static string Close => T("Închide", "Close");
+            public static string Buy => T("Cumpără", "Buy");
+            public static string Unlock => T("Deblochează", "Unlock");
+            public static string Accept => T("Acceptă", "Accept");
+            public static string Quantity => T("Cantitate: {0}", "Quantity: {0}");
+            public static string Value => T("Valoare: {0} credite", "Value: {0} credits");
+            public static string Price => T("Preț: {0} credite", "Price: {0} credits");
+            public static string Owned => T("Deții: {0}", "Owned: {0}");
+            public static string Cost => T("Cost: {0} XP", "Cost: {0} XP");
+            public static string Requires => T("Necesită: {0}", "Requires: {0}");
+            public static string Rewards => T("Recompensă: {0} credite, {1} XP", "Reward: {0} credits, {1} XP");
+            public static string SkillUnlocked => T("DEBLOCATĂ", "UNLOCKED");
+            public static string SkillAvailable => T("Disponibilă", "Available");
+            public static string SkillMissingPrerequisite => T("Blocată: lipsește o abilitate anterioară", "Locked: a previous skill is missing");
+            public static string SkillNotEnoughXp => T("XP insuficient", "Not enough XP");
+            public static string SkillOnlyAtTerminal => T("Deblocarea se face la terminalul de abilități din ascunzătoare.", "Skills are unlocked at the skill terminal in the hideout.");
+            public static string QuestActive => T("în desfășurare", "in progress");
+            public static string QuestCompleted => T("finalizată", "completed");
+            public static string QuestFailed => T("eșuată", "failed");
+            public static string ContractAvailable => T("disponibil", "available");
+            public static string ObjectiveDone => T("[x] ", "[x] ");
+            public static string ObjectiveOpen => T("[ ] ", "[ ] ");
+            public static string ObjectiveFailed => T("[!] ", "[!] ");
+            public static string Optional => T(" (opțional)", " (optional)");
+            public static string Stealth => T("Rămâi nedetectat", "Stay undetected");
+            public static string NotEnoughCredits => T("Credite insuficiente", "Not enough credits");
+            public static string TravelAction => T("Călătorește", "Travel");
+            public static string LevelOpen => T("deblocat", "unlocked");
+            public static string LevelLocked => T("blocat", "locked");
+            public static string LevelHere => T("ești aici", "you are here");
+            public static string TravelLockedHint => T("Termină nivelul anterior ca să deblochezi această destinație.", "Finish the previous level to unlock this destination.");
+            public static string TravelReadyHint => T("Gata de plecare. Progresul se salvează înainte de călătorie.", "Ready to go. Your progress is saved before the trip.");
+            public static string TravelHereHint => T("Te afli deja aici.", "You are already here.");
+            public static string TravelStarted => T("Călătorie spre: {0}", "Travelling to: {0}");
         }
 
         /// <summary>Data logs hidden in the levels (terminal "Jurnale" tab, pickup toast).</summary>
         public static class Lore
         {
-            public const string Found = "Jurnal găsit: {0}  ({1}/{2})";
-            public const string MissingEntry = "??? · {0}";
-            public const string MissingTitle = "Jurnal negăsit";
-            public const string MissingHint = "Jurnalul e ascuns undeva în „{0}”. Caută pe pasarele, pe ziduri înalte, în tuburi de ventilație și sub apă.";
-            public const string Progress = "Jurnale găsite: {0}/{1}";
+            public static string Found => T("Jurnal găsit: {0}  ({1}/{2})", "Data log found: {0}  ({1}/{2})");
+            public static string MissingEntry => T("??? · {0}", "??? · {0}");
+            public static string MissingTitle => T("Jurnal negăsit", "Log not found");
+            public static string MissingHint => T("Jurnalul e ascuns undeva în „{0}”. Caută pe pasarele, pe ziduri înalte, în tuburi de ventilație și sub apă.",
+                "This log is hidden somewhere in “{0}”. Look on catwalks, on high walls, in air vents and under water.");
+            public static string Progress => T("Jurnale găsite: {0}/{1}", "Data logs found: {0}/{1}");
         }
 
         public static class Branches
         {
-            public const string Stealth = "Stealth";
-            public const string Hacking = "Hacking";
-            public const string Hardware = "Hardware";
+            public static string Stealth => T("Stealth", "Stealth");
+            public static string Hacking => T("Hacking", "Hacking");
+            public static string Hardware => T("Hardware", "Hardware");
         }
 
         public static class Prompts
         {
-            public const string Hack = "[E] Spargere terminal";
-            public const string Teleport = "[E] Teleportare prin nod";
-            public const string NodeLocked = "Nod blocat – sparge terminalul";
-            public const string UseElevator = "[E] Folosește liftul";
-            public const string Talk = "[E] Vorbește";
-            public const string FastTravel = "[E] Călătorie rapidă";
-            public const string JobBoard = "[E] Panou de contracte (darknet)";
-            public const string Shop = "[E] Magazin";
-            public const string SkillTerminal = "[E] Terminal abilități";
-            public const string Exit = "[E] Ieșire din nivel";
-            public const string TeleportPad = "[E] Teleportare";
-            public const string AlreadyHacked = "Terminal deja spart";
+            public static string Hack => T("[E] Spargere terminal", "[E] Hack terminal");
+            public static string Teleport => T("[E] Teleportare prin nod", "[E] Teleport through the node");
+            public static string NodeLocked => T("Nod blocat – sparge terminalul", "Node locked – hack the terminal");
+            public static string UseElevator => T("[E] Folosește liftul", "[E] Use the elevator");
+            public static string Talk => T("[E] Vorbește", "[E] Talk");
+            public static string FastTravel => T("[E] Călătorie rapidă", "[E] Fast travel");
+            public static string JobBoard => T("[E] Panou de contracte (darknet)", "[E] Contract board (darknet)");
+            public static string Shop => T("[E] Magazin", "[E] Shop");
+            public static string SkillTerminal => T("[E] Terminal abilități", "[E] Skill terminal");
+            public static string Exit => T("[E] Ieșire din nivel", "[E] Leave the level");
+            public static string TeleportPad => T("[E] Teleportare", "[E] Teleport");
+            public static string AlreadyHacked => T("Terminal deja spart", "Terminal already hacked");
         }
 
         public static class Hub
         {
-            public const string ContractAccepted = "Contract acceptat: {0}";
-            public const string ContractActive = "Contract în desfășurare: {0}";
-            public const string LevelLocked = "Nivel blocat: {0}";
-            public const string SkillUnlocked = "Abilitate deblocată: {0}";
-            public const string NoSkillAvailable = "XP insuficient ({0}) sau nicio abilitate disponibilă.";
-            public const string Bought = "Cumpărat: {0} (-{1} credite)";
-            public const string TooExpensive = "Credite insuficiente ({0}/{1})";
-            public const string PriceSuffix = "{0}: {1} ({2} cr)";
-            public const string TargetSuffix = "{0}: {1}";
+            public static string ContractAccepted => T("Contract acceptat: {0}", "Contract accepted: {0}");
+            public static string ContractActive => T("Contract în desfășurare: {0}", "Contract in progress: {0}");
+            public static string LevelLocked => T("Nivel blocat: {0}", "Level locked: {0}");
+            public static string SkillUnlocked => T("Abilitate deblocată: {0}", "Skill unlocked: {0}");
+            public static string NoSkillAvailable => T("XP insuficient ({0}) sau nicio abilitate disponibilă.", "Not enough XP ({0}) or no skill available.");
+            public static string Bought => T("Cumpărat: {0} (-{1} credite)", "Bought: {0} (-{1} credits)");
+            public static string TooExpensive => T("Credite insuficiente ({0}/{1})", "Not enough credits ({0}/{1})");
+            public static string PriceSuffix => T("{0}: {1} ({2} cr)", "{0}: {1} ({2} cr)");
+            public static string TargetSuffix => T("{0}: {1}", "{0}: {1}");
         }
 
         public static class HackTargets
         {
-            public const string Door = "Ușă de securitate";
-            public const string Elevator = "Lift";
-            public const string NetworkNode = "Nod de rețea";
-            public const string Camera = "Cameră de securitate";
-            public const string Drone = "Dronă";
-            public const string Turret = "Turelă";
-            public const string Laser = "Laser";
-            public const string MotionSensor = "Senzor de mișcare";
-            public const string Sluice = "Stavilă";
-            public const string Fan = "Ventilator";
-            public const string Uplink = "Emițător";
+            public static string Door => T("Ușă de securitate", "Security door");
+            public static string Elevator => T("Lift", "Elevator");
+            public static string NetworkNode => T("Nod de rețea", "Network node");
+            public static string Camera => T("Cameră de securitate", "Security camera");
+            public static string Drone => T("Dronă", "Drone");
+            public static string Turret => T("Turelă", "Turret");
+            public static string Laser => T("Laser", "Laser");
+            public static string MotionSensor => T("Senzor de mișcare", "Motion sensor");
+            public static string Sluice => T("Stavilă", "Sluice gate");
+            public static string Fan => T("Ventilator", "Fan");
+            public static string Uplink => T("Emițător", "Transmitter");
         }
 
         public static class Hacking
         {
-            public const string Title = "SPARGERE ÎN CURS";
-            public const string PatternMemoryHint = "Memorează secvența, apoi repet-o.";
-            public const string WireConnectHint = "Conectează firele de aceeași culoare.";
-            public const string PortScanHint = "Apasă când cursorul trece prin portul deschis.";
-            public const string Watch = "Urmărește...";
-            public const string YourTurn = "Rândul tău!";
-            public const string Success = "ACCES PERMIS";
-            public const string Failure = "ACCES REFUZAT";
-            public const string CancelHint = "[Esc] Abandonează";
+            public static string Title => T("SPARGERE ÎN CURS", "HACK IN PROGRESS");
+            public static string PatternMemoryHint => T("Memorează secvența, apoi repet-o.", "Memorise the sequence, then repeat it.");
+            public static string WireConnectHint => T("Conectează firele de aceeași culoare.", "Connect the wires of the same colour.");
+            public static string PortScanHint => T("Apasă când cursorul trece prin portul deschis.", "Press when the cursor passes the open port.");
+            public static string Watch => T("Urmărește...", "Watch...");
+            public static string YourTurn => T("Rândul tău!", "Your turn!");
+            public static string Success => T("ACCES PERMIS", "ACCESS GRANTED");
+            public static string Failure => T("ACCES REFUZAT", "ACCESS DENIED");
+            public static string CancelHint => T("[Esc] Abandonează", "[Esc] Abort");
         }
 
         public static class Rubric
         {
-            public const string PanelTitle = "BAREM – PREZENTARE (F1)";
-            public const string GoTo = "Mergi";
-            public const string Movement = "1. Mișcare / săritură";
-            public const string Materials = "2. Materiale / texturi";
-            public const string Environment = "3. Mediu: copaci / iarbă";
-            public const string Water = "4. Apă / skybox";
-            public const string Lighting = "5. Lumini / cameră";
-            public const string Prefabs = "6. Prefab-uri";
-            public const string Particles = "7. Particule / teleportare";
-            public const string Menu = "8. Meniu";
-            public const string Sound = "9. Sunet";
-            public const string Animation = "10. Animații / Animator";
-            public const string Collisions = "11. Coliziuni / triggere";
-            public const string Scripts = "12. Scripturi";
-            public const string Cinematics = "Bonus: Cinematice";
-            public const string Multiplayer = "Bonus: Multiplayer co-op";
+            public static string PanelTitle => T("BAREM – PREZENTARE (F1)", "RUBRIC – SHOWCASE (F1)");
+            public static string GoTo => T("Mergi", "Go");
+            public static string Movement => T("1. Mișcare / săritură", "1. Movement / jumping");
+            public static string Materials => T("2. Materiale / texturi", "2. Materials / textures");
+            public static string Environment => T("3. Mediu: copaci / iarbă", "3. Environment: trees / grass");
+            public static string Water => T("4. Apă / skybox", "4. Water / skybox");
+            public static string Lighting => T("5. Lumini / cameră", "5. Lights / camera");
+            public static string Prefabs => T("6. Prefab-uri", "6. Prefabs");
+            public static string Particles => T("7. Particule / teleportare", "7. Particles / teleporting");
+            public static string Menu => T("8. Meniu", "8. Menu");
+            public static string Sound => T("9. Sunet", "9. Sound");
+            public static string Animation => T("10. Animații / Animator", "10. Animations / Animator");
+            public static string Collisions => T("11. Coliziuni / triggere", "11. Collisions / triggers");
+            public static string Scripts => T("12. Scripturi", "12. Scripts");
+            public static string Cinematics => T("Bonus: Cinematice", "Bonus: Cinematics");
+            public static string Multiplayer => T("Bonus: Multiplayer co-op", "Bonus: Co-op multiplayer");
         }
 
         public static class Levels
         {
-            public const string Hub = "Ascunzătoarea";
-            public const string Level01 = "Acoperișuri și parc";
-            public const string Level02 = "Turnul de birouri";
-            public const string Level03 = "Ferma de servere";
-            public const string Level04 = "Canalizarea";
-            public const string Level05 = "Sediul corporației";
-            public const string Level06 = "Antena Halden";
-            public const string RubricShowcase = "Prezentare barem";
+            public static string Hub => T("Ascunzătoarea", "The Hideout");
+            public static string Level01 => T("Acoperișuri și parc", "Rooftops and Park");
+            public static string Level02 => T("Turnul de birouri", "The Office Tower");
+            public static string Level03 => T("Ferma de servere", "The Server Farm");
+            public static string Level04 => T("Canalizarea", "The Sewers");
+            public static string Level05 => T("Sediul corporației", "Corporate Headquarters");
+            public static string Level06 => T("Antena Halden", "The Halden Antenna");
+            public static string RubricShowcase => T("Prezentare barem", "Rubric showcase");
         }
 
         public static class Coop
         {
-            public const string MenuButton = "Co-op";
-            public const string Title = "CO-OP ASIMETRIC";
-            public const string Explain = "Infiltratorul joacă nivelul. Operatorul vede harta, deschide uși, buclează camere și distrage gardieni.";
-            public const string Local = "Local (ecran împărțit)";
-            public const string LocalHint = "Jucătorul 1: tastatură + mouse · Operatorul: gamepad (D-pad sus/jos, A = execută) sau Numpad 8/2/5";
-            public const string Host = "Găzduiește în LAN (Infiltrator)";
-            public const string Join = "Alătură-te (Operator)";
-            public const string AddressPlaceholder = "IP-ul gazdei, ex. 192.168.1.20";
-            public const string Back = "Înapoi";
-            public const string LocalStatus = "Co-op local: Operatorul e pe jumătatea dreaptă a ecranului";
-            public const string HostWaiting = "Găzduiești pe portul {0}. Așteptăm Operatorul...";
-            public const string HostFailed = "Nu am putut porni gazda (portul e ocupat?)";
-            public const string JoinFailed = "Nu am putut porni conexiunea";
-            public const string Connecting = "Conectare la {0}:{1}...";
-            public const string WaitingForMap = "Conectat. Așteptăm harta nivelului de la Infiltrator...";
-            public const string Connected = "Conectat · {0}";
-            public const string OperatorJoined = "Operatorul s-a conectat";
-            public const string Disconnected = "Conexiune pierdută";
-            public const string NoEnergy = "Operator: energie insuficientă";
-            public const string OperatorActed = "Operator: {0}";
-            public const string Door = "ușă comutată";
-            public const string Camera = "cameră buclată 8 s";
-            public const string Guard = "gardian distras";
-            public const string ConsoleTitle = "OPERATOR";
-            public const string Energy = "Energie {0}/{1}";
-            public const string NoTargets = "Nicio țintă în nivel.";
-            public const string NoSignal = "Fără semnal de la Infiltrator.";
-            public const string TargetDoor = "Ușă";
-            public const string TargetCamera = "Cameră";
-            public const string TargetGuard = "Gardian";
-            public const string ActionDoor = "comută ({0})";
-            public const string ActionCamera = "buclează ({0})";
-            public const string ActionGuard = "distrage ({0})";
-            public const string StateOpen = "deschisă";
-            public const string StateClosed = "închisă";
-            public const string StateLooped = "oarbă";
-            public const string StateWatching = "activă";
-            public const string StateAlert = "alertă";
-            public const string StateCalm = "patrulează";
-            public const string Distance = "{0:0} m";
-            public const string LeaveConsole = "Deconectare";
+            public static string MenuButton => T("Co-op", "Co-op");
+            public static string Title => T("CO-OP ASIMETRIC", "ASYMMETRIC CO-OP");
+            public static string Explain => T("Infiltratorul joacă nivelul. Operatorul vede harta, deschide uși, buclează camere și distrage gardieni.",
+                "The Infiltrator plays the level. The Operator sees the map, opens doors, loops cameras and distracts guards.");
+            public static string Local => T("Local (ecran împărțit)", "Local (split screen)");
+            public static string LocalHint => T("Jucătorul 1: tastatură + mouse · Operatorul: gamepad (D-pad sus/jos, A = execută) sau Numpad 8/2/5",
+                "Player 1: keyboard + mouse · Operator: gamepad (D-pad up/down, A = execute) or Numpad 8/2/5");
+            public static string Host => T("Găzduiește în LAN (Infiltrator)", "Host on LAN (Infiltrator)");
+            public static string Join => T("Alătură-te (Operator)", "Join (Operator)");
+            public static string AddressPlaceholder => T("IP-ul gazdei, ex. 192.168.1.20", "Host IP, e.g. 192.168.1.20");
+            public static string Back => T("Înapoi", "Back");
+            public static string LocalStatus => T("Co-op local: Operatorul e pe jumătatea dreaptă a ecranului", "Local co-op: the Operator is on the right half of the screen");
+            public static string HostWaiting => T("Găzduiești pe portul {0}. Așteptăm Operatorul...", "Hosting on port {0}. Waiting for the Operator...");
+            public static string HostFailed => T("Nu am putut porni gazda (portul e ocupat?)", "Could not start the host (is the port in use?)");
+            public static string JoinFailed => T("Nu am putut porni conexiunea", "Could not start the connection");
+            public static string Connecting => T("Conectare la {0}:{1}...", "Connecting to {0}:{1}...");
+            public static string WaitingForMap => T("Conectat. Așteptăm harta nivelului de la Infiltrator...", "Connected. Waiting for the level map from the Infiltrator...");
+            public static string Connected => T("Conectat · {0}", "Connected · {0}");
+            public static string OperatorJoined => T("Operatorul s-a conectat", "The Operator has connected");
+            public static string Disconnected => T("Conexiune pierdută", "Connection lost");
+            public static string NoEnergy => T("Operator: energie insuficientă", "Operator: not enough energy");
+            public static string OperatorActed => T("Operator: {0}", "Operator: {0}");
+            public static string Door => T("ușă comutată", "door toggled");
+            public static string Camera => T("cameră buclată 8 s", "camera looped for 8 s");
+            public static string Guard => T("gardian distras", "guard distracted");
+            public static string ConsoleTitle => T("OPERATOR", "OPERATOR");
+            public static string Energy => T("Energie {0}/{1}", "Energy {0}/{1}");
+            public static string NoTargets => T("Nicio țintă în nivel.", "No targets in this level.");
+            public static string NoSignal => T("Fără semnal de la Infiltrator.", "No signal from the Infiltrator.");
+            public static string TargetDoor => T("Ușă", "Door");
+            public static string TargetCamera => T("Cameră", "Camera");
+            public static string TargetGuard => T("Gardian", "Guard");
+            public static string ActionDoor => T("comută ({0})", "toggle ({0})");
+            public static string ActionCamera => T("buclează ({0})", "loop ({0})");
+            public static string ActionGuard => T("distrage ({0})", "distract ({0})");
+            public static string StateOpen => T("deschisă", "open");
+            public static string StateClosed => T("închisă", "closed");
+            public static string StateLooped => T("oarbă", "blind");
+            public static string StateWatching => T("activă", "watching");
+            public static string StateAlert => T("alertă", "alert");
+            public static string StateCalm => T("patrulează", "patrolling");
+            public static string Distance => T("{0:0} m", "{0:0} m");
+            public static string LeaveConsole => T("Deconectare", "Disconnect");
         }
 
         public static class Cutscenes
         {
-            public const string Skip = "[Enter / Esc] Sari peste";
-            public const string IntroTitle = "ROOT ACCESS";
-            public const string Intro1 = "Sectorul 7. Orașul nu doarme niciodată, iar rețeaua lui nu uită nimic.";
-            public const string Intro2 = "Corporațiile dețin serverele. Eu dețin cheile.";
-            public const string Intro3 = "Un contract nou așteaptă în ascunzătoare. E timpul să intru.";
-            public const string FinaleTitle = "ROOT ACCESS: CONFIRMAT";
-            public const string Finale1 = "Fiecare ecran din oraș arată acum datele Halden. Proiectul OCHI s-a terminat în direct.";
-            public const string Finale2 = "Alarma sună degeaba. Până ajung gardienii pe antenă, eu sunt doar un semnal în rețea.";
-            public const string Finale3 = "Sfârșit. Mulțumim că ai jucat.";
+            public static string Skip => T("[Enter / Esc] Sari peste", "[Enter / Esc] Skip");
+            public static string IntroTitle => T("ROOT ACCESS", "ROOT ACCESS");
+            public static string Intro1 => T("Sectorul 7. Orașul nu doarme niciodată, iar rețeaua lui nu uită nimic.",
+                "Sector 7. The city never sleeps, and its network never forgets.");
+            public static string Intro2 => T("Corporațiile dețin serverele. Eu dețin cheile.", "The corporations own the servers. I own the keys.");
+            public static string Intro3 => T("Un contract nou așteaptă în ascunzătoare. E timpul să intru.", "A new contract is waiting at the hideout. Time to go in.");
+            public static string FinaleTitle => T("ROOT ACCESS: CONFIRMAT", "ROOT ACCESS: CONFIRMED");
+            public static string Finale1 => T("Fiecare ecran din oraș arată acum datele Halden. Proiectul OCHI s-a terminat în direct.",
+                "Every screen in the city now shows the Halden data. Project EYE ended live on air.");
+            public static string Finale2 => T("Alarma sună degeaba. Până ajung gardienii pe antenă, eu sunt doar un semnal în rețea.",
+                "The alarm rings for nothing. By the time the guards reach the antenna, I am just a signal in the network.");
+            public static string Finale3 => T("Sfârșit. Mulțumim că ai jucat.", "The end. Thank you for playing.");
         }
 
         public static class Credits
         {
-            public const string Title = "CREDITE";
-            public const string Body =
+            public static string Title => T("CREDITE", "CREDITS");
+            public static string Body => T(
                 "ROOT ACCESS\n\nProiect universitar – Joc 2D singleplayer/multiplayer în Unity cu C#\n\n" +
                 "Programare, design și integrare\nCernea Bogdan-Andrei\n\n" +
                 "Realizat cu Unity 6 LTS · URP 2D · Cinemachine · Input System\n\n" +
                 "Grafică și sunete: placeholder generate procedural\n(pachetele finale sunt listate în ASSETS.md)\n\n" +
-                "Mulțumiri speciale profesorilor și colegilor de laborator.";
-            public const string BackHint = "[Esc] Înapoi la meniu";
+                "Mulțumiri speciale profesorilor și colegilor de laborator.",
+                "ROOT ACCESS\n\nUniversity project – 2D singleplayer/multiplayer game in Unity with C#\n\n" +
+                "Programming, design and integration\nCernea Bogdan-Andrei\n\n" +
+                "Made with Unity 6 LTS · URP 2D · Cinemachine · Input System\n\n" +
+                "Art and sound: procedurally generated placeholders\n(the final packs are listed in ASSETS.md)\n\n" +
+                "Special thanks to our teachers and lab colleagues.");
+            public static string BackHint => T("[Esc] Înapoi la meniu", "[Esc] Back to the menu");
         }
     }
 }

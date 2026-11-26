@@ -31,6 +31,10 @@ namespace RootAccess.UI
 
         private int _credits;
         private int _xp;
+        private PlayerHealthChanged? _lastHealth;
+        private TraceChanged? _lastTrace;
+        private UplinkProgressChanged? _lastUplink;
+        private bool _hidden;
 
         private float _toastUntil;
         private float _healthTarget = 1f;
@@ -60,6 +64,7 @@ namespace RootAccess.UI
             EventBus<InventoryChanged>.Subscribe(OnInventory);
             EventBus<UplinkProgressChanged>.Subscribe(OnUplink);
             EventBus<SceneLoadStarted>.Subscribe(OnSceneLoad);
+            EventBus<LanguageChanged>.Subscribe(OnLanguageChanged);
         }
 
         private void OnDisable()
@@ -77,6 +82,7 @@ namespace RootAccess.UI
             EventBus<InventoryChanged>.Unsubscribe(OnInventory);
             EventBus<UplinkProgressChanged>.Unsubscribe(OnUplink);
             EventBus<SceneLoadStarted>.Unsubscribe(OnSceneLoad);
+            EventBus<LanguageChanged>.Unsubscribe(OnLanguageChanged);
         }
 
         private void Update()
@@ -107,14 +113,29 @@ namespace RootAccess.UI
         private void OnGameState(GameStateChanged evt) =>
             SetVisible(evt.Current is GameState.Playing or GameState.Hacking or GameState.Dialogue or GameState.Paused or GameState.Terminal);
 
+        /// <summary>Redraws every composed text in the new language (switched from the pause menu's settings).</summary>
+        private void OnLanguageChanged(LanguageChanged _)
+        {
+            if (_lastHealth is PlayerHealthChanged health) OnHealth(health);
+            if (_lastTrace is TraceChanged trace) OnTrace(trace);
+            if (_lastUplink is UplinkProgressChanged uplink) OnUplink(uplink);
+            RenderWallet();
+            OnQuest(default);
+            OnHidden(new PlayerHiddenChanged(_hidden));
+            OnInventory(default);
+            if (promptLabel != null) promptLabel.text = string.Empty;
+        }
+
         private void OnHealth(PlayerHealthChanged evt)
         {
+            _lastHealth = evt;
             _healthTarget = evt.Max > 0 ? (float)evt.Current / evt.Max : 0f;
             if (healthLabel != null) healthLabel.text = $"{Strings.Hud.Health} {evt.Current}/{evt.Max}";
         }
 
         private void OnTrace(TraceChanged evt)
         {
+            _lastTrace = evt;
             _traceTarget = evt.Value / TraceMeter.Max;
             if (traceLabel == null) return;
             traceLabel.text = evt.Level == TraceLevel.Lockdown
@@ -169,6 +190,7 @@ namespace RootAccess.UI
 
         private void OnHidden(PlayerHiddenChanged evt)
         {
+            _hidden = evt.IsHidden;
             if (hiddenLabel != null) hiddenLabel.text = evt.IsHidden ? Strings.Hud.Hidden : string.Empty;
         }
 
@@ -180,6 +202,7 @@ namespace RootAccess.UI
 
         private void OnUplink(UplinkProgressChanged evt)
         {
+            _lastUplink = evt;
             if (uplinkPanel == null) return;
             uplinkPanel.SetActive(evt.Active);
             if (!evt.Active) return;
@@ -195,6 +218,7 @@ namespace RootAccess.UI
 
         private void OnSceneLoad(SceneLoadStarted _)
         {
+            _lastUplink = null;
             if (uplinkPanel != null) uplinkPanel.SetActive(false);
         }
 

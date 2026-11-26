@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "\u2014 A mai disp\u0103rut cineva de la etajul doi.\n\u2014 Nu e treaba
     noastr\u0103. \u0218terge-i ecusonul \u0219i public\u0103 postul.\n\u2014 \u0218i
     dosarul?\n\u2014 Ce dosar?"
+  titleEn: HR conversation
+  bodyEn: "\u2014 Someone else has gone missing from the second floor.\n\u2014 Not
+    our problem. Wipe their badge and post the job.\n\u2014 And the file?\n\u2014
+    What file?"
   levelId: level02
   order: 4

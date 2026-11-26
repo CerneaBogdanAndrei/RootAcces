@@ -207,8 +207,8 @@ namespace RootAccess.EditorTools
             ctx.LoreLogs = new LoreDefinition[SeedContent.Lore.Entries.Length];
             for (int i = 0; i < ctx.LoreLogs.Length; i++)
             {
-                (string id, string level, string title, string body) = SeedContent.Lore.Entries[i];
-                ctx.LoreLogs[i] = Lore(id, title, body, level, i);
+                SeedContent.Lore.Log log = SeedContent.Lore.Entries[i];
+                ctx.LoreLogs[i] = Lore(log, i);
             }
 
             ctx.ArchivistQuest = Quest(SeedContent.Ids.ArchivistQuest, SeedContent.Lore.ArchivistTitle, SeedContent.Lore.ArchivistDesc, false, 500, 250,
@@ -225,31 +225,31 @@ namespace RootAccess.EditorTools
             ctx.Levels = new[] { ctx.HubLevel, ctx.Level01, ctx.Level02, ctx.Level03, ctx.Level04, ctx.Level05, ctx.Level06, ctx.RubricLevel };
 
             ctx.Briefing = Dialogue("dlg_briefing",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Briefing1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Briefing2),
-                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Briefing3));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Briefing1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Briefing2),
+                Line(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Briefing3));
             ctx.Level01Intro = Dialogue("dlg_level01_intro",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro2),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro3));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro2),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Intro3));
             ctx.Level02Intro = Dialogue("dlg_level02_intro",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office2),
-                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Office3));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Office2),
+                Line(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Office3));
             ctx.Level03Intro = Dialogue("dlg_level03_intro",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Farm1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Farm2));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Farm1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Farm2));
             ctx.Level04Intro = Dialogue("dlg_level04_intro",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Sewers1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Sewers2));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Sewers1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Sewers2));
             ctx.Level05Intro = Dialogue("dlg_level05_intro",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq2),
-                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Hq3));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Hq2),
+                Line(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Hq3));
             ctx.Level06Intro = Dialogue("dlg_level06_intro",
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Spire1),
-                new DialogueLine(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Spire2),
-                new DialogueLine(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Spire3));
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Spire1),
+                Line(SeedContent.Dialogue.Operator, SeedContent.Dialogue.Spire2),
+                Line(SeedContent.Dialogue.Hacker, SeedContent.Dialogue.Spire3));
 
             ctx.Database = EditorAssetUtil.LoadOrCreateAsset<GameDatabase>(EditorPaths.ScriptableObjects + "/GameDatabase.asset");
             EditorAssetUtil.SetFields(ctx.Database, so =>
@@ -280,6 +280,7 @@ namespace RootAccess.EditorTools
         {
             var item = EditorAssetUtil.LoadOrCreateAsset<ItemDefinition>($"{EditorPaths.SoItems}/Item_{id}.asset");
             item.Configure(id, display, description, category, stack, value, GeneratedArt.Sprite(icon));
+            item.SetEnglish(Translations.English(display), Translations.English(description));
             EditorUtility.SetDirty(item);
             return item;
         }
@@ -289,6 +290,7 @@ namespace RootAccess.EditorTools
         {
             var skill = EditorAssetUtil.LoadOrCreateAsset<SkillDefinition>($"{EditorPaths.SoSkills}/Skill_{id}.asset");
             skill.Configure(id, display, description, branch, cost, effect, requires);
+            skill.SetEnglish(Translations.English(display), Translations.English(description));
             EditorUtility.SetDirty(skill);
             return skill;
         }
@@ -298,6 +300,9 @@ namespace RootAccess.EditorTools
         {
             var quest = EditorAssetUtil.LoadOrCreateAsset<QuestDefinition>($"{EditorPaths.SoQuests}/Quest_{id}.asset");
             quest.Configure(id, title, description, main, credits, xp, objectives);
+            quest.SetEnglish(Translations.English(title), Translations.English(description));
+            foreach (ObjectiveDefinition objective in quest.Objectives)
+                objective.SetEnglish(Translations.English(objective.SourceDescription));
             EditorUtility.SetDirty(quest);
             return quest;
         }
@@ -307,17 +312,27 @@ namespace RootAccess.EditorTools
             var level = EditorAssetUtil.LoadOrCreateAsset<LevelDefinition>($"{EditorPaths.SoLevels}/Level_{id}.asset");
             level.Configure(id, scene, display, unlocked, order);
             level.SetDescription(description);
+            level.SetEnglish(Translations.English(display), Translations.English(description));
             EditorUtility.SetDirty(level);
             return level;
         }
 
-        private static LoreDefinition Lore(string id, string title, string body, string levelId, int order)
+        private static LoreDefinition Lore(SeedContent.Lore.Log entry, int order)
         {
-            var log = EditorAssetUtil.LoadOrCreateAsset<LoreDefinition>($"{EditorPaths.SoLore}/{id}.asset");
-            log.Configure(id, title, body, levelId, order);
+            var log = EditorAssetUtil.LoadOrCreateAsset<LoreDefinition>($"{EditorPaths.SoLore}/{entry.Id}.asset");
+            log.Configure(entry.Id, entry.Title, entry.Body, entry.Level, order);
+            log.SetEnglish(entry.TitleEn, entry.BodyEn);
             EditorUtility.SetDirty(log);
             return log;
         }
+
+        /// <summary>One dialogue line with its English twin.</summary>
+        private static DialogueLine Line(string speaker, string text) =>
+            new(speaker, text, Translations.English(speaker), Translations.English(text));
+
+        /// <summary>One rubric panel row with its English twin.</summary>
+        private static RubricEntry RubricRow(string title, string summary, string scene, string spawn) =>
+            new(title, summary, scene, spawn, Translations.English(title), Translations.English(summary));
 
         private static DialogueDefinition Dialogue(string id, params DialogueLine[] lines)
         {
@@ -447,20 +462,20 @@ namespace RootAccess.EditorTools
             ctx.Rubric = EditorAssetUtil.LoadOrCreateAsset<RubricCatalog>(EditorPaths.ScriptableObjects + "/RubricCatalog.asset");
             ctx.Rubric.SetEntries(new[]
             {
-                new RubricEntry(Strings.Rubric.Movement, SeedContent.Rubric.Movement, SceneNames.Level01, "l1_movement"),
-                new RubricEntry(Strings.Rubric.Materials, SeedContent.Rubric.Materials, SceneNames.RubricShowcase, "room_02"),
-                new RubricEntry(Strings.Rubric.Environment, SeedContent.Rubric.Environment, SceneNames.Level01, "l1_park"),
-                new RubricEntry(Strings.Rubric.Water, SeedContent.Rubric.Water, SceneNames.Level04, "l4_water"),
-                new RubricEntry(Strings.Rubric.Lighting, SeedContent.Rubric.Lighting, SceneNames.Hub, "hub_center"),
-                new RubricEntry(Strings.Rubric.Prefabs, SeedContent.Rubric.Prefabs, SceneNames.RubricShowcase, "room_06"),
-                new RubricEntry(Strings.Rubric.Particles, SeedContent.Rubric.Particles, SceneNames.Level01, "l1_nodes"),
-                new RubricEntry(Strings.Rubric.Menu, SeedContent.Rubric.Menu, SceneNames.MainMenu, string.Empty),
-                new RubricEntry(Strings.Rubric.Sound, SeedContent.Rubric.Sound, SceneNames.RubricShowcase, "room_09"),
-                new RubricEntry(Strings.Rubric.Animation, SeedContent.Rubric.Animation, SceneNames.RubricShowcase, "room_10"),
-                new RubricEntry(Strings.Rubric.Collisions, SeedContent.Rubric.Collisions, SceneNames.Level01, "l1_security"),
-                new RubricEntry(Strings.Rubric.Scripts, SeedContent.Rubric.Scripts, SceneNames.Level01, "l1_drone"),
-                new RubricEntry(Strings.Rubric.Cinematics, SeedContent.Rubric.Cinematics, SceneNames.Intro, string.Empty),
-                new RubricEntry(Strings.Rubric.Multiplayer, SeedContent.Rubric.Multiplayer, SceneNames.MainMenu, string.Empty)
+                RubricRow(Strings.Rubric.Movement, SeedContent.Rubric.Movement, SceneNames.Level01, "l1_movement"),
+                RubricRow(Strings.Rubric.Materials, SeedContent.Rubric.Materials, SceneNames.RubricShowcase, "room_02"),
+                RubricRow(Strings.Rubric.Environment, SeedContent.Rubric.Environment, SceneNames.Level01, "l1_park"),
+                RubricRow(Strings.Rubric.Water, SeedContent.Rubric.Water, SceneNames.Level04, "l4_water"),
+                RubricRow(Strings.Rubric.Lighting, SeedContent.Rubric.Lighting, SceneNames.Hub, "hub_center"),
+                RubricRow(Strings.Rubric.Prefabs, SeedContent.Rubric.Prefabs, SceneNames.RubricShowcase, "room_06"),
+                RubricRow(Strings.Rubric.Particles, SeedContent.Rubric.Particles, SceneNames.Level01, "l1_nodes"),
+                RubricRow(Strings.Rubric.Menu, SeedContent.Rubric.Menu, SceneNames.MainMenu, string.Empty),
+                RubricRow(Strings.Rubric.Sound, SeedContent.Rubric.Sound, SceneNames.RubricShowcase, "room_09"),
+                RubricRow(Strings.Rubric.Animation, SeedContent.Rubric.Animation, SceneNames.RubricShowcase, "room_10"),
+                RubricRow(Strings.Rubric.Collisions, SeedContent.Rubric.Collisions, SceneNames.Level01, "l1_security"),
+                RubricRow(Strings.Rubric.Scripts, SeedContent.Rubric.Scripts, SceneNames.Level01, "l1_drone"),
+                RubricRow(Strings.Rubric.Cinematics, SeedContent.Rubric.Cinematics, SceneNames.Intro, string.Empty),
+                RubricRow(Strings.Rubric.Multiplayer, SeedContent.Rubric.Multiplayer, SceneNames.MainMenu, string.Empty)
             });
             EditorUtility.SetDirty(ctx.Rubric);
         }

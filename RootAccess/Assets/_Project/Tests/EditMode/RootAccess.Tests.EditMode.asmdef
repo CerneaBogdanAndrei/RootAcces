@@ -7,7 +7,8 @@
         "RootAccess.Core",
         "RootAccess.AI",
         "RootAccess.Systems",
-        "RootAccess.Hacking"
+        "RootAccess.Hacking",
+        "RootAccess.Editor"
     ],
     "includePlatforms": [
         "Editor"

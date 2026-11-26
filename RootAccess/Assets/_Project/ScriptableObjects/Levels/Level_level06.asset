@@ -17,5 +17,8 @@ MonoBehaviour:
   displayName: Antena Halden
   description: "Antena Halden: nacele, ventilatoare, grilaje care cad \u0219i transmisia
     final\u0103 c\u0103tre tot ora\u0219ul."
+  displayNameEn: The Halden Antenna
+  descriptionEn: 'The Halden antenna: gondolas, fans, falling grates and the final
+    broadcast to the whole city.'
   unlockedByDefault: 0
   order: 6

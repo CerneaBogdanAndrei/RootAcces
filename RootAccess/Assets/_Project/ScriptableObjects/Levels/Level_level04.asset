@@ -17,5 +17,7 @@ MonoBehaviour:
   displayName: Canalizarea
   description: "Canalizarea de sub ora\u0219: ap\u0103, curen\u021Bi \u0219i o ecluz\u0103
     de deschis."
+  displayNameEn: The Sewers
+  descriptionEn: 'The sewers under the city: water, currents and a lock to open.'
   unlockedByDefault: 0
   order: 4

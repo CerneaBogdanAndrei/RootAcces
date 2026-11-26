@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: "A doua \u0219ans\u0103"
   description: "Dac\u0103 o spargere e\u0219ueaz\u0103, prime\u0219ti automat \xEEnc\u0103
     o \xEEncercare."
+  displayNameEn: Second Chance
+  descriptionEn: If a hack fails, you automatically get one more attempt.
   branch: 1
   xpCost: 160
   effect: 5

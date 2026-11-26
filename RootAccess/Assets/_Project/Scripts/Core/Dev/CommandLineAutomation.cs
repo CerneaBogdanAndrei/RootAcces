@@ -25,6 +25,7 @@ namespace RootAccess.Core
         private const string DefaultSettingsArg = "-ra-default-settings";
         private const string CoopArg = "-ra-coop";
         private const string CoopAddressArg = "-ra-coop-address";
+        private const string LanguageArg = "-ra-language";
 
         private string _targetScene;
         private string _spawnId;
@@ -48,6 +49,17 @@ namespace RootAccess.Core
 
         /// <summary>True with -ra-default-settings: settings live in memory only (defaults, nothing written to PlayerPrefs).</summary>
         public static bool UsesDefaultSettings => Array.IndexOf(Environment.GetCommandLineArgs(), DefaultSettingsArg) >= 0;
+
+        /// <summary><c>-ra-language en|ro</c>: start in that language (screenshots of the English version).</summary>
+        public static Language? LanguageOverride
+        {
+            get
+            {
+                string value = Value(Environment.GetCommandLineArgs(), LanguageArg);
+                if (string.IsNullOrEmpty(value)) return null;
+                return value.StartsWith("en", StringComparison.OrdinalIgnoreCase) ? Language.English : Language.Romanian;
+            }
+        }
 
         /// <summary>True when Unity's own -screen-fullscreen / -popupwindow switches were passed (scripts keep that mode).</summary>
         public static bool OverridesScreenMode

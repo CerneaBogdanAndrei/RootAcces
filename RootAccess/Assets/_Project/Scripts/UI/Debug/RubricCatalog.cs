@@ -1,4 +1,5 @@
 using System;
+using RootAccess.Core;
 using UnityEngine;
 
 namespace RootAccess.UI
@@ -10,17 +11,21 @@ namespace RootAccess.UI
         [SerializeField, TextArea] private string summary;
         [SerializeField] private string sceneName;
         [SerializeField] private string spawnId;
+        [SerializeField] private string titleEn;
+        [SerializeField, TextArea] private string summaryEn;
 
-        public RubricEntry(string entryTitle, string entrySummary, string scene, string spawn)
+        public RubricEntry(string entryTitle, string entrySummary, string scene, string spawn, string entryTitleEn = null, string entrySummaryEn = null)
         {
             title = entryTitle;
             summary = entrySummary;
             sceneName = scene;
             spawnId = spawn;
+            titleEn = entryTitleEn;
+            summaryEn = entrySummaryEn;
         }
 
-        public string Title => title;
-        public string Summary => summary;
+        public string Title => Loc.T(title, titleEn);
+        public string Summary => Loc.T(summary, summaryEn);
         public string SceneName => sceneName;
         public string SpawnId => spawnId;
     }

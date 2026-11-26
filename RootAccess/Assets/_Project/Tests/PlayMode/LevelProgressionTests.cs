@@ -39,6 +39,8 @@ namespace RootAccess.Tests.PlayMode
             SessionService session = FreshSession();
             Assert.IsFalse(session.Session.IsLevelUnlocked(Level02Id), "The office tower starts locked.");
             yield return SliceTestUtil.LoadScene(SceneNames.Level01);
+            // Some play time has to pass first: a level finished in 0 s records no time (same wait as the other levels).
+            yield return new WaitForSecondsRealtime(0.5f);
             yield return ReachExit("level01");
             Assert.IsTrue(session.Session.IsLevelUnlocked(Level02Id), "Finishing Level 1 must unlock the office tower.");
             Assert.IsTrue(session.Session.LevelTimes.ContainsKey("level01"), "Completing a level records its time.");

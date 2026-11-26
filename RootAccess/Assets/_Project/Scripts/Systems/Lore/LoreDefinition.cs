@@ -1,3 +1,4 @@
+using RootAccess.Core;
 using UnityEngine;
 
 namespace RootAccess.Systems
@@ -11,13 +12,15 @@ namespace RootAccess.Systems
         [SerializeField] private string loreId;
         [SerializeField] private string title;
         [SerializeField, TextArea(3, 8)] private string body;
+        [SerializeField] private string titleEn;
+        [SerializeField, TextArea(3, 8)] private string bodyEn;
         [SerializeField, Tooltip("Level id where the log is hidden (shown as a hint while it is still missing).")]
         private string levelId;
         [SerializeField, Min(0)] private int order;
 
         public string LoreId => loreId;
-        public string Title => title;
-        public string Body => body;
+        public string Title => Loc.T(title, titleEn);
+        public string Body => Loc.T(body, bodyEn);
         public string LevelId => levelId;
         public int Order => order;
 
@@ -28,6 +31,13 @@ namespace RootAccess.Systems
             body = text;
             levelId = level;
             order = index;
+        }
+
+        /// <summary>English title and text, shown when the game language is English.</summary>
+        public void SetEnglish(string logTitle, string text)
+        {
+            titleEn = logTitle;
+            bodyEn = text;
         }
     }
 }

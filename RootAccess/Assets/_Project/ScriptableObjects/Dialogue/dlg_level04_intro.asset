@@ -17,6 +17,11 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "Canalizarea e inundat\u0103 pe alocuri. Po\u021Bi \xEEnota, dar ai grij\u0103
       sub ziduri."
+    speakerEn: OPERATOR
+    textEn: The sewers are flooded in places. You can swim, but be careful under
+      the walls.
   - speaker: OPERATOR
     text: "Un pu\u021B e prea \xEEnalt: deschide stavila \u0219i las\u0103 apa s\u0103
       te ridice."
+    speakerEn: OPERATOR
+    textEn: 'One shaft is too tall: open the sluice gate and let the water lift you.'

@@ -16,40 +16,49 @@ MonoBehaviour:
   title: Transmisia
   description: "Varga a cerut un singur lucru: datele \xEEnapoi la oameni. Antena
     din v\xE2rful sediului emite pe fiecare ecran din ora\u0219."
+  titleEn: The Broadcast
+  descriptionEn: 'Varga asked for one thing: give the data back to the people. The
+    antenna on top of the headquarters reaches every screen in the city.'
   isMainStory: 1
   objectives:
   - objectiveId: reach_l6
     description: "Urc\u0103 pe antena Halden"
+    descriptionEn: Climb the Halden antenna
     type: 0
     targetId: level06
     requiredCount: 1
     optional: 0
   - objectiveId: hack_fan
     description: "Porne\u0219te ventilatorul de r\u0103cire"
+    descriptionEn: Start the cooling fan
     type: 1
     targetId: l6_fan
     requiredCount: 1
     optional: 0
   - objectiveId: hack_uplink
     description: "Sparge emi\u021B\u0103torul de la v\xE2rf"
+    descriptionEn: Hack the transmitter at the top
     type: 1
     targetId: l6_uplink
     requiredCount: 1
     optional: 0
   - objectiveId: hold_broadcast
     description: "\u021Aine transmisia p\xE2n\u0103 la 100%"
+    descriptionEn: Hold the broadcast until 100%
     type: 0
     targetId: l6_broadcast
     requiredCount: 1
     optional: 0
   - objectiveId: reach_exit_l6
     description: "Dispari \xEEn noapte"
+    descriptionEn: Vanish into the night
     type: 0
     targetId: exit_l6
     requiredCount: 1
     optional: 0
   - objectiveId: stealth_l6
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

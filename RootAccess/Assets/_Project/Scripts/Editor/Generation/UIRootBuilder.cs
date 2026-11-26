@@ -280,11 +280,12 @@ namespace RootAccess.EditorTools
 
         private static void BuildSettings(Transform parent, BuildContext ctx)
         {
-            Image panel = CenterPanel("SettingsMenu", parent, new Vector2(900f, 900f), out _, Strings.Settings.Title);
+            Image panel = CenterPanel("SettingsMenu", parent, new Vector2(900f, 960f), out _, Strings.Settings.Title);
             RectTransform column = UIFactory.Rect("Rows", panel.transform);
-            UIFactory.Place(column, new Vector2(0.5f, 1f), new Vector2(0f, -130f), new Vector2(800f, 740f), new Vector2(0.5f, 1f));
-            UIFactory.Vertical(column.gameObject, 10f);
+            UIFactory.Place(column, new Vector2(0.5f, 1f), new Vector2(0f, -125f), new Vector2(800f, 800f), new Vector2(0.5f, 1f));
+            UIFactory.Vertical(column.gameObject, 8f);
 
+            TMP_Dropdown language = UIFactory.Dropdown("Language", column, Strings.Settings.Language);
             Slider master = UIFactory.Slider("Master", column, Strings.Settings.MasterVolume);
             Slider music = UIFactory.Slider("Music", column, Strings.Settings.MusicVolume);
             Slider sfx = UIFactory.Slider("Sfx", column, Strings.Settings.SfxVolume);
@@ -303,6 +304,7 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetFields(view, so =>
             {
                 so.Require("input").objectReferenceValue = ctx.Input;
+                so.Require("languageDropdown").objectReferenceValue = language;
                 so.Require("masterSlider").objectReferenceValue = master;
                 so.Require("musicSlider").objectReferenceValue = music;
                 so.Require("sfxSlider").objectReferenceValue = sfx;
@@ -332,7 +334,6 @@ namespace RootAccess.EditorTools
                 so.Require("bindingGroup").stringValue = ControlSchemes.KeyboardMouse;
                 so.Require("actionLabel").objectReferenceValue = actionLabel;
                 so.Require("bindingLabel").objectReferenceValue = existing;
-                so.Require("displayName").stringValue = label;
             });
             return rebind;
         }
@@ -516,6 +517,7 @@ namespace RootAccess.EditorTools
             Button newGame = UIFactory.Button("NewGame", column, Strings.Menu.NewGame, 460f, 58f);
             Button coop = UIFactory.Button("Coop", column, Strings.Coop.MenuButton, 460f, 58f);
             Button settings = UIFactory.Button("Settings", column, Strings.Menu.Settings, 460f, 58f);
+            Button language = UIFactory.Button("Language", column, string.Format(Strings.Menu.Language, Loc.NativeName(Language.Romanian)), 460f, 58f);
             Button rubric = UIFactory.Button("Rubric", column, Strings.Menu.RubricShowcase, 460f, 58f);
             Button credits = UIFactory.Button("Credits", column, Strings.Menu.Credits, 460f, 58f);
             Button quit = UIFactory.Button("Quit", column, Strings.Menu.Quit, 460f, 58f);
@@ -532,6 +534,7 @@ namespace RootAccess.EditorTools
                 so.Require("coopButton").objectReferenceValue = coop;
                 so.Require("coopMenu").objectReferenceValue = coopMenu;
                 so.Require("settingsButton").objectReferenceValue = settings;
+                so.Require("languageButton").objectReferenceValue = language;
                 so.Require("rubricButton").objectReferenceValue = rubric;
                 so.Require("creditsButton").objectReferenceValue = credits;
                 so.Require("quitButton").objectReferenceValue = quit;

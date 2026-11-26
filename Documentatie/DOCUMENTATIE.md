@@ -9,7 +9,7 @@ Joc 2D side-scrolling de tip **stealth-platformer** într-un oraș cyberpunk, re
 | **Motor** | Unity 6000.3.29f1 (6.3 LTS), Universal Render Pipeline 2D, Input System, Cinemachine 3, Timeline, 2D Animation, Netcode for GameObjects |
 | **Platformă** | Windows x64; tastatură + mouse sau gamepad |
 | **Durată** | Ascunzătoarea + 6 niveluri + cutscene-uri, aproximativ 66 de minute la prima trecere (estimare, vezi §11), plus căutarea celor 18 jurnale de date |
-| **Limbă** | interfața, dialogurile și documentația sunt în română |
+| **Limbă** | jocul e în română sau engleză, la alegere din meniu (interfață, dialoguri, misiuni, jurnale, indicii); documentația e în română |
 | **Autor** | Cernea Bogdan-Andrei |
 | **Cod sursă** | https://github.com/CerneaBogdanAndrei/RootAcces (tag `v1.0`) |
 
@@ -66,7 +66,18 @@ Jocul începe cu o scenă cinematică (intro) și se încheie cu un final cinema
 1. Dezarhivează `RootAccess_Windows.zip`.
 2. Pornește `RootAccess\RootAccess.exe`.
 3. Din meniu: **Joc nou** (intro → ascunzătoarea), **Continuă** (ultima salvare), **Co-op**, **Setări**,
-   **Prezentare barem**, **Credite**, **Ieșire**.
+   **Limba** (română ↔ engleză), **Prezentare barem**, **Credite**, **Ieșire**.
+
+### Limba jocului
+
+Butonul **Limba: Română** din meniul principal trece tot jocul în engleză (devine *Language: English*); încă un click
+îl aduce înapoi. Aceeași alegere există în **Setări → Limbă**, care se deschide și din meniul de pauză, deci limba se
+poate schimba și în mijlocul unui nivel. Schimbarea se vede imediat (butoane, HUD, indicii din nivel, misiuni,
+jurnale, dialoguri, subtitrări) și se ține minte la următoarea pornire.
+
+| ![Meniul în engleză](screenshots/47-en-meniu-principal.png) | ![Nivelul 1 în engleză](screenshots/49-en-nivel1.png) |
+|---|---|
+| ![Setări în engleză](screenshots/48-en-setari.png) | ![Misiunile în engleză](screenshots/50-en-terminal-misiuni.png) |
 
 ### Din Unity Editor
 
@@ -92,8 +103,8 @@ Jocul începe cu o scenă cinematică (intro) și se încheie cu un final cinema
 | Cutscene | Enter / Esc = sari peste | A / B |
 | **Operator în co-op local** | Numpad 8 / 2 = alege ținta, Numpad 5 = execută | D-pad sus / jos, A = execută |
 
-Tastele pentru Săritură și Interacțiune se pot schimba din **Setări → Controale**. Tot acolo se reglează volumul
-(general, muzică, efecte, interfață), rezoluția, fullscreen-ul și VSync.
+Tastele pentru Săritură și Interacțiune se pot schimba din **Setări → Controale**. Tot acolo se aleg limba (română sau
+engleză) și se reglează volumul (general, muzică, efecte, interfață), rezoluția, fullscreen-ul și VSync.
 
 ## 4. Structura jocului
 
@@ -402,7 +413,7 @@ demonstrații de 30 de secunde) sunt în [RUBRIC.md](../RUBRIC.md).
 | 5 | Lumini / cameră | Hub, toate nivelurile | lumini 2D de toate tipurile, umbre, Cinemachine (confiner, shake, zoom) |
 | 6 | Prefab-uri | showcase camera 6 | 60 de prefab-uri, variante (Guard → Heavy/Sniper, Terminal → Door/Camera/Data), pool |
 | 7 | Particule / teleportare | Nivelul 1, `l1_nodes` | 11 sisteme de particule, teleportare prin noduri cu dizolvare |
-| 8 | Meniu | meniul principal | meniu, setări cu rebind, pauză, game over, nivel complet, loading, co-op |
+| 8 | Meniu | meniul principal | meniu, limbă română/engleză, setări cu rebind, pauză, game over, nivel complet, loading, co-op |
 | 9 | Sunet | showcase camera 9 | mixer, snapshot-uri, muzică adaptivă, pași pe suprafețe |
 | 10 | Animații / Animator | showcase camera 10 | Animator Controllers, blend trees, Animation Events |
 | 11 | Coliziuni / triggere | Nivelul 1, `l1_security` | matrice de coliziuni, triggere (gropi, ascunzători, alarme, apă…), raycast-uri |
@@ -440,13 +451,15 @@ rămâne în salvare, așa că o trecere cronometrată confirmă estimarea.
 
 ## 12. Testare și calitate
 
-- **124 de teste EditMode**:
+- **132 de teste EditMode**:
   - A*, inventar, urmărire, portofel, magazin, abilități;
   - misiuni (inclusiv lanțul principal), salvare/încărcare cu migrări și timpii pe nivel;
   - minijocurile de hacking, regula de auz, modelul și codec-ul Operatorului, EventBus, ServiceLocator, FSM;
   - arhiva de jurnale (găsire o singură dată, salvare, salvări vechi fără jurnale, contractul care numără retroactiv);
-  - transmisia de pe antenă (progres doar lângă emițător, pauză fără resetare, valurile de drone).
-- **46 de teste PlayMode**:
+  - transmisia de pe antenă (progres doar lângă emițător, pauză fără resetare, valurile de drone);
+  - limba: alegerea textului după limbă, salvarea ei în setări și faptul că fiecare din cele peste 400 de texte are o
+    variantă engleză reală (fără diacritice românești, cu aceleași `{0}`).
+- **49 de teste PlayMode**:
   - fiecare scenă pornește fără erori, cu jucătorul pe podea;
   - fluxul complet de acceptare: meniu → intro → Hub → Nivelul 1 → hack → ușă → teleport → dronă → pauză → volum → meniu → showcase;
   - toate cele trei minijocuri prin overlay-ul real, terminalul personal și magazinul;
@@ -457,7 +470,9 @@ rămâne în salvare, așa că o trecere cronometrată confirmă estimarea.
     transmisia care cheamă dronele și deschide ușa;
   - câte 3 jurnale distincte în fiecare nivel; un jurnal atins se înregistrează, apare în tab și nu mai apare la revenire;
   - cutscene-urile (track-uri și skip), copacii cu oase (deformarea mesh-ului);
-  - co-op-ul local (ușă, cameră, gardian, ecran împărțit) și gazda LAN.
+  - co-op-ul local (ușă, cameră, gardian, ecran împărțit) și gazda LAN;
+  - limba: butonul din meniu și lista din Setări schimbă pe loc toate textele; un nivel pornit în engleză are indiciile,
+    misiunea și itemele în engleză.
 
   Framework-ul de test pică orice test care produce o eroare în log.
 - **Scripturi de verificare**:
@@ -514,4 +529,5 @@ Toate capturile sunt în `Documentatie/screenshots` și se regenerează cu `./sc
 | `37-meniu-coop`, `38-coop-ecran-impartit`, `39-coop-lan-operator` | co-op |
 | `40-terminal-jurnale`, `41-nivel1-ventilatie` | tab-ul Jurnale, tubul de ventilație din nivelul 1 |
 | `42`–`46` `nivel6-*` | nivelul 6: antena, nacela, ventilatorul, grilajele, emițătorul |
+| `47`–`50` `en-*` | versiunea în engleză: meniul, setările, nivelul 1, misiunile |
 | `barem-camera-01`…`14` | camerele scenei Prezentare barem |

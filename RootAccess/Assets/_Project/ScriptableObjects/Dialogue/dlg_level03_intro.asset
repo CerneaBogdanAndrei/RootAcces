@@ -17,5 +17,11 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "Ferma de servere: zeci de drone de paz\u0103 \u0219i noduri de re\u021Bea
       \xEEntre rafturi."
+    speakerEn: OPERATOR
+    textEn: 'The server farm: dozens of guard drones and network nodes between the
+      racks.'
   - speaker: OPERATOR
     text: "Sari din nod \xEEn nod peste rafturi. Nucleul e la cap\u0103tul halei."
+    speakerEn: OPERATOR
+    textEn: Jump from node to node over the racks. The core is at the far end of
+      the hall.

@@ -144,8 +144,10 @@ Dovezile se verifică automat cu `RubricValidator`: meniul **Root Access → Val
   overlay hacking, inventar, skill tree, jurnal, dialog, panoul F1), `UI/CreditsCanvas.prefab`.
 - **Scripturi:** `UI/Menus/MainMenuView.cs`, `SettingsMenuView.cs`, `PauseMenuView.cs`, `RebindActionButton.cs`,
   `UI/Screens/*.cs`, `UI/Common/UIPanel.cs` + `UITween.cs`, `Core/Scenes/SceneLoader.cs` (încărcare asincronă),
-  `Core/Settings/SettingsService.cs`, `Input/RebindService.cs`.
-- **Demonstrație:** meniul are Continuă / Joc nou / Setări / Prezentare barem / Credite / Ieșire. În Setări: volume
+  `Core/Settings/SettingsService.cs`, `Input/RebindService.cs`, `Core/Localization/Loc.cs` + `UI/Common/LocalizedLabel.cs`
+  (limba).
+- **Demonstrație:** meniul are Continuă / Joc nou / Co-op / Setări / Limba / Prezentare barem / Credite / Ieșire.
+  „Limba: Română” trece tot jocul în engleză pe loc (și înapoi). În Setări: limba, volume
   (general/muzică/efecte/UI) aplicate pe mixer, rezoluție, fullscreen, VSync, rebind pentru Săritură și Interacțiune.
   Joc nou arată ecranul de loading cu bara de progres. În joc: Esc = pauză. Moartea (de exemplu pe podeaua electrică sau
   în laser, din `l1_security`) duce la Game Over, iar ieșirea de la capătul Level01 duce la Nivel complet.

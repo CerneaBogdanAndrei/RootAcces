@@ -16,34 +16,42 @@ MonoBehaviour:
   title: Turnul de birouri
   description: "Fragmentul de pe acoperi\u0219 con\u021Bine o adres\u0103: seiful
     de date al firmei Halden Systems, la etajul 2 al turnului de birouri."
+  titleEn: The Office Tower
+  descriptionEn: 'The rooftop shard holds an address: the Halden Systems data vault,
+    on floor 2 of the office tower.'
   isMainStory: 1
   objectives:
   - objectiveId: reach_l2
     description: "Intr\u0103 \xEEn turnul de birouri"
+    descriptionEn: Get into the office tower
     type: 0
     targetId: level02
     requiredCount: 1
     optional: 0
   - objectiveId: hack_elevator
     description: "Reporne\u0219te liftul de serviciu"
+    descriptionEn: Restart the service elevator
     type: 1
     targetId: l2_elevator
     requiredCount: 1
     optional: 0
   - objectiveId: hack_vault
     description: Sparge seiful de date de la etajul 2
+    descriptionEn: Hack the data vault on floor 2
     type: 1
     targetId: l2_vault
     requiredCount: 1
     optional: 0
   - objectiveId: reach_exit_l2
     description: "Ie\u0219i prin acoperi\u0219ul turnului"
+    descriptionEn: Leave through the tower roof
     type: 0
     targetId: exit_l2
     requiredCount: 1
     optional: 0
   - objectiveId: stealth_l2
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

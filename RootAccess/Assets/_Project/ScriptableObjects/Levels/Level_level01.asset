@@ -17,5 +17,8 @@ MonoBehaviour:
   displayName: "Acoperi\u0219uri \u0219i parc"
   description: "Acoperi\u0219urile Sectorului 7: s\u0103rituri \xEEntre cl\u0103diri,
     primul gardian, o poart\u0103 de securitate \u0219i arena dronelor."
+  displayNameEn: Rooftops and Park
+  descriptionEn: 'The Sector 7 rooftops: jumps between buildings, the first guard,
+    a security gate and the drone arena.'
   unlockedByDefault: 1
   order: 1

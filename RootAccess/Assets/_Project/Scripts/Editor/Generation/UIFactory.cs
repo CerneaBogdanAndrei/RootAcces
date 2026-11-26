@@ -93,7 +93,19 @@ namespace RootAccess.EditorTools
             label.fontStyle = style;
             label.raycastTarget = false;
             label.textWrappingMode = TextWrappingModes.Normal;
+            Localize(label);
             return label;
+        }
+
+        /// <summary>
+        /// Gives a baked label its English twin when its text is a known UI or content string, so it follows the language
+        /// chosen in the menu (<see cref="LocalizedLabel"/>). Labels that views fill at runtime are left alone.
+        /// </summary>
+        public static void Localize(TMP_Text label)
+        {
+            if (label == null || !Translations.TryEnglish(label.text, out string english) || english == label.text) return;
+            if (!label.TryGetComponent(out LocalizedLabel localized)) localized = label.gameObject.AddComponent<LocalizedLabel>();
+            localized.Configure(label, label.text, english);
         }
 
         public static Image FillBar(string name, Transform parent, Vector2 anchor, Vector2 position, Vector2 size, Color fill)

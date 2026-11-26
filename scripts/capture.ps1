@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
     Captures in-game screenshots from the built player for documentation, one launch per shot, using the -ra-* automation
-    switches (scene, spawn point, interact with a named object, broadcast UI commands, screenshot delay).
+    switches (scene, spawn point, interact with a named object, broadcast UI commands, screenshot delay, language).
 .PARAMETER Only
     Capture only the shots whose name matches one of these wildcards (e.g. "terminal-*").
 .PARAMETER OutDir
@@ -76,6 +76,10 @@ $shots = @(
     @{ Name = '44-nivel6-ventilator';      Scene = 'Level06_Spire';    Spawn = 'l6_fans';      Interact = '';              Command = '';          Delay = 3 }
     @{ Name = '45-nivel6-grilaje';         Scene = 'Level06_Spire';    Spawn = 'l6_grates';    Interact = '';              Command = '';          Delay = 3 }
     @{ Name = '46-nivel6-transmisie';      Scene = 'Level06_Spire';    Spawn = 'l6_transmitter'; Interact = '';              Command = '';          Delay = 3 }
+    @{ Name = '47-en-meniu-principal';     Scene = '';                 Spawn = '';             Interact = '';              Command = '';          Delay = 3; Language = 'en' }
+    @{ Name = '48-en-setari';              Scene = '';                 Spawn = '';             Interact = '';              Command = 'settings';  Delay = 3; Language = 'en' }
+    @{ Name = '49-en-nivel1';              Scene = 'Level01_Rooftops'; Spawn = 'l1_start';     Interact = '';              Command = '';          Delay = 3; Language = 'en' }
+    @{ Name = '50-en-terminal-misiuni';    Scene = 'Hub';              Spawn = 'hub_center';   Interact = '';              Command = 'quests';    Delay = 2.5; Language = 'en' }
 )
 for ($i = 1; $i -le 14; $i++) {
     $room = 'room_{0:D2}' -f $i
@@ -95,6 +99,7 @@ foreach ($shot in $selected) {
     if ($shot.Spawn) { $playerArgs += @('-ra-spawn', $shot.Spawn) }
     if ($shot.Interact) { $playerArgs += @('-ra-interact', $shot.Interact) }
     if ($shot.ContainsKey('Coop')) { $playerArgs += @('-ra-coop', $shot.Coop) }
+    if ($shot.ContainsKey('Language')) { $playerArgs += @('-ra-language', $shot.Language) }
     if ($shot.Command) { $playerArgs += @('-ra-command', $shot.Command) }
 
     $process = Start-Process -FilePath $exe -ArgumentList ($playerArgs -join ' ') -PassThru

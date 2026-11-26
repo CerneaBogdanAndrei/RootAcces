@@ -17,8 +17,16 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "Turnul Halden. Camere pe fiecare hol, gardieni care ascult\u0103 \u0219i
       un lunetist la etajul doi."
+    speakerEn: OPERATOR
+    textEn: The Halden tower. Cameras in every hallway, guards who listen and a sniper
+      on the second floor.
   - speaker: OPERATOR
     text: "Liftul de serviciu e blocat. Sparge-i terminalul \u0219i urc\u0103 la
       seif."
+    speakerEn: OPERATOR
+    textEn: The service elevator is locked. Hack its terminal and ride up to the
+      vault.
   - speaker: TU
     text: "Am \xEEn\u021Beles. Intru pe u\u0219a din spate."
+    speakerEn: YOU
+    textEn: Understood. Going in through the back door.
