@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e89e8b47759a794fb90f8cb223e9d72, type: 3}
+  m_Name: Quest_side_archivist
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.QuestDefinition
+  questId: side_archivist
+  title: Arhivarul
+  description: "O jurnalist\u0103 din Sectorul 7 pl\u0103te\u0219te pentru orice
+    jurnal de date despre Halden Systems. Le g\u0103se\u0219ti ascunse \xEEn niveluri:
+    pe pasarele, pe ziduri, sub ap\u0103."
+  isMainStory: 0
+  objectives:
+  - objectiveId: find_logs
+    description: "G\u0103se\u0219te jurnale de date"
+    type: 2
+    targetId: lore_any
+    requiredCount: 10
+    optional: 0
+  rewardCredits: 500
+  rewardXp: 250
+  followUpQuest: {fileID: 0}

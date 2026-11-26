@@ -498,8 +498,16 @@ namespace RootAccess.EditorTools
             PickupVariant("Pickup_Emp", ctx.EmpGrenade, "pickup_emp", 0, new Color(1f, 0.85f, 0.3f));
             PickupVariant("Pickup_Credits", null, "pickup_credit", 50, new Color(1f, 0.85f, 0.3f));
 
+            GameObject lore = Go("LoreLog", null, Layers.Trigger);
+            Box<CircleCollider2D>(lore, new Vector2(0.9f, 0.9f), Vector2.zero, true);
+            GameObject loreVisual = Go("Visual", lore.transform, Layers.Trigger);
+            Sprite(loreVisual, "pickup_lore", ctx.SpriteUnlit, SortingLayers.Interactables, 5);
+            Light(lore.transform, "Glow", Light2D.LightType.Point, new Color(0.45f, 1f, 0.75f), 1f, 1.8f);
+            EditorAssetUtil.SetField(lore.AddComponent<LoreLog>(), "visual", loreVisual.transform);
+            Save(ctx, lore, EditorPaths.PrefabsInteractables);
+
             Console(ctx, "JobBoard", typeof(JobBoard), new Color(1f, 0.6f, 0.9f), c => EditorAssetUtil.SetFields(c, so =>
-                so.SetArray("contracts", new[] { ctx.SideQuest, ctx.GhostQuest })));
+                so.SetArray("contracts", new[] { ctx.SideQuest, ctx.GhostQuest, ctx.ArchivistQuest })));
             Console(ctx, "FastTravelTerminal", typeof(FastTravelTerminal), new Color(0.4f, 1f, 1f), c => EditorAssetUtil.SetField(c, "destination", ctx.Level01));
             Console(ctx, "ShopTerminal", typeof(ShopTerminal), new Color(1f, 0.85f, 0.3f), c => EditorAssetUtil.SetFields(c, so =>
             {

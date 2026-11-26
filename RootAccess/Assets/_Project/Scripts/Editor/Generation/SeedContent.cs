@@ -23,6 +23,7 @@ namespace RootAccess.EditorTools
             public const string GhostQuest = "side_ghost_run";
             public const string MainQuest = "main_first_contract";
             public const string SideQuest = "side_data_courier";
+            public const string ArchivistQuest = "side_archivist";
             public const string Level01 = "level01";
             public const string Hub = "hub";
             public const string TerminalLevel01Door = "terminal_l1_door";
@@ -125,6 +126,55 @@ namespace RootAccess.EditorTools
             public const string HqExit = "Fugi pe acoperiș";
         }
 
+        /// <summary>
+        /// The 15 data logs (3 per level): who Halden Systems is, what "Proiectul OCHI" does with the city's cameras, the
+        /// engineer L. Varga who leaked the first fragment, and the root account the hacker keeps using.
+        /// </summary>
+        public static class Lore
+        {
+            public const string ArchivistTitle = "Arhivarul";
+            public const string ArchivistDesc = "O jurnalistă din Sectorul 7 plătește pentru orice jurnal de date despre Halden Systems. Le găsești ascunse în niveluri: pe pasarele, pe ziduri, sub apă.";
+            public const string ArchivistObjective = "Găsește jurnale de date";
+
+            public static readonly (string id, string level, string title, string body)[] Entries =
+            {
+                ("lore_l1_patrol", Ids.Level01, "Jurnal de patrulă #114",
+                    "Acoperișurile din Sectorul 7 sunt ale noastre după miezul nopții. Halden plătește dublu pentru tura de noapte și nimeni nu întreabă de ce. Regula e simplă: dacă vezi pe cineva cu glugă, raportezi întâi, gândești după."),
+                ("lore_l1_varga", Ids.Level01, "Mesaj șters: L. Varga",
+                    "Dacă citești asta, am reușit să scot fragmentul din clădire. Halden nu stochează date, le vinde. Fiecare cameră din oraș trimite imagini către ferma lor de servere, iar fiecare imagine are un preț."),
+                ("lore_l1_ad", Ids.Level01, "Reclamă interceptată",
+                    "HALDEN CLOUD: viața ta, salvată pentru totdeauna. Abonamentul gratuit include, implicit, consimțământul pentru analiza comportamentală. Dezabonarea se face personal, la sediul central, între orele 03:00 și 03:05."),
+
+                ("lore_l2_memo", Ids.Level02, "Memo intern: Proiectul OCHI",
+                    "Toate holurile primesc camere noi până vineri. Căștile noi ale gardienilor aud pașii de la cinci metri, deci personalul e rugat să nu mai alerge după cafea. Departamentul juridic a aprobat. Departamentul juridic aprobă orice."),
+                ("lore_l2_hr", Ids.Level02, "Conversație HR",
+                    "— A mai dispărut cineva de la etajul doi.\n— Nu e treaba noastră. Șterge-i ecusonul și publică postul.\n— Și dosarul?\n— Ce dosar?"),
+                ("lore_l2_vault", Ids.Level02, "Seif: index de sincronizare",
+                    "Seiful trimite o copie de rezervă către ferma de servere în fiecare oră. Cheia de sincronizare n-a mai fost schimbată din ziua instalării. Cineva a fost leneș, iar acel cineva semnează cu inițialele L.V."),
+
+                ("lore_l3_cooling", Ids.Level03, "Jurnal tehnician: răcire",
+                    "Unitatea CRAC-2 cade iar. Peste 40 de grade, dronele trec singure în patrulare agresivă. Nu te pune între ele și rafturi, nu discuta cu ele și, mai ales, nu le arăta ecusonul: îl scanează."),
+                ("lore_l3_root", Ids.Level03, "Log de sistem: acces respins",
+                    "Utilizator: root. Motiv: utilizatorul root nu există.\nUtilizator: root. Motiv: utilizatorul root nu există.\nUtilizator: root. Acces permis.\nAvertisment: cine a creat contul root?"),
+                ("lore_l3_note", Ids.Level03, "Bilet lipit pe un raft",
+                    "Parola de la nucleu e numele câinelui directorului. Câinele a murit acum trei ani. Parola a rămas. Dacă tot citești bilete lipite pe rafturi, măcar pune-l la loc."),
+
+                ("lore_l4_sluice", Ids.Level04, "Jurnal de întreținere: stavila 3",
+                    "Halden a cumpărat și canalizarea. Oficial, pentru cabluri. Neoficial, ca nimeni să nu mai coboare aici. Stavila 3 se deschide doar din terminal; apa urcă repede, așa că nu sta în puț când o pornești."),
+                ("lore_l4_fixer", Ids.Level04, "Mesaj de la fixer",
+                    "Dacă ai ajuns în canale, ferma a picat și ei știu. Te urmăresc acum pe trei rețele diferite. Nu te opri, nu răspunde la apeluri și nu bea apa, oricât de caldă ar fi."),
+                ("lore_l4_wall", Ids.Level04, "Inscripție pe zid",
+                    "Am fost ingineri la Halden. Acum dormim lângă conducte. Ei au scos oamenii din oraș și au păstrat doar datele lor. Dacă treci pe aici, lasă o lanternă. Și închide stavila în urma ta."),
+
+                ("lore_l5_board", Ids.Level05, "Directiva Consiliului",
+                    "Proiectul OCHI intră în faza a doua: fiecare ușă din oraș va răspunde numai mainframe-ului Halden. Cetățenii nu trebuie informați. Comunicatul de presă va vorbi despre „siguranța comunității”."),
+                ("lore_l5_director", Ids.Level05, "Jurnal personal: directorul",
+                    "Cineva umblă prin rețea cu contul root. Eu l-am creat, acum zece ani, ca ușă din spate pentru ziua în care consiliul m-ar fi dat afară. N-am crezut că-l va găsi altcineva. Acum el îmi deschide ușile mie."),
+                ("lore_l5_last", Ids.Level05, "Ultimul mesaj al lui L. Varga",
+                    "Dacă ai ajuns la mainframe, termină ce am început eu. Nu vinde datele, nu le șterge. Dă-le înapoi oamenilor cărora le aparțin. Și, te rog, schimbă cheia de sincronizare. Mi-e rușine de ea.")
+            };
+        }
+
         public static class Dialogue
         {
             public const string Operator = "OPERATOR";
@@ -174,6 +224,7 @@ namespace RootAccess.EditorTools
             public const string L1Move = "A/D mers · Space salt · Space în aer = dublu salt · Shift = dash";
             public const string L1Gaps = "Între acoperișuri e gol: o cădere te costă o viață";
             public const string L1WallJump = "Intră sub perete și sari dintr-un zid în altul";
+            public const string Vent = "Ctrl: te strecori ghemuit prin tubul de ventilație";
             public const string L1Stealth = "Ctrl = ghemuit (fără zgomot) · umbra te ascunde · pasarela ocolește gardianul";
             public const string L1Gate = "Oprește camera de la terminal, apoi sparge ușa";
             public const string L1Lasers = "Laserele pornesc și se opresc: treci în pauză sau sparge terminalul";

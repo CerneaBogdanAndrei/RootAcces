@@ -179,6 +179,17 @@ Drive și testul pe un PC curat rămân la dezvoltator.
   statuie, recepție etc.) așezate automat între segmente; obiectele de gameplay redesenate la aceleași dimensiuni.
 - Meniu principal cu ilustrație pixel-art (hackerul pe acoperiș, dronă, lună, ploaie); versiunea 1.1.
 
+## P10: mai mult conținut ✅ făcut (PR „P10”)
+
+- **15 jurnale de date** (3 pe nivel) ascunse în afara drumului principal: pe zidul hornului de wall-jump, pe pasarele,
+  pe stâlpii din arena dronelor, pe marginea turelelor, între ultimele lasere, pe fundul bazinelor, în puțul stavilei,
+  în tuburile de ventilație. Spun povestea Halden Systems (Proiectul OCHI, inginerul L. Varga, contul root).
+- Tab-ul **Jurnale** în terminalul personal: jurnalele găsite se citesc, iar cele lipsă indică nivelul în care sunt.
+  Fiecare jurnal dă 25 de credite și 20 XP; rămân găsite în salvare (`SaveData.loreLogs`, compatibil cu salvările vechi).
+- Contractul **Arhivarul** pe avizierul din Hub: 10 jurnale pentru 500 de credite și 250 XP. Jurnalele găsite înainte de
+  acceptare se numără (`QuestLog.ReportTo`).
+- Segmentul nou **Tub de ventilație**: o trecere de un tile, prin care treci doar ghemuit, în fiecare nivel.
+
 ## Datorie tehnică urmărită
 
 - Regenerarea conținutului rescrie fileID-urile sub-asset-urilor (controllere, profile de volum), ceea ce produce diff-uri

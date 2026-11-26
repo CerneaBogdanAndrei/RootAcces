@@ -17,6 +17,10 @@ namespace RootAccess.Systems
         /// <summary>"Optical camouflage" skill: detection noise raises the trace meter this much slower.</summary>
         private const float CamouflageTraceMultiplier = 0.7f;
 
+        /// <summary>Reward for each data log found (exploration pays a little, the archivist contract pays the rest).</summary>
+        private const int LoreCreditReward = 25;
+        private const int LoreXpReward = 20;
+
         private SaveSystem _saveSystem;
         private GameManager _gameManager;
         private float _levelStartedAt;
@@ -149,7 +153,26 @@ namespace RootAccess.Systems
 
         public void StartQuest(QuestDefinition quest)
         {
-            if (Session != null && Session.Quests.Start(quest)) EventBus<QuestChanged>.Publish(new QuestChanged(Session.Quests.Get(quest.QuestId)));
+            if (Session == null || !Session.Quests.Start(quest)) return;
+            // Data logs found before the contract was accepted still count towards it.
+            if (Session.Lore.Count > 0) Session.Quests.ReportTo(quest.QuestId, ObjectiveType.Collect, LoreTargets.AnyLog, Session.Lore.Count);
+            EventBus<QuestChanged>.Publish(new QuestChanged(Session.Quests.Get(quest.QuestId)));
+        }
+
+        /// <summary>
+        /// Records a data log found in a level: small credit/XP reward, archivist progress, toast. False when it was already
+        /// found (or there is no session), so the pickup stays put.
+        /// </summary>
+        public bool CollectLore(LoreDefinition log)
+        {
+            if (Session == null || log == null || !Session.Lore.Collect(log.LoreId)) return false;
+            Session.Wallet.Add(LoreCreditReward);
+            Session.Skills.AddXp(LoreXpReward);
+            Session.Quests.Report(ObjectiveType.Collect, LoreTargets.AnyLog);
+            int total = Mathf.Max(database.Lore.Length, Session.Lore.Count);
+            EventBus<LoreCollected>.Publish(new LoreCollected(log, Session.Lore.Count, total));
+            EventBus<ToastRequested>.Publish(new ToastRequested(string.Format(Strings.Lore.Found, log.Title, Session.Lore.Count, total)));
+            return true;
         }
 
         private void CreateSession()

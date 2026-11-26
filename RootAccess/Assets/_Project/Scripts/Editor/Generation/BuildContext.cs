@@ -26,7 +26,10 @@ namespace RootAccess.EditorTools
         public GuardConfig GuardBase, GuardHeavy, GuardSniper;
         public ItemDefinition UsbKey, DataShard, EmpGrenade, Exploit;
         public SkillDefinition[] Skills;
-        public QuestDefinition GhostQuest;
+        public QuestDefinition GhostQuest, ArchivistQuest;
+
+        /// <summary>The 15 data logs in reading order (3 per level, see SeedContent.Lore).</summary>
+        public LoreDefinition[] LoreLogs;
         public SkillDefinition SilentSteps, Overclock, ServoLegs;
         public QuestDefinition MainQuest, SideQuest, OfficeQuest, FarmQuest, SewersQuest, HqQuest;
         public LevelDefinition HubLevel, Level01, Level02, Level03, Level04, Level05, RubricLevel;

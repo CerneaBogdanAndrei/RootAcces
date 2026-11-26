@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l4_wall
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l4_wall
+  title: "Inscrip\u021Bie pe zid"
+  body: "Am fost ingineri la Halden. Acum dormim l\xE2ng\u0103 conducte. Ei au scos
+    oamenii din ora\u0219 \u0219i au p\u0103strat doar datele lor. Dac\u0103 treci
+    pe aici, las\u0103 o lantern\u0103. \u0218i \xEEnchide stavila \xEEn urma ta."
+  levelId: level04
+  order: 11

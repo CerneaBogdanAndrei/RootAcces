@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 245063d0074fa454484ef1dca8c13a2d, type: 3}
+  m_Name: lore_l4_sluice
+  m_EditorClassIdentifier: RootAccess.Systems::RootAccess.Systems.LoreDefinition
+  loreId: lore_l4_sluice
+  title: "Jurnal de \xEEntre\u021Binere: stavila 3"
+  body: "Halden a cump\u0103rat \u0219i canalizarea. Oficial, pentru cabluri. Neoficial,
+    ca nimeni s\u0103 nu mai coboare aici. Stavila 3 se deschide doar din terminal;
+    apa urc\u0103 repede, a\u0219a c\u0103 nu sta \xEEn pu\u021B c\xE2nd o porne\u0219ti."
+  levelId: level04
+  order: 9

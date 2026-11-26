@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using RootAccess.AI;
 using RootAccess.Core;
 using RootAccess.Gameplay;
+using RootAccess.Systems;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
@@ -85,6 +86,17 @@ namespace RootAccess.EditorTools
         public Vector3 P(float dx, float dy = 0f) => new(X + dx, Floor + dy, 0f);
 
         public string NextId(string kind) => $"{_prefix}_{kind}_{++_counter}";
+
+        /// <summary>Hides a data log at (dx, dy) from the cursor; does nothing without a log.</summary>
+        public void LoreAt(LoreDefinition log, float dx, float dy)
+        {
+            // ReferenceEquals, not ==: opening a scene in batchmode may have unloaded the asset (Unity's fake null);
+            // Fresh() reloads it from disk.
+            if (ReferenceEquals(log, null)) return;
+            LoreDefinition fresh = BuildContext.Fresh(log);
+            GameObject go = Put("LoreLog", P(dx, dy), Props, $"LoreLog_{fresh.LoreId}");
+            EditorAssetUtil.SetField(go.GetComponent<LoreLog>(), "log", fresh);
+        }
 
         public GameObject Put(string prefab, Vector3 position, Transform parent = null, string name = null) =>
             SceneBuilder.Place(_ctx, prefab, position, parent ?? Props, name);
@@ -271,7 +283,7 @@ namespace RootAccess.EditorTools
         /// Wall-jump chimney: a tall wall blocks the way; the only route over it is the 3-tile shaft between it and a
         /// hanging wall you walk under, climbing by jumping from wall to wall.
         /// </summary>
-        public LevelLayout WallJumpChimney(int height = 10, string hint = null)
+        public LevelLayout WallJumpChimney(int height = 10, string hint = null, LoreDefinition lore = null)
         {
             Estimate("Horn de wall-jump", 30f);
             const int width = 14;
@@ -280,6 +292,7 @@ namespace RootAccess.EditorTools
             Wall(4, 5, 2, hangTop);
             Wall(8, 10, 0, height);
             Put("Pickup_Credits", P(9f, height + 0.5f));
+            LoreAt(lore, 9f, height + 1.7f);
             if (hint != null) Hint(hint, 2.5f, 5f, 8f);
             Advance(width);
             return this;
@@ -289,7 +302,8 @@ namespace RootAccess.EditorTools
         /// Patrol room: one guard walking between two points, a shadow to hide in, crates for cover and an optional
         /// catwalk above the route. Snipers stand on the catwalk instead and shoot down.
         /// </summary>
-        public GameObject GuardPatrol(string guardPrefab = "Guard", int width = 18, bool catwalk = true, bool guardOnCatwalk = false)
+        public GameObject GuardPatrol(string guardPrefab = "Guard", int width = 18, bool catwalk = true, bool guardOnCatwalk = false,
+            LoreDefinition lore = null)
         {
             Estimate($"Patrulă ({guardPrefab})", guardPrefab == "Guard_Sniper" ? 50f : 40f);
             Block(0, width);
@@ -304,6 +318,8 @@ namespace RootAccess.EditorTools
             Transform b = PrefabFactory.Go("Patrol_B", Enemies, Layers.Default, P(width - (guardOnCatwalk ? 4.5f : 3.5f), y)).transform;
             GameObject guard = Put(guardPrefab, P(width * 0.6f, y), Enemies);
             EditorAssetUtil.SetFields(guard.GetComponent<Guard>(), so => so.SetArray("patrolPoints", new[] { a, b }));
+            if (catwalk) LoreAt(lore, width - 4f, walkHeight + 0.7f);
+            else LoreAt(lore, width - 4.5f, 1.7f);
             Decor(width);
             Advance(width);
             return guard;
@@ -337,7 +353,7 @@ namespace RootAccess.EditorTools
         /// Low tunnel crossed by cycling lasers (too low to jump over them). Time the gaps or hack the control terminal
         /// at the entrance to switch every beam off.
         /// </summary>
-        public Terminal LaserCorridor(int lasers, string terminalId, float cycleOffset = 0.55f)
+        public Terminal LaserCorridor(int lasers, string terminalId, float cycleOffset = 0.55f, LoreDefinition lore = null)
         {
             Estimate($"Coridor cu {lasers} lasere", 25f + lasers * 6f);
             int width = 5 + lasers * 3 + 2;
@@ -360,6 +376,8 @@ namespace RootAccess.EditorTools
                 so.Require("rewardCredits").intValue = 20;
             });
             Lamp(width * 0.5f, 3.4f, new Color(1f, 0.3f, 0.6f), 0.8f, 5f);
+            // Between the last two beams, clear of the electric floor: grab it in the gap of the cycle.
+            LoreAt(lore, 5.5f + 3f * (lasers - 1) - 1.5f, 0.6f);
             Advance(width);
             return terminal.GetComponent<Terminal>();
         }
@@ -395,7 +413,7 @@ namespace RootAccess.EditorTools
         }
 
         /// <summary>Hall with pillars for the A* drones to path around, plus crates to break line of sight.</summary>
-        public List<GameObject> DroneArena(int drones, string spawnId = null, string reward = null)
+        public List<GameObject> DroneArena(int drones, string spawnId = null, string reward = null, LoreDefinition lore = null)
         {
             Estimate($"Arenă cu {drones} drone", 30f + drones * 10f);
             const int width = 24;
@@ -411,6 +429,7 @@ namespace RootAccess.EditorTools
             for (int i = 0; i < drones; i++)
                 list.Add(Put("Drone", P(9f + i * 7f, 6f + (i % 2)), Enemies, $"Drone_{i + 1}"));
             if (reward != null) Put(reward, P(21.5f));
+            LoreAt(lore, 14.5f, 4.7f);
             Decor(width);
             Advance(width);
             return list;
@@ -475,7 +494,7 @@ namespace RootAccess.EditorTools
         /// Turret hall: an EMP pickup at the entrance, one turret on the floor and one on a ledge, crates for cover. Turrets
         /// see 9 m: leave a corridor (≥ 8 tiles) before the next checkpoint so nobody respawns under fire.
         /// </summary>
-        public LevelLayout TurretHall(int turrets = 2)
+        public LevelLayout TurretHall(int turrets = 2, LoreDefinition lore = null)
         {
             Estimate($"Sală cu {turrets} turele", 30f + turrets * 6f);
             const int width = 22;
@@ -487,6 +506,7 @@ namespace RootAccess.EditorTools
             Put("Crate", P(11f, 0.5f));
             Put("Turret", P(19.5f), Enemies);
             if (turrets > 1) Put("Turret", P(15.5f, 4f), Enemies);
+            LoreAt(lore, 17.5f, 4.7f);
             Decor(width);
             Advance(width);
             return this;
@@ -497,7 +517,7 @@ namespace RootAccess.EditorTools
         /// buoyancy, crates that float). With <paramref name="dive"/> a wall hangs from the ceiling into the water, so the
         /// only way on is to swim under it.
         /// </summary>
-        public WaterBody2D WaterPool(int width, int depth, bool dive = false, int crates = 2)
+        public WaterBody2D WaterPool(int width, int depth, bool dive = false, int crates = 2, LoreDefinition lore = null)
         {
             Estimate(dive ? "Bazin cu scufundare" : "Bazin", dive ? 35f : 22f);
             Fill(_scene.Ground, X, X + width - 1, BaseY, Floor - depth - 1, _theme.Ground);
@@ -506,6 +526,7 @@ namespace RootAccess.EditorTools
             WaterBody2D water = Water(X + width * 0.5f, Floor - depth, width, depth - 0.5f);
             for (int i = 0; i < crates; i++) Put("Crate", P(2f + i * (width - 4f) / Mathf.Max(1, crates - 1), 0.5f));
             if (dive) Wall(width / 2 - 1, width / 2 + 1, -2, Indoor ? Ceiling : 8);
+            LoreAt(lore, width * 0.3f, -depth + 0.7f);
             Advance(width);
             Block(0, 2);
             Advance(2);
@@ -517,7 +538,7 @@ namespace RootAccess.EditorTools
         /// floods the shaft until the surface sits just under the ledge; swim up and jump out. The floor stays raised
         /// afterwards. A step inside the shaft lets the player climb back out before flooding it.
         /// </summary>
-        public FloodControl FloodShaft(string terminalId, string spawnId = null, int shaftDepth = 6, int ledge = 6)
+        public FloodControl FloodShaft(string terminalId, string spawnId = null, int shaftDepth = 6, int ledge = 6, LoreDefinition lore = null)
         {
             Estimate("Puț cu stavilă", 60f);
             const int width = 10;
@@ -528,6 +549,8 @@ namespace RootAccess.EditorTools
             if (Indoor) Shell(0, width, Floor + ledge);
             if (Indoor) Fill(_scene.Backdrop, X, X + width - 1, Floor - shaftDepth, Floor + ledge - 1, _theme.Back);
             Platform(1, 3, -3);
+            // On the step inside the dry shaft: grab it before flooding, then climb back out.
+            LoreAt(lore, 2f, -2.3f);
             WaterBody2D water = Water(X + width * 0.5f, Floor - shaftDepth, width, 1f);
             var control = PrefabFactory.Go("FloodControl", Hazards, Layers.Default, P(width * 0.5f, 0f)).AddComponent<FloodControl>();
             EditorAssetUtil.SetFields(control, so =>
@@ -549,7 +572,7 @@ namespace RootAccess.EditorTools
         /// Chain of server towers over a pit: each tower top has an arrival and a departure node, linked to the next
         /// tower, so the way across is node → node → node; the last tower drops back down to the floor.
         /// </summary>
-        public List<NetworkNode> NodeChain(int towers, string spawnId = null)
+        public List<NetworkNode> NodeChain(int towers, string spawnId = null, LoreDefinition lore = null)
         {
             Estimate($"Lanț de {towers} turnuri cu noduri", 12f + towers * 14f);
             int[] heights = { 6, 9, 7, 10 };
@@ -577,6 +600,7 @@ namespace RootAccess.EditorTools
                 nodes.Add(arrival.GetComponent<NetworkNode>());
                 if (i % 2 == 0) Put("ServerRack", P(3f));
                 Put("Pickup_Credits", P(3f, 0f));
+                if (i == towers - 1) LoreAt(lore, 2f, 0.7f);
                 if (i < towers - 1) departure = Put("NetworkNode", P(4.8f), Props, $"NetworkNode_Chain_{i + 1}b");
                 Advance(6);
             }
@@ -585,6 +609,22 @@ namespace RootAccess.EditorTools
             Block(0, 4);
             Advance(4);
             return nodes;
+        }
+
+        /// <summary>
+        /// Ventilation duct: a wall mass leaves a one-tile gap at floor level, too low to walk through standing (1.3 m);
+        /// crouch (0.78 m) to crawl under it, silently. Optionally a data log waits halfway through.
+        /// </summary>
+        public LevelLayout VentDuct(int length = 8, string hint = null, LoreDefinition lore = null)
+        {
+            Estimate("Tub de ventilație", 10f + length * 1.2f);
+            int width = length + 6;
+            Block(0, width);
+            Wall(3, 3 + length, 1, Indoor ? Ceiling : OutdoorHeadroom);
+            if (hint != null) Hint(hint, 1.5f, 3.4f, 9f);
+            LoreAt(lore, 3f + length * 0.5f, 0.5f);
+            Advance(width);
+            return this;
         }
 
         /// <summary>Interior shell between explicit rows (used where neighbouring floors differ, e.g. the node towers).</summary>

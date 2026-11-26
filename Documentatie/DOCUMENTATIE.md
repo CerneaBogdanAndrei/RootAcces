@@ -8,7 +8,7 @@ Joc 2D side-scrolling de tip **stealth-platformer** într-un oraș cyberpunk, re
 | **Gen** | stealth-platformer 2D cu hacking, single-player + co-op asimetric pentru doi jucători |
 | **Motor** | Unity 6000.3.29f1 (6.3 LTS), Universal Render Pipeline 2D, Input System, Cinemachine 3, Timeline, 2D Animation, Netcode for GameObjects |
 | **Platformă** | Windows x64; tastatură + mouse sau gamepad |
-| **Durată** | Ascunzătoarea + 5 niveluri + cutscene-uri, aproximativ 52 de minute la prima trecere (estimare, vezi §11) |
+| **Durată** | Ascunzătoarea + 5 niveluri + cutscene-uri, aproximativ 54 de minute la prima trecere (estimare, vezi §11), plus căutarea celor 15 jurnale de date |
 | **Limbă** | interfața, dialogurile și documentația sunt în română |
 | **Autor** | Cernea Bogdan-Andrei |
 | **Cod sursă** | https://github.com/CerneaBogdanAndrei/RootAcces (tag `v1.0`) |
@@ -119,12 +119,28 @@ Bază între misiuni, cu un briefing la intrare și cinci console:
 
 ### Terminalul personal (Tab)
 
-Oprește timpul și are tab-urile **Inventar**, **Abilități**, **Misiuni**, plus **Magazin**, **Contracte** sau
-**Călătorie** când e deschis de la o consolă din Hub.
+Oprește timpul și are tab-urile **Inventar**, **Abilități**, **Misiuni**, **Jurnale**, plus **Magazin**, **Contracte**
+sau **Călătorie** când e deschis de la o consolă din Hub.
 
 | ![Inventar](screenshots/04-terminal-inventar.png) | ![Abilități](screenshots/05-terminal-abilitati.png) |
 |---|---|
 | ![Magazin](screenshots/06-terminal-magazin.png) | ![Misiuni](screenshots/08-terminal-misiuni.png) |
+
+### Jurnale de date
+
+Fiecare nivel ascunde **3 jurnale de date** (15 în total), în locuri la care ajungi doar dacă ieși de pe drumul
+principal: în vârful zidului din hornul de wall-jump, pe capătul pasarelei de deasupra gardianului, pe stâlpul din arena
+dronelor, lângă tureta de pe margine, între ultimele două lasere, pe fundul bazinelor, pe treapta din puțul stavilei sau
+la jumătatea unui tub de ventilație. Împreună spun povestea Halden Systems: Proiectul OCHI (camerele din tot orașul),
+inginerul L. Varga care a scos primul fragment și contul root lăsat ca ușă din spate.
+
+- Un jurnal găsit dă **25 de credite și 20 XP** și apare în tab-ul **Jurnale**, unde se poate citi. Jurnalele lipsă
+  arată doar nivelul în care sunt ascunse.
+- Jurnalele rămân găsite în salvare; când revii într-un nivel, apar doar cele pe care nu le-ai luat încă.
+- Contractul **Arhivarul** (avizierul din Hub) cere 10 jurnale și plătește 500 de credite și 250 XP. Jurnalele găsite
+  înainte să accepți contractul se numără.
+
+![Tab-ul Jurnale](screenshots/40-terminal-jurnale.png)
 
 ### Progresie și salvare
 
@@ -133,7 +149,7 @@ Oprește timpul și are tab-urile **Inventar**, **Abilități**, **Misiuni**, pl
 - **Recompense:** credite (magazin) și XP (abilități), din misiuni, terminale sparte și pickup-uri.
 - **Salvare** automată la checkpoint-uri, la ieșirea din nivel și înainte de călătorie (JSON versionat în
   `%USERPROFILE%\AppData\LocalLow\CerneaBogdanAndrei\Root Access\Saves`). Se salvează: scena, checkpoint-ul, creditele, XP-ul, abilitățile,
-  inventarul, misiunile, nivelurile deblocate, terminalele sparte și **cel mai bun timp pe fiecare nivel**.
+  inventarul, misiunile, nivelurile deblocate, terminalele sparte, jurnalele găsite și **cel mai bun timp pe fiecare nivel**.
 - **Ecranul „Misiune îndeplinită”** arată timpul petrecut în nivel, recordul, timpul total, creditele, XP-ul și
   nivelul de urmărire.
 
@@ -156,13 +172,14 @@ de la stânga la dreapta. Fiecare segment își face propria podea, așa că ord
 | Sala cu turele | turele care trag; te adăpostești după lăzi sau folosești EMP-ul |
 | Bazin / scufundare | înot, lăzi care plutesc, ziduri coborâte în apă sub care treci pe dedesubt |
 | Puțul cu stavilă | spargi stavila, apa umple puțul și te ridică până la marginea care altfel e prea sus |
+| Tub de ventilație | o trecere înaltă de un singur tile: o traversezi doar ghemuit (Ctrl), fără zgomot |
 | Checkpoint / ieșire | salvare și reapariție / finalul nivelului |
 
 ### Nivelul 1: Acoperișuri și parc (tutorial, exterior)
 
 Start cu indicații de control și dialogul Operatorului, parc pe acoperiș (copaci cu oase legănați de vânt, iarbă care
 se îndoaie în jurul jucătorului), patru gropi între clădiri, hornul de wall-jump, primul gardian (cu pasarelă pe
-deasupra), poarta de securitate cu ușa din misiune, tunelul cu lasere și podea electrică, turnul urcat prin noduri de
+deasupra), poarta de securitate cu ușa din misiune, tunelul cu lasere și podea electrică, tubul de ventilație, turnul urcat prin noduri de
 rețea (cu fragmentul de date pe acoperiș), arena cu două drone și ultimele gropi până la extracție. Ploaie, skybox de noapte
 și parallax.
 
@@ -381,31 +398,35 @@ cu ×1,25 pentru morți și reîncercări.
 
 | Parte | Estimare (min) |
 |---|---|
-| Nivelul 1: Acoperișuri și parc | 7,7 |
-| Nivelul 2: Turnul de birouri | 9,5 |
-| Nivelul 3: Ferma de servere | 9,3 |
-| Nivelul 4: Canalizarea | 8,9 |
-| Nivelul 5: Sediul corporației | 11,2 |
+| Nivelul 1: Acoperișuri și parc | 8,1 |
+| Nivelul 2: Turnul de birouri | 9,9 |
+| Nivelul 3: Ferma de servere | 9,8 |
+| Nivelul 4: Canalizarea | 9,3 |
+| Nivelul 5: Sediul corporației | 11,6 |
 | Ascunzătoarea (5 vizite) | 3,3 |
 | Cutscene-uri și dialoguri | 1,8 |
-| **Total** | **≈ 52** |
+| **Total** | **≈ 54** |
+
+Căutarea celor 15 jurnale de date nu intră în estimare: e timp în plus pentru cine explorează.
 
 Ținta din cerințe e de cel puțin 30 de minute. Timpul real al fiecărui nivel apare pe ecranul „Misiune îndeplinită” și
 rămâne în salvare, așa că o trecere cronometrată confirmă estimarea.
 
 ## 12. Testare și calitate
 
-- **114 teste EditMode**:
+- **120 de teste EditMode**:
   - A*, inventar, urmărire, portofel, magazin, abilități;
   - misiuni (inclusiv lanțul principal), salvare/încărcare cu migrări și timpii pe nivel;
-  - minijocurile de hacking, regula de auz, modelul și codec-ul Operatorului, EventBus, ServiceLocator, FSM.
-- **38 de teste PlayMode**:
+  - minijocurile de hacking, regula de auz, modelul și codec-ul Operatorului, EventBus, ServiceLocator, FSM;
+  - arhiva de jurnale (găsire o singură dată, salvare, salvări vechi fără jurnale, contractul care numără retroactiv).
+- **40 de teste PlayMode**:
   - fiecare scenă pornește fără erori, cu jucătorul pe podea;
   - fluxul complet de acceptare: meniu → intro → Hub → Nivelul 1 → hack → ușă → teleport → dronă → pauză → volum → meniu → showcase;
   - toate cele trei minijocuri prin overlay-ul real, terminalul personal și magazinul;
   - ieșirile nivelurilor 1–5 cu deblocare, tab-ul Călătorie;
   - gardianul care aude, patrulează și răspunde la alarmă;
   - stavila care inundă puțul;
+  - câte 3 jurnale distincte în fiecare nivel; un jurnal atins se înregistrează, apare în tab și nu mai apare la revenire;
   - cutscene-urile (track-uri și skip), copacii cu oase (deformarea mesh-ului);
   - co-op-ul local (ușă, cameră, gardian, ecran împărțit) și gazda LAN.
 
@@ -439,7 +460,7 @@ Pentru Google Drive se urcă cele două arhive din `dist/`:
 
 - **Grafica e generată din cod.** Pachetele de artă externe rămân opționale: se importă în `Assets/ThirdParty` și se
   leagă în generatoare (vezi ASSETS.md).
-- **Durata de joc e o estimare** (~52 de minute). O trecere completă cronometrată o confirmă; timpii se văd în joc.
+- **Durata de joc e o estimare** (~54 de minute). O trecere completă cronometrată o confirmă; timpii se văd în joc.
 - **Co-op-ul LAN** e testat automat pe același PC (127.0.0.1). Pe două PC-uri, firewall-ul Windows trebuie să permită
   `RootAccess.exe` (portul 7777) la prima pornire a gazdei. Nu există join prin internet (Relay).
 - **Echilibrarea** (dificultatea terminalelor, costurile Operatorului, numărul de gardieni) poate fi ajustată după
@@ -462,4 +483,5 @@ Toate capturile sunt în `Documentatie/screenshots` și se regenerează cu `./sc
 | `28`, `29` `nivel3-*` · `30`, `31` `nivel4-*` · `32`, `33` `nivel5-*` | nivelurile 3–5 |
 | `34`–`36` `cutscene-*` | intro și final |
 | `37-meniu-coop`, `38-coop-ecran-impartit`, `39-coop-lan-operator` | co-op |
+| `40-terminal-jurnale`, `41-nivel1-ventilatie` | tab-ul Jurnale, tubul de ventilație din nivelul 1 |
 | `barem-camera-01`…`14` | camerele scenei Prezentare barem |

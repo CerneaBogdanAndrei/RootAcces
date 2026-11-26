@@ -23,6 +23,7 @@ namespace RootAccess.Systems
             Trace = new TraceMeter(traceSettings);
             Skills = new SkillTree();
             Quests = new QuestLog();
+            Lore = new LoreArchive();
         }
 
         public Inventory Inventory { get; }
@@ -30,6 +31,7 @@ namespace RootAccess.Systems
         public TraceMeter Trace { get; }
         public SkillTree Skills { get; }
         public QuestLog Quests { get; }
+        public LoreArchive Lore { get; }
 
         public string SceneName { get; set; }
         public string CheckpointId { get; private set; }
@@ -87,7 +89,8 @@ namespace RootAccess.Systems
                 quests = Quests.ToData(),
                 unlockedLevels = new List<string>(_unlockedLevels),
                 hackedTerminals = new List<string>(_hackedTerminals),
-                levelTimes = LevelTimesData()
+                levelTimes = LevelTimesData(),
+                loreLogs = Lore.ToData()
             };
         }
 
@@ -119,6 +122,7 @@ namespace RootAccess.Systems
             if (data.levelTimes != null)
                 foreach (LevelTimeData entry in data.levelTimes)
                     RecordLevelTime(entry.levelId, entry.seconds);
+            Lore.LoadFrom(data.loreLogs);
             Trace.ResetMeter();
         }
     }

@@ -74,10 +74,10 @@ Clean-machine order: `ProjectSetup.Run` → `-importPackage "<ugui>/Package Reso
 
 Player automation switches (handled by `Core/Dev/CommandLineAutomation.cs`): `-ra-scene <Scene> -ra-spawn <id>
 -ra-newgame -ra-screenshot <png> -ra-screenshot-delay <s> -ra-quit-after <s> -ra-interact <ObjectName>
--ra-command inventory,skills,quests,pause,rubric,settings,gameover,coop,operator-act -ra-coop local|host|join
+-ra-command inventory,skills,quests,lore,pause,rubric,settings,gameover,coop,operator-act -ra-coop local|host|join
 -ra-coop-address <ip> -ra-default-settings` (in-memory settings: scripts
 must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses them to photograph every screen. Spawn ids: `hub_center`, `l1_start`,
-`l1_park`, `l1_movement`, `l1_security`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
+`l1_park`, `l1_movement`, `l1_security`, `l1_vent`, `l1_nodes`, `l1_drone`, `l2_start`, `l2_security`, `l2_elevator`, `l2_upper`,
 `l2_vault`, `l3_start`, `l3_drones`, `l3_nodes`, `l3_core`, `l4_start`, `l4_water`, `l4_sluice`, `l4_gate`, `l5_start`,
 `l5_security`, `l5_elevator`, `l5_drones`, `l5_nodes`, `showcase_start`, `room_01`..`room_14`. Cutscene scenes `Intro`
 (New Game → Intro → Hub) and `Finale` (Level 5 exit → Finale → Credits) are built by `Editor/Generation/CutsceneFactory.cs`. Levels are composed from `Editor/Generation/LevelLayout.cs` segments; each level has a `LevelTheme`
@@ -113,9 +113,9 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 ## Testing
 
-- EditMode (`Tests/EditMode`, 114 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
-  SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet.
-- PlayMode (`Tests/PlayMode`, 38 tests; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
+- EditMode (`Tests/EditMode`, 120 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
+  SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet, LoreArchive.
+- PlayMode (`Tests/PlayMode`, 40 tests; `LoreLogTests` check 3 distinct data logs per level; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
   teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
   Wire Connect through the real overlay (camera disabled, data shard + credits awarded).
