@@ -18,7 +18,8 @@
         "Unity.Cinemachine",
         "Unity.2D.Animation.Runtime",
         "RootAccess.Net",
-        "Unity.Netcode.Runtime"
+        "Unity.Netcode.Runtime",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

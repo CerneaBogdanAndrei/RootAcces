@@ -33,6 +33,8 @@ namespace RootAccess.Core
             ISettingsStore store = CommandLineAutomation.UsesDefaultSettings ? new MemorySettingsStore() : new PlayerPrefsSettingsStore();
             Settings = new SettingsService(store);
             Settings.Load();
+            if (CommandLineAutomation.LanguageOverride is Language language) Settings.Current.language = (int)language;
+            Settings.ApplyLanguage();
             Settings.ApplyDisplay(!CommandLineAutomation.OverridesScreenMode);
             ServiceLocator.Register(Settings);
         }

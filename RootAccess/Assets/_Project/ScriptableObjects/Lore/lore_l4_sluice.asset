@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "Halden a cump\u0103rat \u0219i canalizarea. Oficial, pentru cabluri. Neoficial,
     ca nimeni s\u0103 nu mai coboare aici. Stavila 3 se deschide doar din terminal;
     apa urc\u0103 repede, a\u0219a c\u0103 nu sta \xEEn pu\u021B c\xE2nd o porne\u0219ti."
+  titleEn: 'Maintenance log: sluice 3'
+  bodyEn: Halden bought the sewers too. Officially, for the cables. Unofficially,
+    so nobody comes down here any more. Sluice 3 only opens from the terminal; the
+    water rises fast, so don't stand in the shaft when you start it.
   levelId: level04
   order: 9

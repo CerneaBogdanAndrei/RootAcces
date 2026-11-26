@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: "Pa\u0219i silen\u021Bio\u0219i"
   description: "T\u0103lpi amortizate: pa\u0219ii t\u0103i se aud de trei ori mai
     \xEEncet."
+  displayNameEn: Silent Steps
+  descriptionEn: 'Padded soles: your footsteps are three times quieter.'
   branch: 0
   xpCost: 100
   effect: 2

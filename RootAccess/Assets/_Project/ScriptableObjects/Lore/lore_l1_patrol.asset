@@ -18,5 +18,9 @@ MonoBehaviour:
     Halden pl\u0103te\u0219te dublu pentru tura de noapte \u0219i nimeni nu \xEEntreab\u0103
     de ce. Regula e simpl\u0103: dac\u0103 vezi pe cineva cu glug\u0103, raportezi
     \xEEnt\xE2i, g\xE2nde\u0219ti dup\u0103."
+  titleEn: Patrol log #114
+  bodyEn: 'The Sector 7 rooftops are ours after midnight. Halden pays double for
+    the night shift and nobody asks why. The rule is simple: if you see someone in
+    a hood, report first, think later.'
   levelId: level01
   order: 0

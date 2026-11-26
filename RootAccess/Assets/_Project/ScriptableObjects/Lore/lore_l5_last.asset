@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "Dac\u0103 ai ajuns la mainframe, termin\u0103 ce am \xEEnceput eu. Nu vinde
     datele, nu le \u0219terge. D\u0103-le \xEEnapoi oamenilor c\u0103rora le apar\u021Bin.
     \u0218i, te rog, schimb\u0103 cheia de sincronizare. Mi-e ru\u0219ine de ea."
+  titleEn: L. Varga's last message
+  bodyEn: If you made it to the mainframe, finish what I started. Don't sell the
+    data, don't delete it. Give it back to the people it belongs to. And please,
+    change the sync key. I'm ashamed of it.
   levelId: level05
   order: 14

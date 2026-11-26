@@ -47,6 +47,7 @@ namespace RootAccess.EditorTools
         {
             EditorAssetUtil.RunBatchStep("SceneBuilder", () =>
             {
+                Translations.UseSourceLanguage();
                 var ctx = new BuildContext();
                 PlaytimeReport.Clear();
                 AssetFactory.BuildAll(ctx);
@@ -159,6 +160,7 @@ namespace RootAccess.EditorTools
             label.rectTransform.sizeDelta = new Vector2(width, 4f);
             label.textWrappingMode = TextWrappingModes.Normal;
             go.GetComponent<MeshRenderer>().sortingLayerName = SortingLayers.Foreground;
+            UIFactory.Localize(label);
             return label;
         }
 

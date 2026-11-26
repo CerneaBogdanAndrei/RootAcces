@@ -1,4 +1,5 @@
 using System;
+using RootAccess.Core;
 using UnityEngine;
 
 namespace RootAccess.Systems
@@ -16,6 +17,7 @@ namespace RootAccess.Systems
     {
         [SerializeField] private string objectiveId;
         [SerializeField] private string description;
+        [SerializeField] private string descriptionEn;
         [SerializeField] private ObjectiveType type;
         [SerializeField, Tooltip("Location id, terminal id or item id depending on the objective type.")]
         private string targetId;
@@ -34,11 +36,17 @@ namespace RootAccess.Systems
         }
 
         public string ObjectiveId => objectiveId;
-        public string Description => description;
+        public string Description => Loc.T(description, descriptionEn);
         public ObjectiveType Type => type;
         public string TargetId => targetId;
         public int RequiredCount => requiredCount;
         public bool Optional => optional;
+
+        /// <summary>The Romanian text as authored (the generators look up its English twin from it).</summary>
+        public string SourceDescription => description;
+
+        /// <summary>English objective text, shown when the game language is English.</summary>
+        public void SetEnglish(string text) => descriptionEn = text;
     }
 
     [CreateAssetMenu(menuName = "Root Access/Quest Definition", fileName = "Quest_")]
@@ -47,6 +55,8 @@ namespace RootAccess.Systems
         [SerializeField] private string questId;
         [SerializeField] private string title;
         [SerializeField, TextArea] private string description;
+        [SerializeField] private string titleEn;
+        [SerializeField, TextArea] private string descriptionEn;
         [SerializeField] private bool isMainStory;
         [SerializeField] private ObjectiveDefinition[] objectives = new ObjectiveDefinition[0];
         [SerializeField, Min(0)] private int rewardCredits;
@@ -55,8 +65,8 @@ namespace RootAccess.Systems
         private QuestDefinition followUpQuest;
 
         public string QuestId => questId;
-        public string Title => title;
-        public string Description => description;
+        public string Title => Loc.T(title, titleEn);
+        public string Description => Loc.T(description, descriptionEn);
         public bool IsMainStory => isMainStory;
         public ObjectiveDefinition[] Objectives => objectives;
         public int RewardCredits => rewardCredits;
@@ -73,6 +83,13 @@ namespace RootAccess.Systems
             rewardCredits = credits;
             rewardXp = xp;
             objectives = questObjectives ?? new ObjectiveDefinition[0];
+        }
+
+        /// <summary>English title and description, shown when the game language is English.</summary>
+        public void SetEnglish(string questTitle, string desc)
+        {
+            titleEn = questTitle;
+            descriptionEn = desc;
         }
 
         /// <summary>Chains this quest to the next one; null ends the chain.</summary>

@@ -54,7 +54,7 @@ namespace RootAccess.EditorTools
 
             Directory.CreateDirectory(Path.GetDirectoryName(ReportPath) ?? "Logs");
             File.WriteAllText(ReportPath, md.ToString(), new UTF8Encoding(false));
-            EditorAssetUtil.Log($"Playtime estimate: {TotalSeconds / 60f:0.0} min (Hub + 5 levels + cutscenes) -> {ReportPath}");
+            EditorAssetUtil.Log($"Playtime estimate: {TotalSeconds / 60f:0.0} min (Hub + 6 levels + cutscenes) -> {ReportPath}");
         }
     }
 }

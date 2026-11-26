@@ -38,6 +38,13 @@ namespace RootAccess.Core
         public SettingsChanged(GameSettings settings) => Settings = settings;
     }
 
+    /// <summary>The player switched the game language: labels and open screens redraw their text.</summary>
+    public readonly struct LanguageChanged : IEvent
+    {
+        public readonly Language Language;
+        public LanguageChanged(Language language) => Language = language;
+    }
+
     public readonly struct PlayerHealthChanged : IEvent
     {
         public readonly int Current;

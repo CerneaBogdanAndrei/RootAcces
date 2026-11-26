@@ -18,68 +18,110 @@ MonoBehaviour:
       coyote time, buffer, dublu salt, dash, wall-jump, ghemuire, \xEEnot."
     sceneName: Level01_Rooftops
     spawnId: l1_movement
+    titleEn: 1. Movement / jumping
+    summaryEn: 'Rigidbody2D controller: acceleration, variable jump, coyote time,
+      buffering, double jump, dash, wall jump, crouching, swimming.'
   - title: 2. Materiale / texturi
     summary: "Materiale pe suprafe\u021Be (metal, sticl\u0103, neon, beton), shadere
       dizolvare/hologram\u0103/neon, normal maps."
     sceneName: RubricShowcase
     spawnId: room_02
+    titleEn: 2. Materials / textures
+    summaryEn: Surface materials (metal, glass, neon, concrete), dissolve/hologram/neon
+      shaders, normal maps.
   - title: "3. Mediu: copaci / iarb\u0103"
     summary: "Copaci cu oase (SpriteSkin) leg\u0103na\u021Bi de v\xE2nt \u0219i iarb\u0103
       cu shader care se \xEEndoaie l\xE2ng\u0103 juc\u0103tor."
     sceneName: Level01_Rooftops
     spawnId: l1_park
+    titleEn: '3. Environment: trees / grass'
+    summaryEn: Boned trees (SpriteSkin) swaying in the wind and shader grass that
+      bends around the player.
   - title: "4. Ap\u0103 / skybox"
     summary: "Ap\u0103 cu arcuri dinamice \u0219i refrac\u021Bie (Shader Graph),
       plutire, \xEEnot, stavil\u0103 care inund\u0103 pu\u021Bul; skybox de noapte."
     sceneName: Level04_Sewers
     spawnId: l4_water
+    titleEn: 4. Water / skybox
+    summaryEn: Water with dynamic springs and refraction (Shader Graph), buoyancy,
+      swimming, a sluice that floods the shaft; night skybox.
   - title: "5. Lumini / camer\u0103"
     summary: "Lumini 2D Global/Point/Spot/Freeform, neon p\xE2lp\xE2itor, umbre,
       Cinemachine cu confiner \u0219i shake."
     sceneName: Hub
     spawnId: hub_center
+    titleEn: 5. Lights / camera
+    summaryEn: 2D Global/Point/Spot/Freeform lights, flickering neon, shadows, Cinemachine
+      with confiner and shake.
   - title: 6. Prefab-uri
     summary: "Prefab-uri \u0219i variante (Guard_Heavy/Sniper, Terminal_Door/Camera/Data),
       obiecte din pool."
     sceneName: RubricShowcase
     spawnId: room_06
+    titleEn: 6. Prefabs
+    summaryEn: Prefabs and variants (Guard_Heavy/Sniper, Terminal_Door/Camera/Data),
+      pooled objects.
   - title: 7. Particule / teleportare
     summary: "Particule (sc\xE2ntei, ploaie, abur, date, praf, stropi) \u0219i teleportare
       prin noduri de re\u021Bea."
     sceneName: Level01_Rooftops
     spawnId: l1_nodes
+    titleEn: 7. Particles / teleporting
+    summaryEn: Particles (sparks, rain, steam, data, dust, splashes) and teleporting
+      through network nodes.
   - title: 8. Meniu
-    summary: "Meniu principal, set\u0103ri cu rebinding, pauz\u0103, game over, nivel
-      complet, loading asincron."
+    summary: "Meniu principal, limb\u0103 rom\xE2n\u0103/englez\u0103, set\u0103ri
+      cu rebinding, pauz\u0103, game over, nivel complet, loading asincron."
     sceneName: MainMenu
     spawnId: 
+    titleEn: 8. Menu
+    summaryEn: Main menu, Romanian/English language, settings with rebinding, pause,
+      game over, level complete, asynchronous loading.
   - title: 9. Sunet
     summary: "AudioMixer cu snapshot-uri, muzic\u0103 adaptiv\u0103 stealth/alert\u0103,
       pa\u0219i pe suprafe\u021Be, surse din pool."
     sceneName: RubricShowcase
     spawnId: room_09
+    titleEn: 9. Sound
+    summaryEn: AudioMixer with snapshots, adaptive stealth/alert music, per-surface
+      footsteps, pooled sources.
   - title: "10. Anima\u021Bii / Animator"
     summary: "Animator Controllers cu blend trees, Animation Events pentru pa\u0219i
       \u0219i lovituri."
     sceneName: RubricShowcase
     spawnId: room_10
+    titleEn: 10. Animations / Animator
+    summaryEn: Animator Controllers with blend trees, Animation Events for footsteps
+      and hits.
   - title: 11. Coliziuni / triggere
     summary: Matrice de coliziuni, OnCollisionEnter2D (daune, aterizare), triggere,
       raycast-uri.
     sceneName: Level01_Rooftops
     spawnId: l1_security
+    titleEn: 11. Collisions / triggers
+    summaryEn: Collision matrix, OnCollisionEnter2D (damage, landing), triggers,
+      raycasts.
   - title: 12. Scripturi
     summary: "Arhitectur\u0103 pe asmdef-uri, EventBus, A* propriu pentru drone,
       teste EditMode/PlayMode."
     sceneName: Level01_Rooftops
     spawnId: l1_drone
+    titleEn: 12. Scripts
+    summaryEn: Architecture on asmdefs, EventBus, our own A* for drones, EditMode/PlayMode
+      tests.
   - title: 'Bonus: Cinematice'
     summary: "Cutscene-uri Timeline + Cinemachine (intro dup\u0103 Joc nou, final
       dup\u0103 nivelul 6), s\u0103rite cu Enter/Esc."
     sceneName: Intro
     spawnId: 
+    titleEn: 'Bonus: Cinematics'
+    summaryEn: Timeline + Cinemachine cutscenes (intro after New game, finale after
+      level 6), skippable with Enter/Esc.
   - title: 'Bonus: Multiplayer co-op'
     summary: "Co-op asimetric: Infiltrator + Operator (hart\u0103, u\u0219i, camere,
       gardieni), split-screen sau LAN."
     sceneName: MainMenu
     spawnId: 
+    titleEn: 'Bonus: Co-op multiplayer'
+    summaryEn: 'Asymmetric co-op: Infiltrator + Operator (map, doors, cameras, guards),
+      split screen or LAN.'

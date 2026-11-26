@@ -18,5 +18,9 @@ MonoBehaviour:
     \xEEn mai pu\u021Bin de o secund\u0103: panouri, telefoane, televizoare. Oficial,
     pentru anun\u021Buri de urgen\u021B\u0103. Neoficial, n-a fost folosit niciodat\u0103
     pentru o urgen\u021B\u0103."
+  titleEn: 'Spec sheet: the EYE transmitter'
+  bodyEn: 'The transmitter at the top of the antenna takes over any screen in the
+    city in under a second: billboards, phones, TVs. Officially, for emergency announcements.
+    Unofficially, it has never been used for an emergency.'
   levelId: level06
   order: 16

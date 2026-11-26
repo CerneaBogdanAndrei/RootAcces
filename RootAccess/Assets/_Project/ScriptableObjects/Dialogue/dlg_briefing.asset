@@ -17,8 +17,16 @@ MonoBehaviour:
   - speaker: OPERATOR
     text: "Contract nou pe darknet. Laboratorul de pe acoperi\u0219urile Sectorului
       7 \u021Bine ceva pre\u021Bios."
+    speakerEn: OPERATOR
+    textEn: New contract on the darknet. The lab on the Sector 7 rooftops is holding
+      something valuable.
   - speaker: OPERATOR
     text: "Intri, spargi u\u0219a de serviciu, iei fragmentul de date \u0219i ie\u0219i
       f\u0103r\u0103 s\u0103 te vad\u0103 nimeni."
+    speakerEn: OPERATOR
+    textEn: You go in, hack the service door, grab the data shard and get out without
+      anyone seeing you.
   - speaker: TU
     text: "Primit. Pornesc spre acoperi\u0219uri."
+    speakerEn: YOU
+    textEn: Copy that. Heading for the rooftops.

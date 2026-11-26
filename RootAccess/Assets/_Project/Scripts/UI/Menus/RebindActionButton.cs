@@ -16,7 +16,6 @@ namespace RootAccess.UI
         [SerializeField] private string bindingGroup = ControlSchemes.KeyboardMouse;
         [SerializeField] private TMP_Text actionLabel;
         [SerializeField] private TMP_Text bindingLabel;
-        [SerializeField] private string displayName;
 
         private InputReader _input;
         private Button _button;
@@ -27,14 +26,12 @@ namespace RootAccess.UI
         {
             _button = GetComponent<Button>();
             _button.onClick.AddListener(StartRebind);
-            if (actionLabel != null && !string.IsNullOrEmpty(displayName)) actionLabel.text = displayName;
         }
 
         public void Configure(string action, string group, string label)
         {
             actionName = action;
             bindingGroup = group;
-            displayName = label;
             if (actionLabel != null) actionLabel.text = label;
         }
 

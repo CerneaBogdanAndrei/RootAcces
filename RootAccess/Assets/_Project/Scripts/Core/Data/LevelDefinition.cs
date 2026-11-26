@@ -10,13 +10,15 @@ namespace RootAccess.Core
         [SerializeField] private string sceneName;
         [SerializeField] private string displayName;
         [SerializeField, TextArea] private string description;
+        [SerializeField] private string displayNameEn;
+        [SerializeField, TextArea] private string descriptionEn;
         [SerializeField] private bool unlockedByDefault;
         [SerializeField] private int order;
 
         public string LevelId => levelId;
         public string SceneName => sceneName;
-        public string DisplayName => displayName;
-        public string Description => description;
+        public string DisplayName => Loc.T(displayName, displayNameEn);
+        public string Description => Loc.T(description, descriptionEn);
         public bool UnlockedByDefault => unlockedByDefault;
         public int Order => order;
 
@@ -30,5 +32,12 @@ namespace RootAccess.Core
         }
 
         public void SetDescription(string text) => description = text;
+
+        /// <summary>English name and description, shown when the game language is English.</summary>
+        public void SetEnglish(string display, string text)
+        {
+            displayNameEn = display;
+            descriptionEn = text;
+        }
     }
 }

@@ -18,5 +18,9 @@ MonoBehaviour:
     va r\u0103spunde numai mainframe-ului Halden. Cet\u0103\u021Benii nu trebuie
     informa\u021Bi. Comunicatul de pres\u0103 va vorbi despre \u201Esiguran\u021Ba
     comunit\u0103\u021Bii\u201D."
+  titleEn: Board directive
+  bodyEn: "Project EYE enters phase two: every door in the city will answer only
+    to the Halden mainframe. Citizens are not to be informed. The press release will
+    talk about \u201Ccommunity safety\u201D."
   levelId: level05
   order: 12

@@ -16,34 +16,42 @@ MonoBehaviour:
   title: Primul contract
   description: "Un client anonim vrea datele unui laborator de pe acoperi\u0219urile
     Sectorului 7."
+  titleEn: First Contract
+  descriptionEn: An anonymous client wants the data of a lab on the rooftops of Sector
+    7.
   isMainStory: 1
   objectives:
   - objectiveId: reach_l1
     description: "Ajunge pe acoperi\u0219urile din Sectorul 7"
+    descriptionEn: Reach the rooftops of Sector 7
     type: 0
     targetId: level01
     requiredCount: 1
     optional: 0
   - objectiveId: hack_door
     description: "Sparge terminalul u\u0219ii de serviciu"
+    descriptionEn: Hack the service door terminal
     type: 1
     targetId: terminal_l1_door
     requiredCount: 1
     optional: 0
   - objectiveId: collect_shard
     description: "Recupereaz\u0103 fragmentul de date"
+    descriptionEn: Recover the data shard
     type: 2
     targetId: data_shard
     requiredCount: 1
     optional: 0
   - objectiveId: reach_exit
     description: "Ajunge la punctul de extrac\u021Bie"
+    descriptionEn: Reach the extraction point
     type: 0
     targetId: exit_l1
     requiredCount: 1
     optional: 0
   - objectiveId: stealth
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

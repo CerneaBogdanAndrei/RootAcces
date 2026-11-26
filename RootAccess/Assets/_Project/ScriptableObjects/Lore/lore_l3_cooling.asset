@@ -17,5 +17,9 @@ MonoBehaviour:
   body: "Unitatea CRAC-2 cade iar. Peste 40 de grade, dronele trec singure \xEEn
     patrulare agresiv\u0103. Nu te pune \xEEntre ele \u0219i rafturi, nu discuta
     cu ele \u0219i, mai ales, nu le ar\u0103ta ecusonul: \xEEl scaneaz\u0103."
+  titleEn: 'Technician log: cooling'
+  bodyEn: 'CRAC-2 is down again. Above 40 degrees the drones switch to aggressive
+    patrol on their own. Don''t get between them and the racks, don''t argue with
+    them and, above all, don''t show them your badge: they scan it.'
   levelId: level03
   order: 6

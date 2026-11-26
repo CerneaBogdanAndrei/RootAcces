@@ -16,7 +16,14 @@ MonoBehaviour:
   lines:
   - speaker: OPERATOR
     text: "Sediul. Gardieni grei, luneti\u0219ti, turele \u0219i lasere peste tot."
+    speakerEn: OPERATOR
+    textEn: Headquarters. Heavy guards, snipers, turrets and lasers everywhere.
   - speaker: OPERATOR
     text: "Liftul executiv duce la mainframe. Dup\u0103 asta, fugi pe acoperi\u0219."
+    speakerEn: OPERATOR
+    textEn: The executive elevator leads to the mainframe. After that, run for the
+      roof.
   - speaker: TU
     text: "Hai s\u0103 termin\u0103m ce am \xEEnceput."
+    speakerEn: YOU
+    textEn: Let's finish what we started.

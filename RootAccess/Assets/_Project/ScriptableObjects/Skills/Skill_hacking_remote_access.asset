@@ -15,6 +15,8 @@ MonoBehaviour:
   skillId: hacking_remote_access
   displayName: "Acces de la distan\u021B\u0103"
   description: "Po\u021Bi sparge terminalele de la aproximativ 4 metri."
+  displayNameEn: Remote Access
+  descriptionEn: You can hack terminals from about 4 metres away.
   branch: 1
   xpCost: 240
   effect: 6

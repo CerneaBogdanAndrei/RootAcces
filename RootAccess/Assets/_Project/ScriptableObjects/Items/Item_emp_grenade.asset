@@ -16,6 +16,8 @@ MonoBehaviour:
   displayName: "Grenad\u0103 EMP"
   description: "Scurtcircuiteaz\u0103 drone, camere \u0219i turele pentru c\xE2teva
     secunde."
+  displayNameEn: EMP Grenade
+  descriptionEn: Shorts out drones, cameras and turrets for a few seconds.
   category: 2
   icon: {fileID: 21300000, guid: 39ef9859d6e21214b98e1ec08605d3f9, type: 3}
   maxStack: 3

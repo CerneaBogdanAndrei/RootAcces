@@ -18,5 +18,9 @@ MonoBehaviour:
     gratuit include, implicit, consim\u021B\u0103m\xE2ntul pentru analiza comportamental\u0103.
     Dezabonarea se face personal, la sediul central, \xEEntre orele 03:00 \u0219i
     03:05."
+  titleEn: Intercepted advert
+  bodyEn: 'HALDEN CLOUD: your life, saved forever. The free plan includes, by default,
+    consent to behavioural analysis. To unsubscribe, come in person to our headquarters
+    between 03:00 and 03:05.'
   levelId: level01
   order: 2

@@ -18,5 +18,9 @@ MonoBehaviour:
     s\u0103-i spun\u0103 nimeni. Grilajele de pe pasarela de est sunt ruginite p\xE2n\u0103
     la os. Halden a promis c\u0103 le schimb\u0103 trimestrul viitor. Asta a fost
     acum trei ani."
+  titleEn: 'Log: window-cleaning crew'
+  bodyEn: Gondola 2 has been running on its own for a while, back and forth, with
+    nobody telling it to. The grates on the east catwalk are rusted to the bone.
+    Halden promised to replace them next quarter. That was three years ago.
   levelId: level06
   order: 15

@@ -15,6 +15,8 @@ MonoBehaviour:
   itemId: usb_key
   displayName: Cheie USB
   description: "Cheie de acces criptat\u0103. Deschide u\u0219i de serviciu."
+  displayNameEn: USB Key
+  descriptionEn: Encrypted access key. Opens service doors.
   category: 0
   icon: {fileID: 21300000, guid: 802a86a80c38e994d9aac260c1af7ea5, type: 3}
   maxStack: 3

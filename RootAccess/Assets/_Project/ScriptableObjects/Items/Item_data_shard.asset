@@ -15,6 +15,8 @@ MonoBehaviour:
   itemId: data_shard
   displayName: Fragment de date
   description: "Date corporative furate. Se v\xE2nd pe darknet."
+  displayNameEn: Data Shard
+  descriptionEn: Stolen corporate data. Sells well on the darknet.
   category: 3
   icon: {fileID: 21300000, guid: de5bdb9d9479b5b4aa6b0d0d4a0717ea, type: 3}
   maxStack: 10

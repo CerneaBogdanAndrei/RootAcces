@@ -17,5 +17,15 @@ MonoBehaviour:
   body: "Utilizator: root. Motiv: utilizatorul root nu exist\u0103.\nUtilizator:
     root. Motiv: utilizatorul root nu exist\u0103.\nUtilizator: root. Acces permis.\nAvertisment:
     cine a creat contul root?"
+  titleEn: 'System log: access denied'
+  bodyEn: 'User: root. Reason: user root does not exist.
+
+    User: root. Reason:
+    user root does not exist.
+
+    User: root. Access granted.
+
+    Warning: who
+    created the root account?'
   levelId: level03
   order: 7

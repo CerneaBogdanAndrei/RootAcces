@@ -16,28 +16,35 @@ MonoBehaviour:
   title: "Sub ora\u0219"
   description: "Sediul e sigilat. Singura intrare nesupravegheat\u0103 trece prin
     canalizare, pe sub ziduri."
+  titleEn: Under the City
+  descriptionEn: The headquarters is sealed. The only unwatched way in runs through
+    the sewers, under the walls.
   isMainStory: 1
   objectives:
   - objectiveId: reach_l4
     description: "Coboar\u0103 \xEEn canalizare"
+    descriptionEn: Go down into the sewers
     type: 0
     targetId: level04
     requiredCount: 1
     optional: 0
   - objectiveId: hack_sluice
     description: "Deschide stavila \u0219i urc\u0103 pe ap\u0103"
+    descriptionEn: Open the sluice gate and ride the water up
     type: 1
     targetId: l4_sluice
     requiredCount: 1
     optional: 0
   - objectiveId: reach_exit_l4
     description: "Ajunge sub funda\u021Bia sediului"
+    descriptionEn: Reach the foundations of the headquarters
     type: 0
     targetId: exit_l4
     requiredCount: 1
     optional: 0
   - objectiveId: stealth_l4
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

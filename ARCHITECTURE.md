@@ -17,7 +17,8 @@ sunt explicate pe scurt, pentru cine vine din web sau backend.
 - **Conținut generat din cod.** Scenele, prefab-urile, materialele, mixerul și animatorii sunt create de scripturi de
   Editor rulate în batchmode, nu de mână. Așa build-ul e reproductibil, iar diff-urile importante rămân în C#.
 - **Fără valori „magice”.** Layere, tag-uri, ID-uri de scene, parametri de mixer și ID-uri de SFX/VFX stau în
-  `Core/Constants.cs` și `Core/Ids.cs`. Tot textul afișat jucătorului (în română) e în `Core/Strings.cs`.
+  `Core/Constants.cs` și `Core/Ids.cs`. Tot textul afișat jucătorului e în `Core/Strings.cs` (interfața) și în
+  `Editor/Generation/SeedContent.cs` (conținutul scris în asset-uri), în română și engleză (vezi secțiunea despre limbă).
 
 ## 2. Module și assembly definitions
 
@@ -100,7 +101,7 @@ Toate evenimentele sunt `readonly struct : IEvent`, definite în `Core/Events/*.
 
 | Domeniu | Evenimente |
 |---|---|
-| Scene / stare | `SceneLoadStarted`, `SceneLoadProgress`, `SceneLoadCompleted`, `GameStateChanged`, `SettingsChanged`, `LevelCompleted` |
+| Scene / stare | `SceneLoadStarted`, `SceneLoadProgress`, `SceneLoadCompleted`, `GameStateChanged`, `SettingsChanged`, `LanguageChanged`, `LevelCompleted` |
 | Jucător | `PlayerHealthChanged`, `PlayerDied`, `PlayerRespawnRequested`, `PlayerRespawned`, `PlayerHiddenChanged`, `CheckpointReached`, `InteractionPromptChanged` |
 | Stealth | `TraceNoise`, `TraceChanged`, `TraceLevelChanged`, `AlarmRaised`, `PlayerNoise` |
 | Hacking | `HackRequested`, `HackSessionStarted`, `HackResolved`, `HackSessionEnded` |
@@ -189,8 +190,24 @@ raza EMP). Hacking-ul nu depinde de Systems, așa că efectele de spargere sunt 
   `RegisterMigration(vechi, json => jsonNou)`. Un fișier mai vechi trece prin migrări în lanț. Unul mai nou sau fără
   migrare întoarce `VersionMismatch`, iar unul corupt întoarce `Corrupted`. Toate cazurile au teste EditMode.
 - Salvarea reține doar ID-uri (iteme, quest-uri, skill-uri). La încărcare, `GameDatabase` le rezolvă în ScriptableObject-uri.
-- Setările (volum, rezoluție, fullscreen, VSync, rebind-uri ca JSON) se salvează separat, în `PlayerPrefs`, prin
+- Setările (limbă, volum, rezoluție, fullscreen, VSync, rebind-uri ca JSON) se salvează separat, în `PlayerPrefs`, prin
   `SettingsService` și interfața `ISettingsStore`, care în teste e înlocuită cu una în memorie.
+
+### Limba (română / engleză)
+
+- `Core/Localization/Loc.cs` ține limba curentă. `Loc.T(ro, en)` alege textul; `Loc.Set` schimbă limba și publică
+  `LanguageChanged`. `SettingsService.SetLanguage` o salvează (`GameSettings.language`), iar `GameManager` o aplică la
+  pornire (sau `-ra-language en` din linia de comandă).
+- `Strings` și `SeedContent` sunt proprietăți `=> T("română", "English")`: codul citește `Strings.Menu.NewGame` ca
+  înainte și primește textul în limba curentă. Româna rămâne limba sursă.
+- Conținutul din asset-uri (iteme, abilități, misiuni și obiective, jurnale, dialoguri, niveluri, barem) are câmpuri
+  gemene (`displayName` / `displayNameEn`...), iar getter-ele aleg după limbă. Generatoarele le completează prin
+  `Translations.English(textRomânesc)`, care caută în `TextCatalog` (toate proprietățile din `Strings` și `SeedContent`,
+  citite în ambele limbi prin reflecție) și opresc generarea dacă un text n-are traducere.
+- Textele fixe din prefab-uri și scene (butoane, titluri, indicii din niveluri, subtitrări) primesc la generare un
+  `UI/Common/LocalizedLabel` cu ambele variante. El schimbă textul la `LanguageChanged` doar cât timp eticheta arată
+  încă una dintre cele două variante; dacă un ecran a scris altceva acolo (un contor, un nume de misiune), îl lasă în pace.
+  Ecranele care compun text (HUD, meniul principal, panoul F1) îl redesenează singure.
 
 ## 7. Randare
 

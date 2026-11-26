@@ -16,28 +16,35 @@ MonoBehaviour:
   title: Ferma de servere
   description: "Seiful Halden trimitea totul c\u0103tre ferma de servere a corpora\u021Biei.
     Acolo e cheia de acces la sediu."
+  titleEn: The Server Farm
+  descriptionEn: The Halden vault sent everything to the corporation's server farm.
+    The key to the headquarters is there.
   isMainStory: 1
   objectives:
   - objectiveId: reach_l3
     description: "Intr\u0103 \xEEn ferma de servere"
+    descriptionEn: Get into the server farm
     type: 0
     targetId: level03
     requiredCount: 1
     optional: 0
   - objectiveId: hack_core
     description: Sparge nucleul de servere
+    descriptionEn: Hack the server core
     type: 1
     targetId: l3_core
     requiredCount: 1
     optional: 0
   - objectiveId: reach_exit_l3
     description: "Ie\u0219i prin tunelul de r\u0103cire"
+    descriptionEn: Leave through the cooling tunnel
     type: 0
     targetId: exit_l3
     requiredCount: 1
     optional: 0
   - objectiveId: stealth_l3
     description: "Bonus: nu declan\u0219a alarma"
+    descriptionEn: 'Bonus: don''t trigger the alarm'
     type: 3
     targetId: 
     requiredCount: 1

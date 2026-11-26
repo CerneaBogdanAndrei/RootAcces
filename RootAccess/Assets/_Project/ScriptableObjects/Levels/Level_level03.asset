@@ -17,5 +17,8 @@ MonoBehaviour:
   displayName: Ferma de servere
   description: "Ferma de servere a corpora\u021Biei: roiuri de drone \u0219i lan\u021Buri
     de noduri de re\u021Bea."
+  displayNameEn: The Server Farm
+  descriptionEn: 'The corporation''s server farm: drone swarms and chains of network
+    nodes.'
   unlockedByDefault: 0
   order: 3

@@ -18,5 +18,9 @@ MonoBehaviour:
     cl\u0103dire. Halden nu stocheaz\u0103 date, le vinde. Fiecare camer\u0103 din
     ora\u0219 trimite imagini c\u0103tre ferma lor de servere, iar fiecare imagine
     are un pre\u021B."
+  titleEn: 'Deleted message: L. Varga'
+  bodyEn: If you are reading this, I managed to get the shard out of the building.
+    Halden doesn't store data, it sells it. Every camera in the city sends footage
+    to their server farm, and every frame has a price.
   levelId: level01
   order: 1

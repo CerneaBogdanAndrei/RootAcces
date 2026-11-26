@@ -16,6 +16,10 @@ namespace RootAccess.Core
         public bool fullscreen = true;
         public bool vSync = true;
         public string bindingOverridesJson = string.Empty;
+        /// <summary><see cref="Language"/> as an int (JSON); settings saved before the switch existed read as Romanian.</summary>
+        public int language;
+
+        public Language Language => System.Enum.IsDefined(typeof(Language), language) ? (Language)language : Language.Romanian;
 
         public GameSettings Clone() => (GameSettings)MemberwiseClone();
 
@@ -132,6 +136,17 @@ namespace RootAccess.Core
             ApplyDisplay();
             NotifyChanged();
         }
+
+        /// <summary>Switches the game language (labels and open screens redraw at once) and remembers it.</summary>
+        public void SetLanguage(Language value)
+        {
+            Current.language = (int)value;
+            ApplyLanguage();
+            NotifyChanged();
+        }
+
+        /// <summary>Makes the stored language the current one (after <see cref="Load"/>).</summary>
+        public void ApplyLanguage() => Loc.Set(Current.Language);
 
         public void SetBindingOverrides(string json)
         {

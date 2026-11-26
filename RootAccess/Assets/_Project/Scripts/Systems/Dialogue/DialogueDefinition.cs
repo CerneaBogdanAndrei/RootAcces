@@ -1,4 +1,5 @@
 using System;
+using RootAccess.Core;
 using UnityEngine;
 
 namespace RootAccess.Systems
@@ -8,15 +9,19 @@ namespace RootAccess.Systems
     {
         [SerializeField] private string speaker;
         [SerializeField, TextArea] private string text;
+        [SerializeField] private string speakerEn;
+        [SerializeField, TextArea] private string textEn;
 
-        public DialogueLine(string speakerName, string lineText)
+        public DialogueLine(string speakerName, string lineText, string speakerNameEn = null, string lineTextEn = null)
         {
             speaker = speakerName;
             text = lineText;
+            speakerEn = speakerNameEn;
+            textEn = lineTextEn;
         }
 
-        public string Speaker => speaker;
-        public string Text => text;
+        public string Speaker => Loc.T(speaker, speakerEn);
+        public string Text => Loc.T(text, textEn);
     }
 
     /// <summary>Data-driven linear conversation shown by the dialogue box.</summary>
