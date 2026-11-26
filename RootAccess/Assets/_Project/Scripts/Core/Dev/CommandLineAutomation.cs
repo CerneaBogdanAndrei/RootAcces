@@ -26,6 +26,7 @@ namespace RootAccess.Core
         private const string CoopArg = "-ra-coop";
         private const string CoopAddressArg = "-ra-coop-address";
         private const string LanguageArg = "-ra-language";
+        private const string InvulnerableArg = "-ra-invulnerable";
 
         private string _targetScene;
         private string _spawnId;
@@ -49,6 +50,12 @@ namespace RootAccess.Core
 
         /// <summary>True with -ra-default-settings: settings live in memory only (defaults, nothing written to PlayerPrefs).</summary>
         public static bool UsesDefaultSettings => Array.IndexOf(Environment.GetCommandLineArgs(), DefaultSettingsArg) >= 0;
+
+        /// <summary>
+        /// <c>-ra-invulnerable</c>: the player ignores damage (falls still put them back on the ledge). Only the automated
+        /// playthrough uses it, to check the route itself; every ignored hit is still logged.
+        /// </summary>
+        public static bool Invulnerable => Array.IndexOf(Environment.GetCommandLineArgs(), InvulnerableArg) >= 0;
 
         /// <summary><c>-ra-language en|ro</c>: start in that language (screenshots of the English version).</summary>
         public static Language? LanguageOverride

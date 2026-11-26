@@ -552,6 +552,7 @@ namespace RootAccess.EditorTools
             // Network nodes: the street is blocked by a tower; the node carries you onto its roof (data shard).
             GameObject dataTerminal = Place(ctx, "Terminal_Data", layout.P(3f), layout.Props, "Terminal_Data");
             ConfigureTerminal(dataTerminal, SeedContent.Ids.TerminalLevel01Data);
+            layout.Route(RouteAction.Interact, 3f, 0f, dataTerminal.GetComponent<Terminal>(), true);
             layout.Hint(SeedContent.Labels.L1Nodes, 9f, 5f, 12f);
             layout.Flat(6);
             layout.NodeHop("l1_nodes", 10, "Pickup_DataShard");

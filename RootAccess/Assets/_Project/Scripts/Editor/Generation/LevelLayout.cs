@@ -36,6 +36,9 @@ namespace RootAccess.EditorTools
         private string _lastDecor;
         private readonly List<(int x0, int x1, int above)> _shells = new();
         private readonly List<(string segment, float seconds)> _estimate = new();
+        private readonly List<RouteStep> _route = new();
+        private Transform _routeRoot;
+        private string _segment = "Start";
 
         public LevelLayout(BuildContext ctx, SceneBuilder.GameplayScene scene, LevelTheme theme, string idPrefix, int startX, int ceiling = 0)
         {
@@ -79,7 +82,25 @@ namespace RootAccess.EditorTools
         /// Adds a segment's estimated first-run time: walking, waiting for patrols/lasers, one attempt per hacking minigame
         /// (~20–25 s each) and reading hints. Deaths and retries are added on top by <c>PlaytimeReport</c>.
         /// </summary>
-        public void Estimate(string segment, float seconds) => _estimate.Add((segment, seconds));
+        public void Estimate(string segment, float seconds)
+        {
+            _estimate.Add((segment, seconds));
+            _segment = segment;
+        }
+
+        /// <summary>
+        /// Adds a waypoint of the level's intended route at (dx, dy) from the cursor: how this segment is meant to be
+        /// crossed. Data only (gizmos in the Scene view); the automated playthrough follows it with real input.
+        /// </summary>
+        public RouteStep Route(RouteAction action, float dx, float dy = 0f, MonoBehaviour subject = null, bool screenshot = false)
+        {
+            if (_routeRoot == null) _routeRoot = SceneBuilder.Group("Route", _scene.Root);
+            GameObject go = PrefabFactory.Go($"Route_{_route.Count:D3}_{action}", _routeRoot, Layers.Default, P(dx, dy));
+            var step = go.AddComponent<RouteStep>();
+            step.Configure(_route.Count, action, _segment, subject, screenshot);
+            _route.Add(step);
+            return step;
+        }
 
         // ---------------------------------------------------------------- primitives
 
@@ -238,6 +259,7 @@ namespace RootAccess.EditorTools
             Decor(width);
             Scatter(1f, width - 1f, width);
             if (hint != null) Hint(hint, width * 0.5f);
+            Route(RouteAction.Walk, width - 0.5f, 0f, screenshot: true);
             Advance(width);
             return this;
         }
@@ -258,12 +280,20 @@ namespace RootAccess.EditorTools
                 int width = i == 0 ? 6 : 5;
                 Floor = baseFloor + rises[i % rises.Length];
                 Block(0, width);
-                if (i > 0) Put("Pickup_Credits", P(width * 0.5f, 1f));
+                if (i > 0)
+                {
+                    Put("Pickup_Credits", P(width * 0.5f, 1f));
+                    Route(RouteAction.Jump, 1.3f);
+                }
+
                 if (i == gaps)
                 {
+                    Route(RouteAction.Walk, width - 0.5f);
                     Advance(width);
                     break;
                 }
+
+                Route(RouteAction.Walk, width - 0.45f, 0f, screenshot: i == 0);
 
                 if (i % 2 == 1) Put("RooftopAC", P(1.5f));
                 else if (i > 0) Scatter(0.5f, width - 0.5f, i);
@@ -275,6 +305,7 @@ namespace RootAccess.EditorTools
 
             Floor = baseFloor;
             Block(0, 3);
+            Route(RouteAction.Walk, 2.5f);
             Advance(3);
             return this;
         }
@@ -294,6 +325,11 @@ namespace RootAccess.EditorTools
             Put("Pickup_Credits", P(9f, height + 0.5f));
             LoreAt(lore, 9f, height + 1.7f);
             if (hint != null) Hint(hint, 2.5f, 5f, 8f);
+            // Under the hanging wall into the shaft, wall to wall up past the tall wall, over it and down the far side.
+            Route(RouteAction.Walk, 2.5f, 0f, screenshot: true);
+            Route(RouteAction.Walk, 6.5f);
+            Route(RouteAction.WallClimb, 9f, height);
+            Route(RouteAction.Walk, 13f);
             Advance(width);
             return this;
         }
@@ -320,6 +356,19 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetFields(guard.GetComponent<Guard>(), so => so.SetArray("patrolPoints", new[] { a, b }));
             if (catwalk) LoreAt(lore, width - 4f, walkHeight + 0.7f);
             else LoreAt(lore, width - 4.5f, 1.7f);
+            if (catwalk && !guardOnCatwalk)
+            {
+                // The stealth route: up onto the catwalk, over the guard's head, down at the far end.
+                Route(RouteAction.Walk, 2.3f, 0f, screenshot: true);
+                Route(RouteAction.Jump, 3.8f, walkHeight);
+                Route(RouteAction.Walk, width - 3.6f, walkHeight);
+                Route(RouteAction.Walk, width - 0.5f);
+            }
+            else
+            {
+                Route(RouteAction.Walk, width - 0.5f, 0f, screenshot: true);
+            }
+
             Decor(width);
             Advance(width);
             return guard;
@@ -345,6 +394,9 @@ namespace RootAccess.EditorTools
             EditorAssetUtil.SetFields(doorTerminal.GetComponent<Terminal>(), so => so.Require("difficulty").intValue = doorDifficulty);
             Put("Crate", P(6f, 0.5f));
             Put("NeonSign", P(7f, Indoor ? Ceiling - 2.5f : 6f));
+            Route(RouteAction.Interact, 2f, 0f, cameraTerminal.GetComponent<Terminal>(), true);
+            Route(RouteAction.Interact, 9.5f, 0f, doorTerminal.GetComponent<Terminal>());
+            Route(RouteAction.Walk, width - 0.5f);
             Advance(width);
             return (cameraTerminal.GetComponent<Terminal>(), doorTerminal.GetComponent<Terminal>(), door.GetComponent<Door>(), camera.GetComponent<SecurityCamera>());
         }
@@ -378,6 +430,8 @@ namespace RootAccess.EditorTools
             Lamp(width * 0.5f, 3.4f, new Color(1f, 0.3f, 0.6f), 0.8f, 5f);
             // Between the last two beams, clear of the electric floor: grab it in the gap of the cycle.
             LoreAt(lore, 5.5f + 3f * (lasers - 1) - 1.5f, 0.6f);
+            Route(RouteAction.Interact, 1.5f, 0f, terminal.GetComponent<Terminal>(), true);
+            Route(RouteAction.Walk, width - 0.5f);
             Advance(width);
             return terminal.GetComponent<Terminal>();
         }
@@ -394,15 +448,19 @@ namespace RootAccess.EditorTools
             if (spawnId != null) Spawn(spawnId, 1f);
             GameObject ground = Put("NetworkNode", P(4f), Props, "NetworkNode_A");
             GameObject nodeTerminal = requiresHack && hackTerminalId != null ? HackTerminal("Terminal", 6.5f, hackTerminalId, "Terminal_Node") : null;
+            if (nodeTerminal != null) Route(RouteAction.Interact, 6.5f, 0f, nodeTerminal.GetComponent<Terminal>(), true);
+            Route(RouteAction.Interact, 4f, 0f, ground.GetComponent<NetworkNode>(), nodeTerminal == null);
             Advance(8);
             Floor += height;
             Block(0, 14);
+            Route(RouteAction.Walk, 13.5f);
             GameObject roof = Put("NetworkNode", P(2f), Props, "NetworkNode_B");
             if (rooftopPrefab != null) Put(rooftopPrefab, P(6.5f));
             Put("NeonSign", P(7f, 4f));
             Put("RooftopAC", P(10f));
             Advance(14);
             Floor -= height;
+            Route(RouteAction.Walk, 3.5f);
             SceneBuilder.LinkNodes(ground, roof, requiresHack);
             if (nodeTerminal != null)
                 SceneBuilder.ConfigureTerminal(nodeTerminal, hackTerminalId, ground.GetComponent<NetworkNode>(), roof.GetComponent<NetworkNode>());
@@ -430,6 +488,9 @@ namespace RootAccess.EditorTools
                 list.Add(Put("Drone", P(9f + i * 7f, 6f + (i % 2)), Enemies, $"Drone_{i + 1}"));
             if (reward != null) Put(reward, P(21.5f));
             LoreAt(lore, 14.5f, 4.7f);
+            Route(RouteAction.Walk, 13.2f, 0f, screenshot: true);
+            Route(RouteAction.Jump, 16f);
+            Route(RouteAction.Walk, width - 0.5f);
             Decor(width);
             Advance(width);
             return list;
@@ -466,10 +527,15 @@ namespace RootAccess.EditorTools
 
             Put("NeonSign", P(-1.5f, Indoor ? Ceiling - 2.5f : 5f));
 
-            HackTerminal("Terminal", -3.5f, terminalId, "Terminal_Elevator", elevator);
+            GameObject elevatorTerminal = HackTerminal("Terminal", -3.5f, terminalId, "Terminal_Elevator", elevator);
+            Route(RouteAction.Interact, -3.5f, 0f, elevatorTerminal.GetComponent<Terminal>(), true);
+            Route(RouteAction.Walk, 2f);
+            Route(RouteAction.Interact, 2f, 0f, elevator);
+            Route(RouteAction.Ride, 2f, rise, elevator);
             Advance(4);
             Floor = lower + rise;
             Block(0, 4);
+            Route(RouteAction.Walk, 3.5f);
             Advance(4);
             return elevator;
         }
@@ -486,6 +552,8 @@ namespace RootAccess.EditorTools
             Put("NeonSign", P(3f, Indoor ? Ceiling - 2.5f : 5f));
             Put("NeonSign", P(9f, Indoor ? Ceiling - 2.5f : 5f));
             PrefabFactory.Light(Lights, "VaultGlow", Light2D.LightType.Point, new Color(1f, 0.35f, 0.85f), 1.1f, 6f, P(6f, 2f));
+            Route(RouteAction.Interact, 6f, 0f, terminal.GetComponent<Terminal>(), true);
+            Route(RouteAction.Walk, width - 0.5f);
             Advance(width);
             return terminal.GetComponent<Terminal>();
         }
@@ -507,6 +575,7 @@ namespace RootAccess.EditorTools
             Put("Turret", P(19.5f), Enemies);
             if (turrets > 1) Put("Turret", P(15.5f, 4f), Enemies);
             LoreAt(lore, 17.5f, 4.7f);
+            Route(RouteAction.Walk, width - 0.5f, 0f, screenshot: true);
             Decor(width);
             Advance(width);
             return this;
@@ -527,6 +596,9 @@ namespace RootAccess.EditorTools
             for (int i = 0; i < crates; i++) Put("Crate", P(2f + i * (width - 4f) / Mathf.Max(1, crates - 1), 0.5f));
             if (dive) Wall(width / 2 - 1, width / 2 + 1, -2, Indoor ? Ceiling : 8);
             LoreAt(lore, width * 0.3f, -depth + 0.7f);
+            // Dive under the hanging wall when there is one, then swim to the far edge and climb out.
+            if (dive) Route(RouteAction.Swim, width * 0.5f, -depth + 0.6f, water, true);
+            Route(RouteAction.Swim, width + 1f, 0f, water, !dive);
             Advance(width);
             Block(0, 2);
             Advance(2);
@@ -558,8 +630,10 @@ namespace RootAccess.EditorTools
                 so.Require("water").objectReferenceValue = water;
                 so.Require("floodedDepth").floatValue = shaftDepth + ledge - 0.5f;
             });
-            HackTerminal("Terminal", -2.5f, terminalId, "Terminal_Sluice", control);
+            GameObject sluice = HackTerminal("Terminal", -2.5f, terminalId, "Terminal_Sluice", control);
             Put("SewerPipe", P(width * 0.5f, ledge + 1.5f));
+            Route(RouteAction.Interact, -2.5f, 0f, sluice.GetComponent<Terminal>(), true);
+            Route(RouteAction.Swim, width + 1.5f, ledge, water);
             Advance(width);
             Floor += ledge;
             Block(0, 6);
@@ -580,6 +654,7 @@ namespace RootAccess.EditorTools
             Block(0, 6);
             if (spawnId != null) Spawn(spawnId, 1f);
             GameObject departure = Put("NetworkNode", P(4f), Props, "NetworkNode_Chain_0");
+            Route(RouteAction.Interact, 4f, 0f, departure.GetComponent<NetworkNode>(), true);
             Advance(6);
             int floor = Floor;
             int highest = 0;
@@ -601,12 +676,22 @@ namespace RootAccess.EditorTools
                 if (i % 2 == 0) Put("ServerRack", P(3f));
                 Put("Pickup_Credits", P(3f, 0f));
                 if (i == towers - 1) LoreAt(lore, 2f, 0.7f);
-                if (i < towers - 1) departure = Put("NetworkNode", P(4.8f), Props, $"NetworkNode_Chain_{i + 1}b");
+                if (i < towers - 1)
+                {
+                    departure = Put("NetworkNode", P(4.8f), Props, $"NetworkNode_Chain_{i + 1}b");
+                    Route(RouteAction.Interact, 4.8f, 0f, departure.GetComponent<NetworkNode>());
+                }
+                else
+                {
+                    Route(RouteAction.Walk, 5.5f);
+                }
+
                 Advance(6);
             }
 
             Floor = floor;
             Block(0, 4);
+            Route(RouteAction.Walk, 3f);
             Advance(4);
             return nodes;
         }
@@ -623,6 +708,9 @@ namespace RootAccess.EditorTools
             Wall(3, 3 + length, 1, Indoor ? Ceiling : OutdoorHeadroom);
             if (hint != null) Hint(hint, 1.5f, 3.4f, 9f);
             LoreAt(lore, 3f + length * 0.5f, 0.5f);
+            Route(RouteAction.Walk, 2.4f, 0f, screenshot: true);
+            Route(RouteAction.Crawl, 3f + length + 0.8f);
+            Route(RouteAction.Walk, width - 0.5f);
             Advance(width);
             return this;
         }
@@ -644,6 +732,7 @@ namespace RootAccess.EditorTools
             Block(0, 4);
             if (spawnId != null) Spawn(spawnId, 1f);
             if (hint != null) Hint(hint, 2f, 4.6f, 9f);
+            Route(RouteAction.Walk, 3.4f, 0f, screenshot: true);
             Advance(4);
             for (int span = 0; span < spans; span++)
             {
@@ -669,14 +758,17 @@ namespace RootAccess.EditorTools
                     so.Require("startDelay").floatValue = span * 1.3f;
                 });
                 if (span == 0) LoreAt(lore, gap * 0.5f, 3.9f);
+                Route(RouteAction.Ride, gap + 1.2f, 0f, gondola.GetComponent<MovingPlatform>());
                 Advance(gap);
                 if (span == spans - 1) break;
                 Block(0, 3);
                 Put("Decor_Mast", P(1.5f));
+                Route(RouteAction.Walk, 2.5f);
                 Advance(3);
             }
 
             Block(0, 4);
+            Route(RouteAction.Walk, 3f);
             Advance(4);
             return this;
         }
@@ -698,6 +790,8 @@ namespace RootAccess.EditorTools
             GameObject terminal = terminalId != null ? HackTerminal("Terminal", 2.5f, terminalId, "Terminal_Fan") : null;
             Platform(1, 3, height - 2);
             LoreAt(lore, 2f, height - 2 + 0.7f);
+            if (terminal != null) Route(RouteAction.Interact, 2.5f, 0f, terminal.GetComponent<Terminal>(), true);
+            else Route(RouteAction.Walk, approach - 1f, 0f, screenshot: true);
             Advance(approach);
 
             // The fan sits in a one-tile recess: its grill is the floor.
@@ -719,6 +813,8 @@ namespace RootAccess.EditorTools
             Floor += height;
             Block(0, 6);
             Put("Pickup_Credits", P(2.5f, 0.6f));
+            Route(RouteAction.Updraft, 2f, 0f, updraft);
+            Route(RouteAction.Walk, 5.5f);
             Advance(6);
             return updraft;
         }
@@ -733,6 +829,7 @@ namespace RootAccess.EditorTools
             Block(0, 4);
             if (spawnId != null) Spawn(spawnId, 1f);
             if (hint != null) Hint(hint, 2f, 4.6f, 9f);
+            Route(RouteAction.Walk, 0.5f, 0f, screenshot: true);
             Advance(4);
             int span = grates * 3 + 1;
             Pit(0, span, -2f, 0);
@@ -746,6 +843,8 @@ namespace RootAccess.EditorTools
 
             Advance(span);
             Block(0, 4);
+            // Straight across at full speed: each grate holds half a second, the one-tile gaps are no wider than a stride.
+            Route(RouteAction.Walk, 3f);
             Advance(4);
             return this;
         }
@@ -795,6 +894,9 @@ namespace RootAccess.EditorTools
             });
             LoreAt(lore, 16f, 3.7f);
             PrefabFactory.Light(Lights, "UplinkGlow", Light2D.LightType.Point, new Color(0.3f, 0.9f, 1f), 0.9f, 7f, P(10f, 3f));
+            Route(RouteAction.Interact, 7f, 0f, terminal.GetComponent<Terminal>(), true);
+            Route(RouteAction.Hold, 10f, 0f, uplink, true);
+            Route(RouteAction.Walk, width - 0.5f);
             Advance(width);
             return uplink;
         }
@@ -837,6 +939,7 @@ namespace RootAccess.EditorTools
             GameObject checkpoint = Put("Checkpoint", P(2.5f), Props, $"Checkpoint_{checkpointId}");
             EditorAssetUtil.SetFields(checkpoint.GetComponent<Gameplay.Checkpoint>(), so => so.Require("checkpointId").stringValue = checkpointId);
             if (spawnId != null) Spawn(spawnId, 1f);
+            Route(RouteAction.Walk, 4.5f);
             Advance(5);
             return this;
         }
@@ -857,6 +960,7 @@ namespace RootAccess.EditorTools
                 so.Require("unlocksLevel").objectReferenceValue = BuildContext.Fresh(unlocks);
             });
             Put("NeonSign", P(5f, Indoor ? Ceiling - 2.5f : 5f));
+            Route(RouteAction.Walk, 5f, 0f, screenshot: true);
             Advance(8);
             return exit.GetComponent<LevelExit>();
         }
@@ -887,6 +991,8 @@ namespace RootAccess.EditorTools
                 so.Require("cellSize").floatValue = 0.5f;
             });
             pathfinding.AddComponent<PathRequestQueue>();
+            if (_routeRoot == null) _routeRoot = SceneBuilder.Group("Route", _scene.Root);
+            _routeRoot.gameObject.AddComponent<LevelRoute>().SetSteps(_route.ToArray());
             return rect;
         }
     }

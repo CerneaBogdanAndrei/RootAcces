@@ -1,0 +1,25 @@
+{
+    "name": "RootAccess.Playthrough",
+    "rootNamespace": "RootAccess.Playthrough",
+    "references": [
+        "RootAccess.Core",
+        "RootAccess.Input",
+        "RootAccess.Systems",
+        "RootAccess.Gameplay",
+        "RootAccess.Player",
+        "RootAccess.Hacking",
+        "RootAccess.UI",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

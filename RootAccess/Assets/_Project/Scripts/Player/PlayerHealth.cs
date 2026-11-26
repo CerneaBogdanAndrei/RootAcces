@@ -13,6 +13,7 @@ namespace RootAccess.Player
         private PlayerController _controller;
         private Vector3 _respawnPoint;
         private float _invulnerableUntil;
+        private bool _ignoreDamage;
 
         public int Current { get; private set; }
         public int Max => _controller.Config.MaxHealth + _controller.BonusHealth;
@@ -22,6 +23,7 @@ namespace RootAccess.Player
         private void Awake()
         {
             _controller = GetComponent<PlayerController>();
+            _ignoreDamage = CommandLineAutomation.Invulnerable;
         }
 
         private void Start()
@@ -65,6 +67,12 @@ namespace RootAccess.Player
         {
             if (!IsAlive || damage.Amount <= 0) return;
             if (IsInvulnerable && damage.Type != DamageType.Fall) return;
+            if (_ignoreDamage && damage.Type != DamageType.Fall)
+            {
+                Debug.Log($"[PlayerHealth] Hit ignored (automation): {damage.Type} x{damage.Amount} at {transform.position}.", this);
+                _invulnerableUntil = Time.time + _controller.Config.InvulnerabilitySeconds;
+                return;
+            }
 
             Current = Mathf.Max(0, Current - damage.Amount);
             _invulnerableUntil = Time.time + _controller.Config.InvulnerabilitySeconds;
