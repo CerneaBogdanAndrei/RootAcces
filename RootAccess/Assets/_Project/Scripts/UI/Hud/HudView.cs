@@ -1,14 +1,28 @@
+using System.Text;
 using RootAccess.Core;
 using RootAccess.Systems;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RootAccess.UI
 {
-    /// <summary>In-game HUD: health, trace meter, credits, active contract, interaction prompt, stealth and toasts.</summary>
+    /// <summary>
+    /// In-game HUD: health, trace meter, credits, the objective list of the active contract (with the next step and the
+    /// side contracts), interaction prompt, stealth and toasts. In split-screen co-op a <see cref="SplitScreenRegion"/>
+    /// keeps it on the Infiltrator's half.
+    /// </summary>
     public sealed class HudView : MonoBehaviour
     {
+        private const string DoneColor = "#7C86A3";
+        private const string CurrentColor = "#2EF2FF";
+        private const string PendingColor = "#D7DCEB";
+        private const string BonusColor = "#FFD24A";
+        private const string FailedColor = "#FF4A5A";
+        private const string SideColor = "#A9B2CC";
+        private const int MaxSideContracts = 2;
+
         [SerializeField] private CanvasGroup group;
         [SerializeField] private Image healthFill;
         [SerializeField] private TMP_Text healthLabel;
@@ -16,7 +30,8 @@ namespace RootAccess.UI
         [SerializeField] private TMP_Text traceLabel;
         [SerializeField] private TMP_Text creditsLabel;
         [SerializeField] private TMP_Text questTitle;
-        [SerializeField] private TMP_Text questObjective;
+        [SerializeField, Tooltip("Every objective of the active contract, ticked off as they are done.")]
+        private TMP_Text questObjective;
         [SerializeField] private TMP_Text promptLabel;
         [SerializeField] private TMP_Text hiddenLabel;
         [SerializeField] private TMP_Text toastLabel;
@@ -35,6 +50,7 @@ namespace RootAccess.UI
         private TraceChanged? _lastTrace;
         private UplinkProgressChanged? _lastUplink;
         private bool _hidden;
+        private readonly StringBuilder _text = new();
 
         private float _toastUntil;
         private float _healthTarget = 1f;
@@ -56,7 +72,6 @@ namespace RootAccess.UI
             EventBus<TraceChanged>.Subscribe(OnTrace);
             EventBus<CreditsChanged>.Subscribe(OnCredits);
             EventBus<XpChanged>.Subscribe(OnXp);
-            EventBus<CoopViewChanged>.Subscribe(OnCoopView);
             EventBus<QuestChanged>.Subscribe(OnQuest);
             EventBus<InteractionPromptChanged>.Subscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Subscribe(OnHidden);
@@ -64,6 +79,7 @@ namespace RootAccess.UI
             EventBus<InventoryChanged>.Subscribe(OnInventory);
             EventBus<UplinkProgressChanged>.Subscribe(OnUplink);
             EventBus<SceneLoadStarted>.Subscribe(OnSceneLoad);
+            EventBus<SceneLoadCompleted>.Subscribe(OnSceneLoaded);
             EventBus<LanguageChanged>.Subscribe(OnLanguageChanged);
         }
 
@@ -74,7 +90,6 @@ namespace RootAccess.UI
             EventBus<TraceChanged>.Unsubscribe(OnTrace);
             EventBus<CreditsChanged>.Unsubscribe(OnCredits);
             EventBus<XpChanged>.Unsubscribe(OnXp);
-            EventBus<CoopViewChanged>.Unsubscribe(OnCoopView);
             EventBus<QuestChanged>.Unsubscribe(OnQuest);
             EventBus<InteractionPromptChanged>.Unsubscribe(OnPrompt);
             EventBus<PlayerHiddenChanged>.Unsubscribe(OnHidden);
@@ -82,6 +97,7 @@ namespace RootAccess.UI
             EventBus<InventoryChanged>.Unsubscribe(OnInventory);
             EventBus<UplinkProgressChanged>.Unsubscribe(OnUplink);
             EventBus<SceneLoadStarted>.Unsubscribe(OnSceneLoad);
+            EventBus<SceneLoadCompleted>.Unsubscribe(OnSceneLoaded);
             EventBus<LanguageChanged>.Unsubscribe(OnLanguageChanged);
         }
 
@@ -149,13 +165,6 @@ namespace RootAccess.UI
             RenderWallet();
         }
 
-        /// <summary>Split-screen co-op: the HUD follows the gameplay camera onto the left half of the screen.</summary>
-        private void OnCoopView(CoopViewChanged evt)
-        {
-            var rect = (RectTransform)transform;
-            rect.anchorMax = new Vector2(evt.Split ? 0.5f : 1f, 1f);
-        }
-
         private void OnXp(XpChanged evt)
         {
             _xp = evt.Xp;
@@ -167,20 +176,87 @@ namespace RootAccess.UI
             if (creditsLabel != null) creditsLabel.text = string.Format(Strings.Hud.CreditsAndXp, _credits, _xp);
         }
 
+        /// <summary>The story contract stays on screen; a side contract is shown only while no story contract runs.</summary>
         private void OnQuest(QuestChanged evt)
         {
-            QuestProgress quest = evt.Quest;
-            if (quest == null || quest.Status != QuestStatus.Active)
-            {
-                if (ServiceLocator.TryGet(out SessionService session)) quest = session.Session.Quests.ActiveMainQuest;
-            }
+            ServiceLocator.TryGet(out SessionService session);
+            QuestProgress quest = session != null && session.Session != null ? session.Session.Quests.ActiveMainQuest : null;
+            if (quest == null && evt.Quest is { Status: QuestStatus.Active }) quest = evt.Quest;
+            RenderQuest(quest, session);
+        }
 
+        /// <summary>The next step depends on where the player is (the travel hint only makes sense in the hideout).</summary>
+        private void OnSceneLoaded(SceneLoadCompleted _) => OnQuest(default);
+
+        private void RenderQuest(QuestProgress quest, SessionService session)
+        {
             if (questTitle != null) questTitle.text = quest != null ? quest.Definition.Title : Strings.Hud.NoActiveQuest;
             if (questObjective == null) return;
-            ObjectiveProgress objective = quest?.FirstIncomplete();
-            questObjective.text = objective != null
-                ? $"> {objective.Definition.Description} ({objective.Count}/{objective.Definition.RequiredCount})"
-                : string.Empty;
+            _text.Clear();
+            foreach (ChecklistLine line in ObjectiveChecklist.For(quest)) AppendObjective(line);
+            AppendTravelHint(quest, session);
+            AppendSideContracts(quest, session);
+            questObjective.text = _text.ToString();
+        }
+
+        private void AppendObjective(ChecklistLine line)
+        {
+            string counter = line.ShowsCounter ? $" ({line.Count}/{line.Required})" : string.Empty;
+            switch (line.Mark)
+            {
+                case ChecklistMark.Done:
+                    AppendLine(DoneColor, $"<s>{Strings.Panels.ObjectiveDone}{line.Text}</s>");
+                    break;
+                case ChecklistMark.Current:
+                    AppendLine(CurrentColor, $"{Strings.Hud.ObjectiveCurrent}{line.Text}{counter}");
+                    break;
+                case ChecklistMark.Bonus:
+                    AppendLine(BonusColor, $"{Strings.Panels.ObjectiveOpen}{line.Text}{counter}");
+                    break;
+                case ChecklistMark.Failed:
+                    AppendLine(FailedColor, $"{Strings.Panels.ObjectiveFailed}{line.Text}");
+                    break;
+                default:
+                    AppendLine(PendingColor, $"{Strings.Panels.ObjectiveOpen}{line.Text}{counter}");
+                    break;
+            }
+        }
+
+        /// <summary>In the hideout, "reach level X" means: take the travel terminal there.</summary>
+        private void AppendTravelHint(QuestProgress quest, SessionService session)
+        {
+            ObjectiveProgress next = quest?.FirstIncomplete();
+            if (next == null || next.Definition.Type != ObjectiveType.Reach || session == null || session.Database == null) return;
+            if (SceneManager.GetActiveScene().name != SceneNames.Hub) return;
+            foreach (LevelDefinition level in session.Database.Levels)
+            {
+                if (level == null || level.LevelId != next.Definition.TargetId) continue;
+                AppendLine(BonusColor, string.Format(Strings.Hud.TravelHint, level.DisplayName));
+                return;
+            }
+        }
+
+        /// <summary>Other running contracts, one line each: what to do next for them.</summary>
+        private void AppendSideContracts(QuestProgress shown, SessionService session)
+        {
+            if (session == null || session.Session == null) return;
+            int listed = 0;
+            foreach (QuestProgress other in session.Session.Quests.All)
+            {
+                if (listed >= MaxSideContracts) break;
+                if (other == shown || other.Status != QuestStatus.Active) continue;
+                ObjectiveProgress next = other.FirstIncomplete();
+                if (next == null) continue;
+                string counter = next.Definition.RequiredCount > 1 ? $" ({next.Count}/{next.Definition.RequiredCount})" : string.Empty;
+                AppendLine(SideColor, $"<size=85%>{string.Format(Strings.Hud.SideContract, other.Definition.Title, next.Definition.Description + counter)}</size>");
+                listed++;
+            }
+        }
+
+        private void AppendLine(string color, string body)
+        {
+            if (_text.Length > 0) _text.Append('\n');
+            _text.Append("<color=").Append(color).Append('>').Append(body).Append("</color>");
         }
 
         private void OnPrompt(InteractionPromptChanged evt)

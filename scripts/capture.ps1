@@ -80,6 +80,8 @@ $shots = @(
     @{ Name = '48-en-setari';              Scene = '';                 Spawn = '';             Interact = '';              Command = 'settings';  Delay = 3; Language = 'en' }
     @{ Name = '49-en-nivel1';              Scene = 'Level01_Rooftops'; Spawn = 'l1_start';     Interact = '';              Command = '';          Delay = 3; Language = 'en' }
     @{ Name = '50-en-terminal-misiuni';    Scene = 'Hub';              Spawn = 'hub_center';   Interact = '';              Command = 'quests';    Delay = 2.5; Language = 'en' }
+    @{ Name = '51-coop-pauza';             Scene = 'Level01_Rooftops'; Spawn = 'l1_security';  Interact = '';              Command = 'pause';     Delay = 4; Coop = 'local' }
+    @{ Name = '52-coop-hacking';           Scene = 'Level01_Rooftops'; Spawn = 'l1_security';  Interact = 'Terminal_Camera'; Command = '';        Delay = 4; Coop = 'local' }
 )
 for ($i = 1; $i -le 14; $i++) {
     $room = 'room_{0:D2}' -f $i

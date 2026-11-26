@@ -19,7 +19,7 @@ namespace RootAccess.EditorTools
         private const string DevelopmentArg = "-ra-development";
 
         /// <summary>Player version shown on the main menu (Application.version). 1.1 = painted art pass, 1.2 = Level 6 (the Halden antenna).</summary>
-        public const string GameVersion = "1.3";
+        public const string GameVersion = "1.4";
 
         public static string OutputPath => $"{OutputDirectory}/{ExecutableName}";
 

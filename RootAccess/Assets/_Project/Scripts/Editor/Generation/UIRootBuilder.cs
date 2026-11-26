@@ -16,6 +16,9 @@ namespace RootAccess.EditorTools
         {
             GameObject root = UIFactory.Canvas("UIRoot", 100);
             BuildHud(root.transform, ctx);
+            // Split-screen co-op: the Operator's console sits right above the HUD, so a menu the Infiltrator opens (pause,
+            // settings, terminal, game over) is drawn whole on top of it instead of being cut in half by it.
+            BuildOperatorConsole(root.transform);
             BuildTerminal(root.transform, ctx);
             BuildDialogue(root.transform, ctx);
             BuildHacking(root.transform, ctx);
@@ -24,7 +27,6 @@ namespace RootAccess.EditorTools
             BuildGameOver(root.transform);
             BuildLevelComplete(root.transform);
             BuildRubricPanel(root.transform, ctx);
-            BuildOperatorConsole(root.transform);
             BuildLoading(root.transform);
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, $"{EditorPaths.PrefabsUI}/UIRoot.prefab");
@@ -56,10 +58,18 @@ namespace RootAccess.EditorTools
 
             TextMeshProUGUI credits = UIFactory.Text("Credits", hud, "0", 30f, TextAlignmentOptions.Right, UIFactory.Yellow, FontStyles.Bold);
             UIFactory.Place(credits.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -24f), new Vector2(500f, 40f));
-            TextMeshProUGUI questTitle = UIFactory.Text("QuestTitle", hud, Strings.Hud.NoActiveQuest, 26f, TextAlignmentOptions.Right, UIFactory.TextColor, FontStyles.Bold);
-            UIFactory.Place(questTitle.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -72f), new Vector2(700f, 36f));
-            TextMeshProUGUI objective = UIFactory.Text("QuestObjective", hud, string.Empty, 22f, TextAlignmentOptions.Right, UIFactory.Muted);
-            UIFactory.Place(objective.rectTransform, new Vector2(1f, 1f), new Vector2(-28f, -110f), new Vector2(700f, 60f));
+            // Objective list (top right): the contract title, then every objective ticked off as it is done. 430 px wide so
+            // it still clears the status panel when split-screen co-op squeezes the HUD into half of the screen.
+            Image questPanel = UIFactory.Image("QuestPanel", hud, new Color(0.03f, 0.02f, 0.08f, 0.86f));
+            UIFactory.Place(questPanel.rectTransform, new Vector2(1f, 1f), new Vector2(-24f, -74f), new Vector2(430f, 90f));
+            VerticalLayoutGroup questLayout = UIFactory.Vertical(questPanel.gameObject, 6f, 14, TextAnchor.UpperLeft);
+            questLayout.childControlWidth = true;
+            questLayout.childControlHeight = true;
+            questLayout.childForceExpandWidth = true;
+            questPanel.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            TextMeshProUGUI questTitle = UIFactory.Text("QuestTitle", questPanel.transform, Strings.Hud.NoActiveQuest, 24f, TextAlignmentOptions.Left, UIFactory.Cyan, FontStyles.Bold);
+            TextMeshProUGUI objective = UIFactory.Text("QuestObjective", questPanel.transform, string.Empty, 20f, TextAlignmentOptions.TopLeft, UIFactory.TextColor);
+            objective.lineSpacing = 4f;
 
             TextMeshProUGUI prompt = UIFactory.Text("Prompt", hud, string.Empty, 30f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
             UIFactory.Place(prompt.rectTransform, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(1000f, 50f));
@@ -67,11 +77,13 @@ namespace RootAccess.EditorTools
             UIFactory.Place(toast.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(1000f, 50f));
 
             Image uplink = UIFactory.Image("UplinkPanel", hud, new Color(0.03f, 0.02f, 0.08f, 0.75f));
-            UIFactory.Place(uplink.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -100f), new Vector2(620f, 84f));
-            TextMeshProUGUI uplinkLabel = UIFactory.Text("UplinkLabel", uplink.transform, string.Empty, 24f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
-            UIFactory.Place(uplinkLabel.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(600f, 32f));
-            Image uplinkFill = UIFactory.FillBar("UplinkBar", uplink.transform, new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(580f, 22f), new Color(0.3f, 1f, 0.75f));
+            UIFactory.Place(uplink.rectTransform, new Vector2(0f, 1f), new Vector2(24f, -266f), new Vector2(480f, 84f));
+            TextMeshProUGUI uplinkLabel = UIFactory.Text("UplinkLabel", uplink.transform, string.Empty, 22f, TextAlignmentOptions.Center, UIFactory.Cyan, FontStyles.Bold);
+            UIFactory.Place(uplinkLabel.rectTransform, new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(460f, 32f));
+            Image uplinkFill = UIFactory.FillBar("UplinkBar", uplink.transform, new Vector2(0.5f, 1f), new Vector2(0f, -48f), new Vector2(448f, 22f), new Color(0.3f, 1f, 0.75f));
             uplinkFill.fillAmount = 0f;
+
+            hud.gameObject.AddComponent<SplitScreenRegion>();
 
             var gradient = new Gradient();
             gradient.SetKeys(new[] { new GradientColorKey(UIFactory.Cyan, 0f), new GradientColorKey(UIFactory.Yellow, 0.5f), new GradientColorKey(new Color(1f, 0.2f, 0.25f), 1f) },
@@ -176,6 +188,7 @@ namespace RootAccess.EditorTools
             UIFactory.Place(body.rectTransform, new Vector2(0f, 1f), new Vector2(28f, -62f), new Vector2(1240f, 120f));
             TextMeshProUGUI hint = UIFactory.Text("Hint", box.transform, Strings.Panels.Continue, 18f, TextAlignmentOptions.Right, UIFactory.Muted);
             UIFactory.Place(hint.rectTransform, new Vector2(1f, 0f), new Vector2(-20f, 10f), new Vector2(300f, 26f));
+            SplitRegion(box.gameObject, box.rectTransform, box.rectTransform);
             EditorAssetUtil.SetFields(view, so =>
             {
                 so.Require("input").objectReferenceValue = ctx.Input;
@@ -224,6 +237,7 @@ namespace RootAccess.EditorTools
             HackingMinigame wires = Minigame<WireConnectMinigame>("WireConnect");
             HackingMinigame portScan = Minigame<PortScanMinigame>("PortScan");
 
+            SplitRegion(overlay.gameObject, overlay, frame.rectTransform);
             var view = overlay.gameObject.AddComponent<HackingOverlay>();
             EditorAssetUtil.SetFields(view, so =>
             {
@@ -233,6 +247,17 @@ namespace RootAccess.EditorTools
                 so.Require("hintLabel").objectReferenceValue = hint;
                 so.Require("resultLabel").objectReferenceValue = result;
                 so.SetArray("minigames", new[] { pattern, wires, portScan });
+            });
+        }
+
+        /// <summary>Keeps <paramref name="region"/> in the Infiltrator's half in split-screen co-op, <paramref name="fit"/> scaled to fit.</summary>
+        private static void SplitRegion(GameObject host, RectTransform region, RectTransform fit)
+        {
+            var split = host.AddComponent<SplitScreenRegion>();
+            EditorAssetUtil.SetFields(split, so =>
+            {
+                so.Require("region").objectReferenceValue = region;
+                so.Require("fitContent").objectReferenceValue = fit;
             });
         }
 

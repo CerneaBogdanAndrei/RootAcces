@@ -117,9 +117,10 @@ must never overwrite the developer's PlayerPrefs). `scripts/capture.ps1` uses th
 
 ## Testing
 
-- EditMode (`Tests/EditMode`, 132 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
-  SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet, LoreArchive, UplinkTransfer.
-- PlayMode (`Tests/PlayMode`, 49 tests; `LanguageTests` switch RO/EN from the menus and check an English level; `LoreLogTests` check 3 distinct data logs per level; `SpireTests` cover the Level 6
+- EditMode (`Tests/EditMode`, 136 tests): A*, Inventory, TraceMeter, SaveSystem (+migrations, GameSession round-trip),
+  SkillTree, QuestLog, hacking models, EventBus, ServiceLocator, FSM, Wallet, LoreArchive, UplinkTransfer, localization, ObjectiveChecklist.
+- PlayMode (`Tests/PlayMode`, 51 tests; `LanguageTests` switch RO/EN from the menus and check an English level;
+  `SplitScreenAndObjectivesTests` check the split-screen layout and the HUD objective list; `LoreLogTests` check 3 distinct data logs per level; `SpireTests` cover the Level 6
   gondola, fan, crumbling grate and broadcast; `LevelProgressionTests` redirect saves with `SessionService.UseSaveDirectory`): every project scene in Build Settings boots with no logged errors and the player
   standing on the floor; `VerticalSliceAcceptanceTests` drives the whole slice (menu → Hub → Level 1 → hack → door →
   teleport → drone chase → pause → volume → menu → Rubric Showcase); `HackingTerminalTests` solves Port Scan and
